@@ -176,14 +176,6 @@ const setActiveTabRU = (tabRU) => {
                                     <div class="sm:col-span-1">
                                         <label for="Arrondissement" class="block text-sm font-medium">Arrondissement</label>
                                         <div class="mt-2">    
-                                            <!--  
-                                            <select name="slt_arrondissement" v-model="form.arrondissement" id="Arrondissement" class="block w-full rounded-md bg-white 
-                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                                <option value="kedougou">Kédougou</option>
-                                            </select>
-                                              -->
                                             <select
                                                 id="arrondissements"
                                                 v-model="selectedArrondissement"
@@ -203,14 +195,6 @@ const setActiveTabRU = (tabRU) => {
                                     <div class="sm:col-span-1">
                                         <label for="Departement" class="block text-sm font-medium">Commune</label>
                                         <div class="mt-2">  
-                                            <!--    
-                                            <select name="slt_commune" v-model="form.commune" id="Departement" class="block w-full rounded-md bg-white 
-                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                                <option value="1">Kédougou</option>
-                                            </select>
-                                             --> 
                                              <select
                                                 id="communes"
                                                 v-model="selectedCommune"

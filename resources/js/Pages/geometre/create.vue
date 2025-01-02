@@ -801,7 +801,7 @@ const setActiveTabRU = (tabRU) => {
                                         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
                                             <div class="sm:col-span-2">
                                                 <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
-                                                    <input id="Maison_indivielle" type="radio" value="Maison individuelle" name="rd_type_maissons" class="w-4 h-4 
+                                                    <input v-model="currentCat" id="Maison_indivielle" type="radio" value="catA" name="rd_type_maissons" class="w-4 h-4 
                                                         text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 
                                                         dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                                     <label for="Maison_indivielle" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 
@@ -810,7 +810,7 @@ const setActiveTabRU = (tabRU) => {
                                             </div>
                                             <div class="sm:col-span-2">
                                                 <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
-                                                    <input checked id="Immeuble_collectif" type="radio" value="Immeuble collectif" name="rd_type_maissons" 
+                                                    <input v-model="currentCat" id="Immeuble_collectif" type="radio" value="catB" name="rd_type_maissons" 
                                                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 
                                                                 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700
                                                                 dark:border-gray-600">
@@ -833,15 +833,10 @@ const setActiveTabRU = (tabRU) => {
                                                     dark:text-gray-300">Bâtiment principal</label>
                                             </div>
                                             <div  class="grid gap-6 mb-6 md:grid-cols-2">
-                                                <div> 
-                                                    <label for="Cat" class="block text-sm/6 font-medium text-gray-900">CAT</label>
-                                                    <select type="select" name="slt_cat" id="Cat"  class="block w-full rounded-md bg-white 
-                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                                        <option value=""></option>
-
-                                                    </select>
+                                                <div class="grid gap-6 mb-6 md:grid-cols-2"> 
+                                                    <KeepAlive>
+                                                        <component :is="currentCat"></component>
+                                                    </KeepAlive>
                                                 </div>
                                                 <div > 
                                                     <label for="Prix_mettre_carre" class="block text-sm/6 font-medium text-gray-900">Prix m²</label>
@@ -1588,7 +1583,17 @@ const setActiveTabRU = (tabRU) => {
 </style>
 
 <script > 
+import catA from './catA.vue'
+import catB from './catB.vue'
 
+export default {
+  components: { catA, catB },
+  data() {
+    return {
+      currentCat: 'catA'
+    }
+  },
+}
 
 </script>
 
