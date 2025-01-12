@@ -3,11 +3,39 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import CompA from "./CompA.vue";
 import CompB from "./CompB.vue";
 
 const current = ref("CompA");
+
+const selectedRegion = ref();
+const selectedArrondissement = ref();
+const selectedDepartement = ref();
+const selectedCommune = ref();
+
+const departements = ref(null);
+const arrondissements = ref(null);
+const communes = ref(null);
+
+const props = defineProps({
+    regions: {
+        type: Array,
+        default: () => [],
+    },
+    // departements: {
+    //     type: Array,
+    //     default: () => [],
+    // },
+    // arrondissements: {
+    //     type: Array,
+    //     default: () => [],
+    // },
+    // communes: {
+    //     type: Array,
+    //     default: () => [],
+    // },
+});
 
 const form = useForm({
     region: "",
@@ -19,8 +47,53 @@ const form = useForm({
     // Ajouter d'autres champs nécessaires
 });
 
+const fetchDepartements = () => {
+    console.log("selectedRegion a changé", selectedRegion.value);
+
+    // form.post(
+    //     "/fetch-departements",
+    //     { region_id: selectedRegion },
+    //     {
+    //         onSuccess: (page) => {
+    //             departements.value = page.props.departements;
+    //             arrondissements.value = [];
+    //             communes.value = [];
+    //         },
+    //     }
+    // );
+};
+
+const fetchArrondissements = () => {
+    form.post(
+        "/fetch-arrondissements",
+        { departement_id: form.value.departement },
+        {
+            onSuccess: (page) => {
+                arrondissements.value = page.props.arrondissements;
+                communes.value = [];
+            },
+        }
+    );
+};
+
+const fetchCommunes = () => {
+    Inertia.post(
+        "/fetch-communes",
+        { arrondissement_id: form.value.arrondissement },
+        {
+            onSuccess: (page) => {
+                communes.value = page.props.communes;
+            },
+        }
+    );
+};
+
+onMounted(() => {
+    console.log("Les régions: ", props.regions);
+});
+
 const submitForm = () => {
-    console.log("Soumettre formulaire: ", form.data);
+    console.log("Soumettre formulaire: ", form);
 
     // Décommenter cette ligne pour soumettre le formulaire dans la base de données.👇
     /* form.post(route("scretariat.store"), {
@@ -268,17 +341,26 @@ const mazTabs = [
                                             <label
                                                 for="Region"
                                                 class="block text-sm font-medium"
-                                                >Région</label
                                             >
+                                                Région
+                                            </label>
                                             <div class="mt-2">
                                                 <select
-                                                    name="slt_region"
-                                                    v-model="form.region"
-                                                    id="Region"
+                                                    id="slt_region"
+                                                    v-model="selectedRegion"
+                                                    @change="
+                                                        fetchDepartements(
+                                                            selectedRegion
+                                                        )
+                                                    "
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
-                                                    <option value="Kedougou">
-                                                        Kédougou
+                                                    <option
+                                                        v-for="region in regions"
+                                                        :key="region.id"
+                                                        :value="region.id"
+                                                    >
+                                                        {{ region?.slt_region }}
                                                     </option>
                                                 </select>
                                             </div>
@@ -296,7 +378,9 @@ const mazTabs = [
                                                         selectedDepartement
                                                     "
                                                     @change="
-                                                        fetchArrondissements
+                                                        fetchArrondissements(
+                                                            selectedDepartement
+                                                        )
                                                     "
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
@@ -984,83 +1068,3 @@ const mazTabs = [
         </div>
     </AuthenticatedLayout>
 </template>
-<!--
-<script>
-import CompA from "./CompA.vue";
-import CompB from "./CompB.vue";
-import InputError from "@/Components/InputError.vue";
-import { ref } from "vue";
-
-export default {
-    components: { CompA, CompB },
-    data() {
-        return {
-            current: "CompA",
-        };
-    },
-
-    slt_departement: "create",
-    data() {
-        return {
-            departements: [],
-            arrondissements: [],
-            communes: [],
-            selectedDepartement: "",
-            selectedArrondissement: "",
-            selectedCommune: "",
-        };
-    },
-    methods: {
-        async fetchDepartements() {
-            try {
-                const response = await fetch("/api/departements");
-                this.departements = await response.json();
-            } catch (error) {
-                console.error(
-                    "Erreur lors du chargement des départements :",
-                    error
-                );
-            }
-        },
-        async fetchArrondissements() {
-            if (!this.selectedDepartement) {
-                this.arrondissements = [];
-                this.communes = [];
-                return;
-            }
-            try {
-                const response = await fetch(
-                    `/api/arrondissements/${this.selectedDepartement}`
-                );
-                this.arrondissements = await response.json();
-                this.communes = [];
-            } catch (error) {
-                console.error(
-                    "Erreur lors du chargement des arrondissements :",
-                    error
-                );
-            }
-        },
-        async fetchCommunes() {
-            if (!this.selectedArrondissement) {
-                this.communes = [];
-                return;
-            }
-            try {
-                const response = await fetch(
-                    `/api/communes/${this.selectedArrondissement}`
-                );
-                this.communes = await response.json();
-            } catch (error) {
-                console.error(
-                    "Erreur lors du chargement des communes :",
-                    error
-                );
-            }
-        },
-    },
-    mounted() {
-        this.fetchDepartements();
-    },
-};
-</script> -->

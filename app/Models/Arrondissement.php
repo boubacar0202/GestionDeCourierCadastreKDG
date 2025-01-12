@@ -7,20 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class Arrondissement extends Model
 {
     //
-    protected $fillable =[
-  
+    protected $fillable = [
         'slt_arrondissement',
     ];
+
+    protected $with = ['communes'];
 
     public function departement()
     {
         return $this->belongsTo(Departement::class);
     }
 
-    public function commune()
+    public function communes()
     {
         return $this->hasMany(Commune::class);
     }
 }
-
-

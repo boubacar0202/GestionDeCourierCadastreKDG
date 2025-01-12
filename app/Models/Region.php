@@ -10,4 +10,12 @@ class Region extends Model
     protected $fillable = [
         'slt_region',
     ];
+
+    protected $with = ['departements'];
+
+
+    public function departements()
+    {
+        return $this->hasMany(Departement::class);
+    }
 }

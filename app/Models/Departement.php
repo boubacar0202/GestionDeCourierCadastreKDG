@@ -11,12 +11,14 @@ class Departement extends Model
         'slt_departement',
     ];
 
+    protected $with = ['arrondissements'];
+
     public function region()
     {
         return $this->belongsTo(Region::class);
     }
 
-    public function arrondissement()
+    public function arrondissements()
     {
         return $this->hasMany(Arrondissement::class);
     }
