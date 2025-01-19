@@ -38,14 +38,47 @@ const props = defineProps({
 });
 
 const form = useForm({
+    numDossier: "",
+    numDordre: "",
+    serviceRendu: "",
+    etatCession: "",
+    cessionDefinitive: "",
+    dateCreation: "",
     region: "",
     departement: "",
     arrondissement: "",
     commune: "",
     lotissement: "",
-    numLot: "",
+    numLotissement: "",
     numSection: "",
-    selecteTitulaire: "",
+    numParcelle: "",
+    numTitre: "",
+    titreMere: "",
+    surface: "",
+    documentAdmin: "",
+    numDeliberation: "",
+    dateDeliberation: "",
+    nicad: "",
+    dependantDomaine: "",
+    ussuBornage: "",
+    titreMere: "",
+    lf: "",
+    numRequisition: "",
+    surfaceBornage: "",
+    dateBornage: "",
+    nomGeometre: "",
+    selectTitulaire: "",
+    nationalite: "",
+    selectePiece: "",
+    numPiece: "",
+    dateDelivrance: "",
+    dateNaissance: "",
+    lieuNaissance: "",
+    adresse: "",
+    telephone: "",
+    ninea: "",
+    representant: "",
+    email: "",
     // Ajouter d'autres champs nécessaires
 });
 
@@ -167,7 +200,12 @@ const mazTabs = [
                         </div>
 
                         <!-- Corps du formulaire -->
-                        <form @submit.prevent="submitForm">
+                        <form
+                            @submit.prevent="submitForm"
+                            method="post"
+                            action="{{ route('secretariat.store') }}"
+                            encrypted="multipart/from-data"
+                        >
                             <div class="p-6">
                                 <!-- Section Parcelle -->
                                 <h5 class="text-lg font-bold">
@@ -191,7 +229,7 @@ const mazTabs = [
                                                         type="text"
                                                         name="txt_num_dossier"
                                                         v-model="
-                                                            form.numSection
+                                                            form.numDossier
                                                         "
                                                         id="Num_dossier"
                                                         autocomplete="address-level2"
@@ -217,6 +255,7 @@ const mazTabs = [
                                                     <input
                                                         type="text"
                                                         name="txt_num_dordre"
+                                                        v-model="form.numDordre"
                                                         id="Num_dordre"
                                                         autocomplete="address-level2"
                                                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -235,6 +274,9 @@ const mazTabs = [
                                                     <select
                                                         type="select"
                                                         name="slt_service_rendu"
+                                                        v-model="
+                                                            form.serviceRendu
+                                                        "
                                                         id="Service_rendu"
                                                         autocomplete="address-level2"
                                                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -305,6 +347,9 @@ const mazTabs = [
                                                     <input
                                                         type="text"
                                                         name="txt_etat_cession"
+                                                        v-model="
+                                                            form.etatCession
+                                                        "
                                                         id="Etat_cession"
                                                         autocomplete="address-level2"
                                                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -323,6 +368,9 @@ const mazTabs = [
                                                     <input
                                                         type="text"
                                                         name="txt_cession_definitive"
+                                                        v-model="
+                                                            form.cessionDefinitive
+                                                        "
                                                         id="Cession_definitive"
                                                         autocomplete="address-level2"
                                                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -341,6 +389,9 @@ const mazTabs = [
                                                     <input
                                                         type="Date"
                                                         name="dt_date_creation"
+                                                        v-model="
+                                                            form.dateCreation
+                                                        "
                                                         id="Date_creation"
                                                         autocomplete="address-level2"
                                                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -506,7 +557,9 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_num_lotissement"
-                                                    v-model="form.numLot"
+                                                    v-model="
+                                                        form.numLotissement
+                                                    "
                                                     id="Num_lotissement"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />
@@ -538,6 +591,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_num_parcelle"
+                                                    v-model="form.numParcelle"
                                                     id="Num_parcelle"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -554,6 +608,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_num_titre"
+                                                    v-model="form.numTitre"
                                                     id="Num_titre"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -570,6 +625,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_titre_mere"
+                                                    v-model="form.titreMere"
                                                     id="Titre_mere"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -586,6 +642,7 @@ const mazTabs = [
                                                 <input
                                                     type="numbrer"
                                                     name="nbr_surface"
+                                                    v-model="form.surface"
                                                     id="Surface"
                                                     oninput="calculeSurfaceBrute()"
                                                     autocomplete="address-level2"
@@ -603,6 +660,7 @@ const mazTabs = [
                                                 <select
                                                     type="select"
                                                     name="slt_document_admin"
+                                                    v-model="form.documentAdmin"
                                                     id="Document_admin"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -660,6 +718,9 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_num_deliberation"
+                                                    v-model="
+                                                        form.numDeliberation
+                                                    "
                                                     id="Num_deliberation"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -676,6 +737,9 @@ const mazTabs = [
                                                 <input
                                                     type="date"
                                                     name="dt_date_deliberation"
+                                                    v-model="
+                                                        form.dateDeliberation
+                                                    "
                                                     id="Date_deliberation"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -693,6 +757,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_nicad"
+                                                    v-model="form.nicad"
                                                     id="Nicad"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -703,36 +768,38 @@ const mazTabs = [
                                 </div>
 
                                 <!-- exemple de tabs avec MazUi -->
+
+                                <h5 class="text-lg font-bold">
+                                    Réferences Cadastrales
+                                </h5>
+                                <br />
                                 <div>
-                                    Exemple de tabs avec MazUi
+                                    <!-- Exemple de tabs avec MazUi -->
                                     <MazTabs>
                                         <MazTabsBar :items="mazTabs" />
-
                                         <MazTabsContent>
                                             <MazTabsContentItem
                                                 :tab="1"
                                                 class="maz-py-4"
                                             >
-                                                contenu du tab 1 ici....
+                                                <!-- contenu du tab 1 ici.... -->
                                                 <CompA />
                                             </MazTabsContentItem>
                                             <MazTabsContentItem
                                                 :tab="2"
                                                 class="maz-py-4"
                                             >
-                                                contenu du tab 2 ici....
+                                                <!-- contenu du tab 2 ici....  -->
                                                 <CompB />
                                             </MazTabsContentItem>
                                         </MazTabsContent>
                                     </MazTabs>
                                 </div>
+                                <br />
                                 <!-- exemple de tabs avec MazUi -->
 
                                 <!-- Reference Cadastral -->
-                                <h5 class="text-lg font-bold">
-                                    Réferences Cadastrales
-                                </h5>
-                                <br />
+                                <!--
                                 <div class="mb-6">
                                     <div
                                         class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
@@ -784,6 +851,7 @@ const mazTabs = [
                                         </KeepAlive>
                                     </div>
                                 </div>
+                                -->
 
                                 <!-- Section Titulaire -->
                                 <h5 class="text-lg font-bold">
@@ -803,6 +871,9 @@ const mazTabs = [
                                             <div class="mt-2 grid grid-cols-1">
                                                 <select
                                                     name="slt_titulaire"
+                                                    v-model="
+                                                        form.selectTitulaire
+                                                    "
                                                     id="Titulaire"
                                                     class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
@@ -836,6 +907,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_nationalite"
+                                                    v-model="nationalite"
                                                     id="Nationalite"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -934,6 +1006,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_num_piece"
+                                                    v-model="form.numPiece"
                                                     id="Num_piece"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -950,6 +1023,9 @@ const mazTabs = [
                                                 <input
                                                     type="date"
                                                     name="dt_date_delivrance"
+                                                    v-model="
+                                                        form.dateDelivrance
+                                                    "
                                                     id="Date_delivrance"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -966,6 +1042,7 @@ const mazTabs = [
                                                 <input
                                                     type="date"
                                                     name="dt_date_naissance"
+                                                    v-model="form.dateNaissance"
                                                     id="Date_naissance"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -982,6 +1059,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_lieu_naissance"
+                                                    v-model="form.lieuNaissance"
                                                     id="Lieu_naissance"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -998,6 +1076,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_adresse"
+                                                    v-model="form.adresse"
                                                     id="Adresse"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -1014,6 +1093,7 @@ const mazTabs = [
                                                 <input
                                                     type="tel"
                                                     name="tel_telephone"
+                                                    v-model="form.telephone"
                                                     id="Telephone"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -1030,6 +1110,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_ninea"
+                                                    v-model="form.ninea"
                                                     id="Ninea"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -1046,6 +1127,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_representant"
+                                                    v-model="form.representant"
                                                     id="Representant"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -1062,6 +1144,7 @@ const mazTabs = [
                                                 <input
                                                     type="email"
                                                     name="eml_email"
+                                                    v-model="form.email"
                                                     id="Email"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -1070,17 +1153,18 @@ const mazTabs = [
                                         </div>
                                     </div>
                                 </div>
+                                <br />
 
                                 <!-- Bouton de soumission -->
 
                                 <div class="sm:col-span-6 flex justify-center">
                                     <MazBtn type="submit">Enregistrer</MazBtn>
-                                    <!-- <button
+                                    <!--  <button
                                         type="submit"
                                         class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
                                     >
                                         Enregistrer
-                                    </button> -->
+                                    </button>   -->
                                 </div>
                             </div>
                         </form>

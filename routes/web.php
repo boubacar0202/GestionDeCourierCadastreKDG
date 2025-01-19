@@ -23,11 +23,6 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-/*
-Route::get('/secretariat', function () {
-    return Inertia::render('Secretariat');
-})->middleware(['auth', 'verified'])->name('secretariat');
-*/
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -46,6 +41,10 @@ Route::post('/communes', [LocationController::class, 'getCommunesByArrondissemen
 // Route::get('/departements', [LocationController::class, 'getDepartements']);
 // Route::get('/arrondissements/{departementId}', [LocationController::class, 'getArrondissements']);
 // Route::get('/communes/{arrondissementId}', [LocationController::class, 'getCommunes']);
+
+Route::get('/secretariat', function (){
+    return Inertia::render ('secretariat.create');
+});
 
 
 require __DIR__ . '/auth.php';
