@@ -931,14 +931,10 @@ const setActiveTabRU = (tabRU) => {
                                                                 dark:text-gray-300">Bâtiment principal</label>
                                                         </div>
                                                         <div  class="grid gap-6 mb-6 md:grid-cols-2">
-                                                            <div> 
-                                                                <label for="Cat_1" class="block text-sm/6 font-medium text-gray-900">CAT</label>
-                                                                <select type="select" name="slt_cat_1" id="Cat_1"  class="block w-full rounded-md bg-white 
-                                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-
-                                                                </select>
+                                                            <div class="grid gap-6 mb-6 md:grid-cols-2"> 
+                                                                <KeepAlive>
+                                                                    <component :is="currentCat"></component>
+                                                                </KeepAlive>
                                                             </div>
                                                             <div > 
                                                                 <label for="Prix_mettre_carre_1" class="block text-sm/6 font-medium text-gray-900">Prix m²</label>
@@ -1594,7 +1590,6 @@ export default {
     }
   },
 }
-
 </script>
 
 
