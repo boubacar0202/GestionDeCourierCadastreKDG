@@ -30,7 +30,7 @@ class SecretariatController extends Controller
 
         return Inertia::render("secretariat/create",  [
             "regions" => $regions,
-            // "departements" => $departements,
+            "departements" => [],
             // "arrondissements" => $arrondissements,
             // "communes" => $communes,
         ]);

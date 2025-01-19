@@ -39,9 +39,13 @@ Route::resource('geometre', GeometreController::class);
 Route::resource('donnee', DonneeController::class);
 Route::resource('matriceCadastrale', MatriceCadastraleController::class);
 
-Route::get('/departements', [LocationController::class, 'getDepartements']);
-Route::get('/arrondissements/{departementId}', [LocationController::class, 'getArrondissements']);
-Route::get('/communes/{arrondissementId}', [LocationController::class, 'getCommunes']);
+Route::post('/departements', [LocationController::class, 'getDepartementsByRegion']);
+Route::post('/arrondissements', [LocationController::class, 'getArrondissementByDepartement']);
+Route::post('/communes', [LocationController::class, 'getCommunesByArrondissement']);
+
+// Route::get('/departements', [LocationController::class, 'getDepartements']);
+// Route::get('/arrondissements/{departementId}', [LocationController::class, 'getArrondissements']);
+// Route::get('/communes/{arrondissementId}', [LocationController::class, 'getCommunes']);
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

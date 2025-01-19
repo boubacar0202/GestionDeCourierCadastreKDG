@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import { onMounted, ref } from "vue";
@@ -14,32 +14,34 @@ const selectedArrondissement = ref();
 const selectedDepartement = ref();
 const selectedCommune = ref();
 
-const departements = ref(null);
-const arrondissements = ref(null);
-const communes = ref(null);
+// const departements = ref(null);
+// const arrondissements = ref(null);
+// const communes = ref(null);
 
 const props = defineProps({
     regions: {
         type: Array,
         default: () => [],
     },
-    // departements: {
-    //     type: Array,
-    //     default: () => [],
-    // },
-    // arrondissements: {
-    //     type: Array,
-    //     default: () => [],
-    // },
-    // communes: {
-    //     type: Array,
-    //     default: () => [],
-    // },
+    departements: {
+        type: Array,
+        default: () => [],
+    },
+    arrondissements: {
+        type: Array,
+        default: () => [],
+    },
+    communes: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const form = useForm({
     region: "",
     departement: "",
+    arrondissement: "",
+    commune: "",
     lotissement: "",
     numLot: "",
     numSection: "",
@@ -48,56 +50,76 @@ const form = useForm({
 });
 
 const fetchDepartements = () => {
-    console.log("selectedRegion a changé", selectedRegion.value);
-
-    // form.post(
-    //     "/fetch-departements",
-    //     { region_id: selectedRegion },
-    //     {
-    //         onSuccess: (page) => {
-    //             departements.value = page.props.departements;
-    //             arrondissements.value = [];
-    //             communes.value = [];
-    //         },
-    //     }
-    // );
+    if (selectedRegion.value) {
+        router.post(
+            "/departements",
+            { region_id: selectedRegion.value },
+            {
+                only: ["departements"], // Ne recharge que les départements
+                preserveState: true, // Conserve l'état actuel du composant
+                onSuccess: (page) => {
+                    console.log(
+                        "Départements mis à jour :",
+                        page.props.departements
+                    );
+                },
+            }
+        );
+    }
 };
 
 const fetchArrondissements = () => {
-    form.post(
-        "/fetch-arrondissements",
-        { departement_id: form.value.departement },
-        {
-            onSuccess: (page) => {
-                arrondissements.value = page.props.arrondissements;
-                communes.value = [];
-            },
-        }
-    );
+    if (selectedDepartement.value) {
+        router.post(
+            "/arrondissements",
+            { departement_id: selectedRegion.value },
+            {
+                only: ["arrondissements"],
+                preserveState: true,
+                onSuccess: (page) => {
+                    console.log(
+                        "Arrondissement mis à jour :",
+                        page.props.arrondissements
+                    );
+                },
+            }
+        );
+    }
 };
 
 const fetchCommunes = () => {
-    Inertia.post(
-        "/fetch-communes",
-        { arrondissement_id: form.value.arrondissement },
-        {
-            onSuccess: (page) => {
-                communes.value = page.props.communes;
-            },
-        }
-    );
+    if (selectedArrondissement.value) {
+        console.log("ici: ", selectedArrondissement.value);
+
+        router.post(
+            "/communes",
+            { arrondissement_id: selectedArrondissement.value },
+            {
+                only: ["communes"],
+                preserveState: true,
+                onSuccess: (page) => {
+                    console.log("Communes mis à jour :", page.props.communes);
+                },
+            }
+        );
+    }
 };
 
 onMounted(() => {
-    console.log("Les régions: ", props.regions);
+    // console.log("Les régions: ", props.regions);
 });
 
 const submitForm = () => {
-    console.log("Soumettre formulaire: ", form);
+    form.region = selectedRegion.value;
+    form.departement = selectedDepartement.value;
+    form.arrondissement = selectedArrondissement.value;
+    form.commune = selectedCommune.value;
+
+    console.log("Soumettre formulaire: ", form.data());
 
     // Décommenter cette ligne pour soumettre le formulaire dans la base de données.👇
     /* form.post(route("scretariat.store"), {
-        onFinish: () => form.reset("name"),
+        onFinish: () => form.reset(),
     }); */
 };
 
