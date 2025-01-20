@@ -92,7 +92,7 @@ const fetchDepartements = () => {
     //        onSuccess: (page) => {
     //          departements.value = page.props.departements;
     //          arrondissements.value = [];
-    //           communes.value = [];
+    //            communes.value = [];
     //        },
     //    }
     // );

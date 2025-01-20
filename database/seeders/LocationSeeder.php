@@ -14,6 +14,7 @@ class LocationSeeder extends Seeder
     public function run(): void
     {
         //
+        /*
         $kedougou = Departement::create(['slt_departement' => 'Kedougou']);
         $salemata = Departement::create(['slt_departement' => 'Salemata']);
         $saraya = Departement::create(['slt_departement' => 'Saraya']);
@@ -69,6 +70,8 @@ class LocationSeeder extends Seeder
             ['name' => 'Sabodala'],
             ['name' => 'Missirah Sirimana'],
         ]);
+
+        */
 
         // Ajoutez les autres départements, arrondissements et communes comme dans l'exemple ci-dessus.
     }
