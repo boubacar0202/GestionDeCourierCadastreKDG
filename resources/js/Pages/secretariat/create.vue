@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link, useForm, router } from "@inertiajs/vue3";
+import { Head, Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import { onMounted, ref } from "vue";
@@ -14,146 +14,125 @@ const selectedArrondissement = ref();
 const selectedDepartement = ref();
 const selectedCommune = ref();
 
-// const departements = ref(null);
-// const arrondissements = ref(null);
-// const communes = ref(null);
+const departements = ref(null);
+const arrondissements = ref(null);
+const communes = ref(null);
 
 const props = defineProps({
     regions: {
         type: Array,
         default: () => [],
     },
-    departements: {
-        type: Array,
-        default: () => [],
-    },
-    arrondissements: {
-        type: Array,
-        default: () => [],
-    },
-    communes: {
-        type: Array,
-        default: () => [],
-    },
+    // departements: {
+    //     type: Array,
+    //     default: () => [],
+    // },
+    // arrondissements: {
+    //     type: Array,
+    //     default: () => [],
+    // },
+    // communes: {
+    //     type: Array,
+    //     default: () => [],
+    // },
 });
 
 const form = useForm({
-    numDossier: "",
-    numDordre: "",
-    serviceRendu: "",
-    etatCession: "",
-    cessionDefinitive: "",
-    dateCreation: "",
+    numDossier:"",
+    numDordre:"",
+    serviceRendu:"",
+    etatCession:"",
+    cessionDefinitive:"",
+    dateCreation:"",
     region: "",
     departement: "",
-    arrondissement: "",
-    commune: "",
+    commune:"",
     lotissement: "",
     numLotissement: "",
     numSection: "",
-    numParcelle: "",
-    numTitre: "",
-    titreMere: "",
-    surface: "",
-    documentAdmin: "",
-    numDeliberation: "",
-    dateDeliberation: "",
-    nicad: "",
-    dependantDomaine: "",
-    ussuBornage: "",
-    titreMere: "",
-    lf: "",
-    numRequisition: "",
-    surfaceBornage: "",
-    dateBornage: "",
-    nomGeometre: "",
+    numParcelle:"",
+    numTitre:"",
+    titreMere:"",
+    surface:"",
+    documentAdmin:"",
+    numDeliberation:"",
+    dateDeliberation:"",
+    nicad:"",
+    dependantDomaine:"",
+    ussuBornage:"",
+    titreMere:"",
+    lf:"",
+    numRequisition:"",
+    surfaceBornage:"",
+    dateBornage:"",
+    nomGeometre:"",
     selectTitulaire: "",
-    nationalite: "",
-    selectePiece: "",
-    numPiece: "",
-    dateDelivrance: "",
-    dateNaissance: "",
-    lieuNaissance: "",
-    adresse: "",
-    telephone: "",
-    ninea: "",
-    representant: "",
-    email: "",
+    nationalite:"",
+    selectePiece:"",
+    numPiece:"",
+    dateDelivrance:"",
+    dateNaissance:"",
+    lieuNaissance:"",
+    adresse:"",
+    telephone:"",
+    ninea:"",
+    representant:"",
+    email:""
     // Ajouter d'autres champs nécessaires
 });
 
 const fetchDepartements = () => {
-    if (selectedRegion.value) {
-        router.post(
-            "/departements",
-            { region_id: selectedRegion.value },
-            {
-                only: ["departements"], // Ne recharge que les départements
-                preserveState: true, // Conserve l'état actuel du composant
-                onSuccess: (page) => {
-                    console.log(
-                        "Départements mis à jour :",
-                        page.props.departements
-                    );
-                },
-            }
-        );
-    }
+    console.log("selectedRegion a changé", selectedRegion.value);
+
+    // form.post(
+    //     "/fetch-departements",
+    //     { region_id: selectedRegion },
+    //     {
+    //         onSuccess: (page) => {
+    //             departements.value = page.props.departements;
+    //             arrondissements.value = [];
+    //             communes.value = [];
+    //         },
+    //     }
+    // );
 };
 
 const fetchArrondissements = () => {
-    if (selectedDepartement.value) {
-        router.post(
-            "/arrondissements",
-            { departement_id: selectedRegion.value },
-            {
-                only: ["arrondissements"],
-                preserveState: true,
-                onSuccess: (page) => {
-                    console.log(
-                        "Arrondissement mis à jour :",
-                        page.props.arrondissements
-                    );
-                },
-            }
-        );
-    }
+    form.post(
+        "/fetch-arrondissements",
+        { departement_id: form.value.departement },
+        {
+            onSuccess: (page) => {
+                arrondissements.value = page.props.arrondissements;
+                communes.value = [];
+            },
+        }
+    );
 };
 
 const fetchCommunes = () => {
-    if (selectedArrondissement.value) {
-        console.log("ici: ", selectedArrondissement.value);
-
-        router.post(
-            "/communes",
-            { arrondissement_id: selectedArrondissement.value },
-            {
-                only: ["communes"],
-                preserveState: true,
-                onSuccess: (page) => {
-                    console.log("Communes mis à jour :", page.props.communes);
-                },
-            }
-        );
-    }
+    Inertia.post(
+        "/fetch-communes",
+        { arrondissement_id: form.value.arrondissement },
+        {
+            onSuccess: (page) => {
+                communes.value = page.props.communes;
+            },
+        }
+    );
 };
 
 onMounted(() => {
-    // console.log("Les régions: ", props.regions);
+    console.log("Les régions: ", props.regions);
 });
 
 const submitForm = () => {
-    form.region = selectedRegion.value;
-    form.departement = selectedDepartement.value;
-    form.arrondissement = selectedArrondissement.value;
-    form.commune = selectedCommune.value;
-
-    console.log("Soumettre formulaire: ", form.data());
+    console.log("Soumettre formulaire: ", form);
 
     // Décommenter cette ligne pour soumettre le formulaire dans la base de données.👇
-    /* form.post(route("scretariat.store"), {
-        onFinish: () => form.reset(),
-    }); */
+   form.post(route("scretariat.store"), {
+        onFinish: () => form.reset("name"),
+    }); 
 };
 
 // Tab actif (par défaut : 'stats')
@@ -200,12 +179,7 @@ const mazTabs = [
                         </div>
 
                         <!-- Corps du formulaire -->
-                        <form
-                            @submit.prevent="submitForm"
-                            method="post"
-                            action="{{ route('secretariat.store') }}"
-                            encrypted="multipart/from-data"
-                        >
+                        <form @submit.prevent="submitForm" method="post" action="{{ route('secretariat.store') }}" encrypted="multipart/from-data" >
                             <div class="p-6">
                                 <!-- Section Parcelle -->
                                 <h5 class="text-lg font-bold">
@@ -255,7 +229,9 @@ const mazTabs = [
                                                     <input
                                                         type="text"
                                                         name="txt_num_dordre"
-                                                        v-model="form.numDordre"
+                                                        v-model="
+                                                            form.numDordre
+                                                        "
                                                         id="Num_dordre"
                                                         autocomplete="address-level2"
                                                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -406,7 +382,7 @@ const mazTabs = [
                                     <h5 class="text-lg font-bold">
                                         Réferences Parcellelaires
                                     </h5>
-                                    <br />
+                                    <br/>
                                     <div
                                         class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
                                     >
@@ -557,9 +533,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_num_lotissement"
-                                                    v-model="
-                                                        form.numLotissement
-                                                    "
+                                                    v-model="form.numLotissement"
                                                     id="Num_lotissement"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />
@@ -718,9 +692,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_num_deliberation"
-                                                    v-model="
-                                                        form.numDeliberation
-                                                    "
+                                                    v-model="form.numDeliberation"
                                                     id="Num_deliberation"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -737,9 +709,7 @@ const mazTabs = [
                                                 <input
                                                     type="date"
                                                     name="dt_date_deliberation"
-                                                    v-model="
-                                                        form.dateDeliberation
-                                                    "
+                                                    v-model="form.dateDeliberation"
                                                     id="Date_deliberation"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -771,8 +741,7 @@ const mazTabs = [
 
                                 <h5 class="text-lg font-bold">
                                     Réferences Cadastrales
-                                </h5>
-                                <br />
+                                </h5><br>
                                 <div>
                                     <!-- Exemple de tabs avec MazUi -->
                                     <MazTabs>
@@ -794,12 +763,11 @@ const mazTabs = [
                                             </MazTabsContentItem>
                                         </MazTabsContent>
                                     </MazTabs>
-                                </div>
-                                <br />
+                                </div><br>
                                 <!-- exemple de tabs avec MazUi -->
 
                                 <!-- Reference Cadastral -->
-                                <!--
+                                <!--    
                                 <div class="mb-6">
                                     <div
                                         class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
@@ -871,9 +839,7 @@ const mazTabs = [
                                             <div class="mt-2 grid grid-cols-1">
                                                 <select
                                                     name="slt_titulaire"
-                                                    v-model="
-                                                        form.selectTitulaire
-                                                    "
+                                                    v-model="form.selectTitulaire"
                                                     id="Titulaire"
                                                     class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
@@ -1023,9 +989,7 @@ const mazTabs = [
                                                 <input
                                                     type="date"
                                                     name="dt_date_delivrance"
-                                                    v-model="
-                                                        form.dateDelivrance
-                                                    "
+                                                    v-model="form.dateDelivrance"
                                                     id="Date_delivrance"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -1152,13 +1116,12 @@ const mazTabs = [
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <br />
+                                </div><br>
 
                                 <!-- Bouton de soumission -->
 
                                 <div class="sm:col-span-6 flex justify-center">
-                                    <MazBtn type="submit">Enregistrer</MazBtn>
+                                  <MazBtn type="submit">Enregistrer</MazBtn>
                                     <!--  <button
                                         type="submit"
                                         class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
