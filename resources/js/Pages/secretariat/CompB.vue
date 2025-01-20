@@ -1,5 +1,11 @@
 <script setup>
 //v-model="form.ussuBornage"
+// v-model="form.titreMere"
+// v-model="form.lf"
+//  v-model="surfaceBornage"
+//     v-model="form.dateBornage"
+//     v-model="form.numRequisition"
+//     v-model="form.nomGeometre"
 </script>
 
 <template>
@@ -39,7 +45,7 @@
                     <input
                         type="text"
                         name="txt_titre_mere"
-                        v-model="form.titreMere"
+                       
                         id="Titre_mere"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -52,7 +58,7 @@
                     <select
                         type="text"
                         name="slt_lf"
-                        v-model="form.lf"
+                        
                         id="LF"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -79,7 +85,7 @@
                     <input
                         type="text"
                         name="txt_num_requisition"
-                        v-model="form.numRequisition"
+                   
                         id="Num_requisition"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -92,7 +98,7 @@
                     <input
                         type="text"
                         name="txt_surface_bornage"
-                        v-model="surfaceBornage"
+                       
                         id="Surface_bornage"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -105,7 +111,7 @@
                     <input
                         type="text"
                         name="dt_date_bornage"
-                        v-model="form.dateBornage"
+                    
                         id="Date_bornage"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -118,7 +124,7 @@
                     <input
                         type="text"
                         name="txt_nom_geometre"
-                        v-model="form.nomGeometre"
+                    
                         id="Nom_geometre"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
