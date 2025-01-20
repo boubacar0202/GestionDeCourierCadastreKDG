@@ -34,6 +34,7 @@ Route::resource('geometre', GeometreController::class);
 Route::resource('donnee', DonneeController::class);
 Route::resource('matriceCadastrale', MatriceCadastraleController::class);
 
+
 Route::post('/departements', [LocationController::class, 'getDepartementsByRegion']);
 Route::post('/arrondissements', [LocationController::class, 'getArrondissementByDepartement']);
 Route::post('/communes', [LocationController::class, 'getCommunesByArrondissement']);
@@ -42,9 +43,9 @@ Route::post('/communes', [LocationController::class, 'getCommunesByArrondissemen
 // Route::get('/arrondissements/{departementId}', [LocationController::class, 'getArrondissements']);
 // Route::get('/communes/{arrondissementId}', [LocationController::class, 'getCommunes']);
 
-Route::get('/secretariat', function (){
-    return Inertia::render ('secretariat.create');
-});
+//Route::get('/secretariat', function (){
+//    return Inertia::render ('secretariat.create');
+//});
 
 
 require __DIR__ . '/auth.php';

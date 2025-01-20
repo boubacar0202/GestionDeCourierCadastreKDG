@@ -23,18 +23,18 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    // departements: {
-    //     type: Array,
-    //     default: () => [],
-    // },
-    // arrondissements: {
-    //     type: Array,
-    //     default: () => [],
-    // },
-    // communes: {
-    //     type: Array,
-    //     default: () => [],
-    // },
+    departements: {
+        type: Array,
+        default: () => [],
+     },
+    arrondissements: {
+         type: Array,
+         default: () => [],
+     },
+    communes: {
+        type: Array,
+         default: () => [],
+     },
 });
 
 const form = useForm({
@@ -77,6 +77,7 @@ const form = useForm({
     telephone:"",
     ninea:"",
     representant:"",
+    TelephoneRepresentant:"",
     email:""
     // Ajouter d'autres champs nécessaires
 });
@@ -85,15 +86,15 @@ const fetchDepartements = () => {
     console.log("selectedRegion a changé", selectedRegion.value);
 
     // form.post(
-    //     "/fetch-departements",
-    //     { region_id: selectedRegion },
-    //     {
-    //         onSuccess: (page) => {
-    //             departements.value = page.props.departements;
-    //             arrondissements.value = [];
-    //             communes.value = [];
-    //         },
-    //     }
+    //    "/fetch-departements",
+    //   { region_id: selectedRegion },
+    //   {
+    //        onSuccess: (page) => {
+    //          departements.value = page.props.departements;
+    //          arrondissements.value = [];
+    //           communes.value = [];
+    //        },
+    //    }
     // );
 };
 
@@ -422,7 +423,7 @@ const mazTabs = [
                                             >
                                             <div class="mt-2">
                                                 <select
-                                                    id="departments"
+                                                    id="departements"
                                                     v-model="
                                                         selectedDepartement
                                                     "
@@ -433,7 +434,7 @@ const mazTabs = [
                                                     "
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
-                                                    <option value="">
+                                                    <option value="" disabled selected>
                                                         Choisir ici
                                                     </option>
                                                     <option
@@ -463,7 +464,7 @@ const mazTabs = [
                                                     @change="fetchCommunes"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
-                                                    <option value="">
+                                                    <option value="" disabled selected>
                                                         Choisir ici
                                                     </option>
                                                     <option
@@ -492,7 +493,7 @@ const mazTabs = [
                                                     v-model="selectedCommune"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
-                                                    <option value="">
+                                                    <option value="" disabled selected>
                                                         Choisir ici
                                                     </option>
                                                     <option
@@ -764,63 +765,7 @@ const mazTabs = [
                                         </MazTabsContent>
                                     </MazTabs>
                                 </div><br>
-                                <!-- exemple de tabs avec MazUi -->
-
-                                <!-- Reference Cadastral -->
-                                <!--    
-                                <div class="mb-6">
-                                    <div
-                                        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
-                                    >
-                                        <div class="sm:col-span-2">
-                                            <div
-                                                class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700"
-                                            >
-                                                <input
-                                                    v-model="current"
-                                                    value="CompA"
-                                                    id="bordered-radio-1"
-                                                    type="radio"
-                                                    name="rd_immatricalation_terrain"
-                                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                                />
-                                                <label
-                                                    for="bordered-radio-1"
-                                                    class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                                    >Terrain Non
-                                                    Immatriculé</label
-                                                >
-                                            </div>
-                                        </div>
-                                        <div class="sm:col-span-2">
-                                            <div
-                                                class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700"
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    v-model="current"
-                                                    value="CompB"
-                                                    checked
-                                                    id="bordered-radio-2"
-                                                    name="rd_immatricalation_terrain"
-                                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                                />
-                                                <label
-                                                    for="bordered-radio-2"
-                                                    class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                                    >Terrain Immatriculé</label
-                                                >
-                                            </div>
-                                        </div>
-                                        <KeepAlive>
-                                            <component
-                                                :is="current"
-                                            ></component>
-                                        </KeepAlive>
-                                    </div>
-                                </div>
-                                -->
-
+        
                                 <!-- Section Titulaire -->
                                 <h5 class="text-lg font-bold">
                                     Identité Titulaire de droit
@@ -1083,6 +1028,23 @@ const mazTabs = [
                                         </div>
                                         <div class="sm:col-span-1">
                                             <label
+                                                for="Email"
+                                                class="block text-sm/6 font-medium text-gray-900"
+                                                >Email</label
+                                            >
+                                            <div class="mt-2">
+                                                <input
+                                                    type="email"
+                                                    name="eml_email"
+                                                    v-model="form.email"
+                                                    id="Email"
+                                                    autocomplete="address-level2"
+                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="sm:col-span-1">
+                                            <label
                                                 for="Representant"
                                                 class="block text-sm/6 font-medium text-gray-900"
                                                 >Representant</label
@@ -1100,16 +1062,16 @@ const mazTabs = [
                                         </div>
                                         <div class="sm:col-span-1">
                                             <label
-                                                for="Email"
+                                                for="Representant"
                                                 class="block text-sm/6 font-medium text-gray-900"
-                                                >Email</label
+                                                >Telephone Representant</label
                                             >
                                             <div class="mt-2">
                                                 <input
-                                                    type="email"
-                                                    name="eml_email"
-                                                    v-model="form.email"
-                                                    id="Email"
+                                                    type="text"
+                                                    name="txt_representant"
+                                                    v-model="form.TelephoneRepresentant"
+                                                    id="Representant"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />

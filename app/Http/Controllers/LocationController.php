@@ -12,6 +12,7 @@ use Inertia\Inertia;
 class LocationController extends Controller
 {
     //
+  
     public function getDepartements()
     {
         $departements = Departement::all();

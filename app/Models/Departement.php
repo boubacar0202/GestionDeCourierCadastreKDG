@@ -13,7 +13,7 @@ class Departement extends Model
 
     protected $with = ['arrondissements'];
 
-    public function region()
+    public function regions()
     {
         return $this->belongsTo(Region::class);
     }
