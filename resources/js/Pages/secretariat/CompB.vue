@@ -16,23 +16,15 @@
                 <div class="mt-2">
                     <select
                         name="ussu_bornage"
-                        
                         id="Bornage"
                         class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     >
-                        
-                        <option value="Immatriculation">
-                            Immatriculation
-                        </option>
-                        <option value="Morcellement">
-                            Morcellement
-                        </option>
+                        <option value="Immatriculation">Immatriculation</option>
+                        <option value="Morcellement">Morcellement</option>
                         <option value="Rectificatif de Limite">
                             Rectificatif de Limite
                         </option>
-                        <option value="Fusion">
-                            Fusion
-                        </option>
+                        <option value="Fusion">Fusion</option>
                         <option value="Morcellement de Copropriété">
                             Morcellement de Copropriété
                         </option>
@@ -45,7 +37,6 @@
                     <input
                         type="text"
                         name="txt_titre_mere"
-                       
                         id="Titre_mere"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -56,26 +47,16 @@
                 <label for="LF">LF</label>
                 <div class="mt-2">
                     <select
-                        type="text"
                         name="slt_lf"
-                        
                         id="LF"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     >
                         <option selected desabled></option>
-                        <option value="NO">
-                            NO
-                        </option>
-                        <option value="KG">
-                            KG
-                        </option>
-                        <option value="SM">
-                            SM
-                        </option>
-                        <option value="SR">
-                            SR
-                        </option>
+                        <option value="NO">NO</option>
+                        <option value="KG">KG</option>
+                        <option value="SM">SM</option>
+                        <option value="SR">SR</option>
                     </select>
                 </div>
             </div>
@@ -85,7 +66,6 @@
                     <input
                         type="text"
                         name="txt_num_requisition"
-                   
                         id="Num_requisition"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -98,7 +78,6 @@
                     <input
                         type="text"
                         name="txt_surface_bornage"
-                       
                         id="Surface_bornage"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -111,7 +90,6 @@
                     <input
                         type="text"
                         name="dt_date_bornage"
-                    
                         id="Date_bornage"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -124,7 +102,6 @@
                     <input
                         type="text"
                         name="txt_nom_geometre"
-                    
                         id="Nom_geometre"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -134,4 +111,3 @@
         </div>
     </div>
 </template>
-
