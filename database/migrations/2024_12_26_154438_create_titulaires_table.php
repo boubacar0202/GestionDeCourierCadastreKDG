@@ -26,8 +26,9 @@ return new class extends Migration
             $table->string('txt_adresse');
             $table->string('tel_telephone');
             $table->string('txt_ninea');
-            $table->string('txt_representant')->nullable();
             $table->string('eml_email')->nullable();
+            $table->string('txt_representant')->nullable();
+            $table->string('txt_telRepresentant')->nullable();
             $table->timestamps();
         });
     }

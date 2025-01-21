@@ -37,20 +37,26 @@ class SecretariatController extends Controller
         ]);
     }
 
-    /*
-    public function store(Request $request){
-        $dossier = new Dossier;
-        $dossier->txt_num_dossier = $request->txt_num_dossier;
-        $dossier->txt_num_dordre = $request->txt_num_dordre;
-        $dossier->slt_service_dendu = $request->slt_service_dendu;
-        $dossier->txt_etat_cession = $request->txt_etat_cession;
-        $dossier->txt_cession_definitive = $request->txt_cession_definitive;
-        $dossier->dt_date_creation = $request->dt_date_creation;
-
-        $dossier->save();
-        return redirect()->route('secretariat.create')->with('success ', 'Enregistrement réussit');
-    }
-
-    */
     
+    public function store(Request $request){
+        // validation Dosssier
+        $request->validate([
+            'txt_num_dossier' => 'required',
+        ]);
+
+        try{
+            $dossier = new Dossier;
+            $dossier->txt_num_dossier = $request->txt_num_dossier;
+            $dossier->txt_num_dordre = $request->txt_num_dordre;
+            $dossier->slt_service_dendu = $request->slt_service_dendu;
+            $dossier->txt_etat_cession = $request->txt_etat_cession;
+            $dossier->txt_cession_definitive = $request->txt_cession_definitive;
+            $dossier->dt_date_creation = $request->dt_date_creation;
+    
+            $dossier->save();
+            return redirect()->route('secretariat.create')->with('success ', 'Enregistrement réussit');
+        }catch(\Exception $e) {
+            return redirect()->route('secretariat.create')->with('fail',$e->getMessage());
+        }
+    }
 }

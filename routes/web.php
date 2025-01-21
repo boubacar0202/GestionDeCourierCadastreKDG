@@ -47,5 +47,7 @@ Route::post('/communes', [LocationController::class, 'getCommunesByArrondissemen
 //    return Inertia::render ('secretariat.create');
 //});
 
+//Route::post('secretariat', SecretariatController::class,'store');
+
 
 require __DIR__ . '/auth.php';

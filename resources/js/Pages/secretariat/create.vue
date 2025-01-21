@@ -1,4 +1,5 @@
 <script setup>
+
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
@@ -36,6 +37,7 @@ const props = defineProps({
          default: () => [],
      },
 });
+
 
 const form = useForm({
     numDossier:"",
@@ -77,10 +79,15 @@ const form = useForm({
     telephone:"",
     ninea:"",
     representant:"",
-    TelephoneRepresentant:"",
-    email:""
+    telephoneRepresentant:"",
+    email:"",
     // Ajouter d'autres champs nécessaires
 });
+ 
+
+    // Les modification pour tenter de auvegarder dasn la base de donnéé
+
+
 
 const fetchDepartements = () => {
     console.log("selectedRegion a changé", selectedRegion.value);
@@ -127,28 +134,16 @@ onMounted(() => {
     console.log("Les régions: ", props.regions);
 });
 
+
+// Voici ce que vous aviez fait
+
 const submitForm = () => {
     console.log("Soumettre formulaire: ", form);
 
     // Décommenter cette ligne pour soumettre le formulaire dans la base de données.👇
-   form.post(route("scretariat.store"), {
+   form.post(route("store"), {
         onFinish: () => form.reset("name"),
     }); 
-};
-
-// Tab actif (par défaut : 'stats')
-const activeTab = ref("stats");
-
-// Fonction pour changer de tab
-const setActiveTab = (tab) => {
-    activeTab.value = tab;
-};
-
-const activeTabRU = ref("habitation");
-
-// Fonction pour changer de tab
-const setActiveTabRU = (tabRU) => {
-    activeTabRU.value = tabRU;
 };
 
 const mazTabs = [
@@ -158,10 +153,11 @@ const mazTabs = [
         disabled: false,
     },
 ];
+
 </script>
 
 <template>
-    <Head title="Secretariat" />
+    <Head title="Secretariat"/>
 
     <AuthenticatedLayout>
         <template #header>
@@ -180,7 +176,7 @@ const mazTabs = [
                         </div>
 
                         <!-- Corps du formulaire -->
-                        <form @submit.prevent="submitForm" method="post" action="{{ route('secretariat.store') }}" encrypted="multipart/from-data" >
+                        <form @submit.prevent="submitForm" method="post" action="{{ route('store') }}" encrypted="multipart/from-data" >
                             <div class="p-6">
                                 <!-- Section Parcelle -->
                                 <h5 class="text-lg font-bold">
@@ -204,7 +200,7 @@ const mazTabs = [
                                                         type="text"
                                                         name="txt_num_dossier"
                                                         v-model="
-                                                            form.numDossier
+                                                            form.txt_num_dossier
                                                         "
                                                         id="Num_dossier"
                                                         autocomplete="address-level2"
@@ -1069,7 +1065,7 @@ const mazTabs = [
                                             <div class="mt-2">
                                                 <input
                                                     type="text"
-                                                    name="txt_representant"
+                                                    name="txt_telRepresentant"
                                                     v-model="form.TelephoneRepresentant"
                                                     id="Representant"
                                                     autocomplete="address-level2"
@@ -1083,7 +1079,7 @@ const mazTabs = [
                                 <!-- Bouton de soumission -->
 
                                 <div class="sm:col-span-6 flex justify-center">
-                                  <MazBtn type="submit">Enregistrer</MazBtn>
+                                    <MazBtn type="submit">Enregistrer</MazBtn>
                                     <!--  <button
                                         type="submit"
                                         class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
