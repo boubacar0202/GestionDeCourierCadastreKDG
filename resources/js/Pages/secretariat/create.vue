@@ -6,8 +6,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import { onMounted, ref } from "vue";
 import CompA from "./CompA.vue";
 import CompB from "./CompB.vue";
-
-const current = ref("CompA");
+import axios from "axios";
 
 const selectedRegion = ref();
 const selectedArrondissement = ref();
@@ -23,18 +22,18 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    departements: {
-        type: Array,
-        default: () => [],
-    },
-    arrondissements: {
-        type: Array,
-        default: () => [],
-    },
-    communes: {
-        type: Array,
-        default: () => [],
-    },
+    // departements: {
+    //     type: Array,
+    //     default: () => [],
+    // },
+    // arrondissements: {
+    //     type: Array,
+    //     default: () => [],
+    // },
+    // communes: {
+    //     type: Array,
+    //     default: () => [],
+    // },
 });
 
 const form = useForm({
@@ -84,45 +83,55 @@ const form = useForm({
 
 // Les modification pour tenter de auvegarder dasn la base de donnéé
 
-const fetchDepartements = () => {
-    console.log("selectedRegion a changé", selectedRegion.value);
+const fetchDepartements = async () => {
+    if (!selectedRegion.value) {
+        departements.value = [];
+        return;
+    }
 
-    // form.post(
-    //     "/fetch-departements",
-    //     { region_id: selectedRegion },
-    //     {
-    //         onSuccess: (page) => {
-    //             departements.value = page.props.departements;
-    //             arrondissements.value = [];
-    //             communes.value = [];
-    //         },
-    //     }
-    // );
+    try {
+        const response = await axios.get(
+            `/departements/${selectedRegion.value}`
+        );
+        departements.value = response.data.departements;
+        console.log("Départements: ", departements.value);
+    } catch (error) {
+        console.error("Erreur lors du chargement des départements :", error);
+    }
 };
 
-const fetchArrondissements = () => {
-    form.post(
-        "/fetch-arrondissements",
-        { departement_id: form.value.departement },
-        {
-            onSuccess: (page) => {
-                arrondissements.value = page.props.arrondissements;
-                communes.value = [];
-            },
-        }
-    );
+const fetchArrondissements = async () => {
+    if (!selectedDepartement.value) {
+        arrondissements.value = [];
+        return;
+    }
+
+    try {
+        const response = await axios.get(
+            `/arrondissements/${selectedDepartement.value}`
+        );
+        arrondissements.value = response.data.arrondissements;
+        console.log("Arrondissements : ", arrondissements.value);
+    } catch (error) {
+        console.error("Erreur lors du chargement des arrondissements :", error);
+    }
 };
 
-const fetchCommunes = () => {
-    Inertia.post(
-        "/fetch-communes",
-        { arrondissement_id: form.value.arrondissement },
-        {
-            onSuccess: (page) => {
-                communes.value = page.props.communes;
-            },
-        }
-    );
+const fetchCommunes = async () => {
+    if (!selectedArrondissement.value) {
+        communes.value = [];
+        return;
+    }
+
+    try {
+        const response = await axios.get(
+            `/communes/${selectedArrondissement.value}`
+        );
+        communes.value = response.data.communes;
+        console.log("communes : ", communes.value);
+    } catch (error) {
+        console.error("Erreur lors du chargement des communes :", error);
+    }
 };
 
 onMounted(() => {
@@ -390,9 +399,7 @@ const mazTabs = [
                                                     id="slt_region"
                                                     v-model="selectedRegion"
                                                     @change="
-                                                        fetchDepartements(
-                                                            selectedRegion
-                                                        )
+                                                        fetchDepartements()
                                                     "
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
@@ -419,9 +426,7 @@ const mazTabs = [
                                                         selectedDepartement
                                                     "
                                                     @change="
-                                                        fetchArrondissements(
-                                                            selectedDepartement
-                                                        )
+                                                        fetchArrondissements()
                                                     "
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
@@ -456,7 +461,7 @@ const mazTabs = [
                                                     v-model="
                                                         selectedArrondissement
                                                     "
-                                                    @change="fetchCommunes"
+                                                    @change="fetchCommunes()"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
                                                     <option

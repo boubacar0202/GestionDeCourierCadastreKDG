@@ -12,7 +12,7 @@ use Inertia\Inertia;
 class LocationController extends Controller
 {
     //
-  
+
     public function getDepartements()
     {
         $departements = Departement::all();
@@ -29,41 +29,29 @@ class LocationController extends Controller
         return Commune::where('arrondissement_id', $arrondissementId)->get();
     }
 
-    public function getDepartementsByRegion(Request $request)
+    public function getDepartementsByRegion(string $regionId)
     {
-        $validated = $request->validate([
-            'region_id' => 'required|exists:regions,id',
-        ]);
+        $departements = Departement::where('region_id', $regionId)->get();
 
-        $departements = Departement::where('region_id', $validated['region_id'])->get();
-
-        return Inertia::render('secretariat/create', [
+        return response()->json([
             'departements' => $departements,
         ]);
     }
 
-    public function getArrondissementByDepartement(Request $request)
+    public function getArrondissementByDepartement(string $id)
     {
-        $validated = $request->validate([
-            'departement_id' => 'required|exists:departements,id',
-        ]);
+        $arrondissements = Arrondissement::where('departement_id', $id)->get();
 
-        $arrondissements = Arrondissement::where('departement_id', $validated['departement_id'])->get();
-
-        return Inertia::render('secretariat/create', [
+        return response()->json([
             'arrondissements' => $arrondissements,
         ]);
     }
 
-    public function getCommunesByArrondissement(Request $request)
+    public function getCommunesByArrondissement(string $id)
     {
-        $validated = $request->validate([
-            'arrondissement_id' => 'required|exists:arrondissements,id',
-        ]);
+        $communes = Commune::where('arrondissement_id', $id)->get();
 
-        $communes = Commune::where('arrondissement_id', $validated['arrondissement_id'])->get();
-
-        return Inertia::render('secretariat/create', [
+        return response()->json([
             'communes' => $communes,
         ]);
     }
