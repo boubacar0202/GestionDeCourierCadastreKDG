@@ -37,7 +37,7 @@ Route::resource('matriceCadastrale', MatriceCadastraleController::class);
 
 Route::get('/departements/{regionId}', [LocationController::class, 'getDepartementsByRegion']);
 Route::get('/arrondissements/{departementId}', [LocationController::class, 'getArrondissementByDepartement']);
-Route::post('/communes/{arrondissementId}', [LocationController::class, 'getCommunesByArrondissement']);
+Route::get('/communes/{arrondissementId}', [LocationController::class, 'getCommunesByArrondissement']);
 
 
 require __DIR__ . '/auth.php';

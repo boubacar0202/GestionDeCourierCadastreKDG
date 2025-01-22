@@ -22,18 +22,6 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    // departements: {
-    //     type: Array,
-    //     default: () => [],
-    // },
-    // arrondissements: {
-    //     type: Array,
-    //     default: () => [],
-    // },
-    // communes: {
-    //     type: Array,
-    //     default: () => [],
-    // },
 });
 
 const form = useForm({
