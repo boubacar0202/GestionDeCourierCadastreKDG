@@ -183,145 +183,153 @@ import { Head } from '@inertiajs/vue3';
                                             </th>
                                             <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                                <!--{{$item->region}}    -->
+                                               début
                                             </td>
                                             <td class="px-6 py-4">
-                                                Silver
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Laptop
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                $2999
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                3.0 lb.
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Silver
+                                              
                                             </td>
                                             <td class="px-6 py-4">
-                                                Laptop
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                $2999
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                3.0 lb.
+                                          
                                             </td>
                                             <td class="px-6 py-4">
-                                                Silver
+                                            
                                             </td>
                                             <td class="px-6 py-4">
-                                                Laptop
+                                              
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                $2999
+                                              
                                             </td>
                                             <td class="px-6 py-4">
-                                                3.0 lb.
+                                               
                                             </td>
                                             <td class="px-6 py-4">
-                                                Silver
+                                               
                                             </td>
                                             <td class="px-6 py-4">
-                                                Laptop
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                $2999
+                                              
                                             </td>
                                             <td class="px-6 py-4">
-                                                3.0 lb.
+                                               
                                             </td>
                                             <td class="px-6 py-4">
-                                                Silver
+                                               
                                             </td>
                                             <td class="px-6 py-4">
-                                                Laptop
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                $2999
+                                               
                                             </td>
                                             <td class="px-6 py-4">
-                                                3.0 lb.
+                                               
                                             </td>
                                             <td class="px-6 py-4">
-                                                Silver
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Laptop
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                $2999
+                                            
                                             </td>
                                             <td class="px-6 py-4">
-                                                3.0 lb.
+                                               
                                             </td>
                                             <td class="px-6 py-4">
-                                                Silver
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Laptop
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                $2999
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                3.0 lb.
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Silver
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Laptop
+                                                
                                             </td>
                                             <td class="px-6 py-4">
-                                                Yes
+                                                Fin_debut
                                             </td>
-                                            <td class="flex items-center px-6 py-4">
-                                                <a href="/modifier/{{ $item->id }}" class="btn btn-primary btn-sm">Modifier</a>
-                                                <a href="/supprimer/{{ $item->id }}" class="btn btn-danger btn-sm">Supprimer</a>
+                                            <td class="flex items px-6 py-6">
+                                                <div class="mt-2">
+                                                    <MazBtn pastel size="sm">Modifier</MazBtn>
+                                                </div>
+                                                <div class="container">
+                                                    <p>.</p>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <MazBtn color="danger" pastel size="sm">Supprimer</MazBtn>
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
