@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('txt_num_section');
             $table->string('txt_num_parcelle');
             $table->string('txt_num_titre');
-            $table->string('txt_titre_mere');
             $table->integer('nbr_surface');
             $table->string('slt_document_admin');
             $table->string('txt_num_deliberation');

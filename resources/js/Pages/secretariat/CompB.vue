@@ -88,7 +88,7 @@
                 <label for="Date_bornage">Date Bornage</label>
                 <div class="mt-2">
                     <input
-                        type="text"
+                        type="date"
                         name="dt_date_bornage"
                         id="Date_bornage"
                         autocomplete="address-level2"

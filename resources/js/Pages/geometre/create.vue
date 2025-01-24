@@ -72,6 +72,47 @@ const setActiveTabRU = (tabRU) => {
     activeTabRU.value = tabRU;
 };
 
+document.addEventListener('DOMContentLoaded', function () {
+    const Surface = document.getElementById('Surface');
+    const Niveau = document.getElementById('Niveau');
+    const Surface_bati_sol = document.getElementById('Surface_bati_sol');
+
+    function calculate() {
+        const val1 = parseFloat(Surface.value) || 0; // Le premier nombre est préchargé
+        const val2 = parseFloat(Niveau.value) || 0; // Entrée utilisateur
+        Surface_bati_sol.value = val1 * val2; // Changez + en -, *, / selon le besoin
+    }
+
+    Niveau.addEventListener('input', calculate);
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const Surface_bati_sol = document.getElementById('Surface_bati_sol');
+    const Surface_utile = document.getElementById('Surface_utile');
+
+    function calculate() {
+        const val1 = parseFloat(Surface_bati_sol.value) || 0; // Si vide, considérer comme 0
+        Surface_utile.value = val1 * 0.78; // Remplacez par `-`, `*`, `/` si nécessaire
+    }
+
+    Surface_bati_sol.addEventListener('input', calculate);
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const Surface_corriger = document.getElementById('Surface_corriger');
+    const Surface_utile = document.getElementById('Surface_utile');
+    const Coeff = document.getElementById('Coeff');
+
+    function calculate() {
+        const val1 = parseFloat(Surface_bati_sol.value) || 0; // Si vide, considérer comme 0
+        const val2 = parseFloat(Coeff.value) || 0; // Si vide, considérer comme 0
+        Surface_corriger.value = val1 * 0.78; // Remplacez par `-`, `*`, `/` si nécessaire
+    }
+
+    Surface_utile.addEventListener('input', calculate);
+    Coeff.addEventListener('input', calculate);
+});
+
 </script>
 
 <template>

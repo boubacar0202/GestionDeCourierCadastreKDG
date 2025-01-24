@@ -144,6 +144,8 @@ const mazTabs = [
         disabled: false,
     },
 ];
+
+
 </script>
 
 <template>

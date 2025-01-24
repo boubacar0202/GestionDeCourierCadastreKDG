@@ -13,4 +13,7 @@ declare module 'vue' {
     MazTabsContent: typeof import('maz-ui/components/MazTabsContent')['default']
     MazTabsContentItem: typeof import('maz-ui/components/MazTabsContentItem')['default']
   }
+  export interface ComponentCustomProperties {
+    vLazyImg: typeof import('maz-ui')['vLazyImg']
+  }
 }

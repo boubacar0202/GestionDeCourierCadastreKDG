@@ -17,4 +17,11 @@ class GeometreController extends Controller
     public function create(){
         return Inertia::render("geometre/create");
     }
+
+    public function show()
+    {
+        $Niveau = 0; // Exemple de récupération d'un nombre depuis la base de données
+        return view('geometre/create', compact('Niveau'));
+    }
+
 }

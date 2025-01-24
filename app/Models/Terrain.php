@@ -12,8 +12,6 @@ class Terrain extends Model
         'txt_num_lotissement',
         'txt_num_section',
         'txt_num_parcelle',
-        'txt_num_titre',
-        'txt_titre_mere',
         'nbr_surface',
         'slt_document_admin',
         'txt_num_deliberation',
