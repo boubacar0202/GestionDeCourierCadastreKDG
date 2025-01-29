@@ -27,9 +27,6 @@ import { vLazyImg } from 'maz-ui'
                     class="flex flex-center rounded"
                     v-lazy-img="'https://upload.wikimedia.org/wikipedia/commons/9/93/Map_of_the_departments_of_the_K%C3%A9dougou_region_of_Senegal.png'"
                 />
-                <!--      
-                     <h1 class="text-balance text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">Data to enrich your online business</h1>            
-                -->
             </div>
                
        

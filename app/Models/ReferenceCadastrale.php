@@ -8,7 +8,7 @@ class ReferenceCadastrale extends Model
 {
     //
     protected $fillable = [
-        'rd_immatricalation_terrain',
+        'rd_immatriculation_terrain',
         'slt_dependant_domaine',
         'slt_bornage',
         'slt_dependant_domaine',

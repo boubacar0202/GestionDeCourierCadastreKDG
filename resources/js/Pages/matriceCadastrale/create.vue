@@ -179,6 +179,161 @@ import { Head } from '@inertiajs/vue3';
                                     <tbody>
                                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                N°
+                                            </th>
+                                            <td class="px-6 py-4">
+                                                Region
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Departement
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Commune
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Village/Quartier
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Rue
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Section
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Lotissement
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Numéro Lot
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Numéro_Parcelle
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                NICAD
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Numéro_Prote
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Superfice Legale
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Superficie Batie
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Type_Batie
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Niveau
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Superfice_NBatie
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Type_Designation
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Cat_Occupant
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Source_Donnee
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Titre Mere
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Titre Parcelle
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Type_DocFoncier
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Nature_Juridique
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Prenom_Pro
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Nom_Pro
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                CIN_Pro
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Passport_Pro
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                DateDelivrance_Pro
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Date_Naissance
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Lieu_Naissance
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                NINEA_PRO
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Telephone1_Pro
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Telephone2_Pro
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Email_Pro
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Prenom_Occupant
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Nom_Occupant
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                CIN_Ocupant
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Passeport_Occupant
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Date_Delivrance
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                DateNaiss_Occupant
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                LieuNaiss_Occupant
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                NINEA_Occupant
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Tel_Occupant
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Email_Occupant
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Valeur_Locative
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                Observations
+                                            </td>
+                                            <td class="flex items px-6 py-6">
+                                                <div class="mt-2">
+                                                    <MazBtn pastel size="sm">Modifier</MazBtn>
+                                                </div>
+                                                <div class="container">
+                                                    <p>.</p>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <MazBtn color="danger" pastel size="sm">Supprimer</MazBtn>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                                 
                                             </th>
                                             <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">

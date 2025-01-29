@@ -6,15 +6,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class Dossier extends Model
 {
+    protected $table = 'dossiers';
     protected $fillable = [
-        "txt_num_dossier",
-        "txt_num_dordre",
-        "slt_service_dendu",
-        "txt_etat_cession",
-        "txt_cession_definitive",
-        "dt_date_creation",
+        "numDossier",
+        "numDordre",
+        "servicRendu",
+        "etatCession",
+        "cessionDefinitive",
+        "dateCreation",
 
     ];
+    protected $casts = [
+        'dateCreation' => 'date',
+    ];
 
-   
+    public function region()
+    {
+        return $this->hasOne(Region::class);
+    }
+    
+    public function terrains()
+    {
+        return $this->hasMany(Terrain::class);
+    }
+
 }

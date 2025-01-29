@@ -18,4 +18,9 @@ class Terrain extends Model
         'dt_date_deliberation',
         'txt_nicad',
     ];
+
+    public function region()
+    {
+        return $this->belongsTo(Region::class);
+    }
 }

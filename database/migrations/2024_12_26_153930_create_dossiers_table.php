@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Region;
+use App\Models\Terrain;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,21 +15,22 @@ return new class extends Migration
     {
         Schema::create('dossiers', function (Blueprint $table) {
             $table->id();
-            $table->string('txt_num_dossier');
-            $table->string('txt_num_dordre');
-            $table->string('slt_service_rendu');
-            $table->string('txt_etat_cession');
-            $table->string('txt_cession_definitive');
-            $table->date('dt_date_creation');
+            $table->string('numDossier');
+            $table->integer('numDordre');
+            $table->string('serviceRendu');
+            $table->string('etatCession');
+            $table->string('cessionDefinitive');
+            $table->date('dateCreation');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('dossiers');
-    }
+    public function down()
+{
+    Schema::table('dossiers', function (Blueprint $table) {
+        $table->dropColumn('numDossier');
+    });
+}
+
+
 };

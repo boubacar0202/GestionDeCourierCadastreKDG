@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('references_cadastrales', function (Blueprint $table) {
             $table->id();
-            $table->boolean('rd_immatricalation_terrain');
+            $table->boolean('rd_immatriculation_terrain');
             $table->string('slt_dependant_domaine');
             $table->string('slt_bornage');
             $table->string('ussu_bornage');
