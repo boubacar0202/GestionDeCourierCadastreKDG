@@ -190,13 +190,7 @@ const mazTabs = [
                         </div>
 
                         <!-- Corps du formulaire -->
-                        <form
-                            @submit.prevent="submitForm"
-                            method="post"
-                            action="{{ route('store') }}"
-                            enctype="multipart/form-data"
-                        >
-                            @csrf
+                        <form @submit.prevent="submitForm">
                             <div class="p-6">
                                 <!-- Section Parcelle -->
                                 <h5 class="text-lg font-bold">
