@@ -39,8 +39,4 @@ Route::get('/departements/{regionId}', [LocationController::class, 'getDeparteme
 Route::get('/arrondissements/{departementId}', [LocationController::class, 'getArrondissementByDepartement']);
 Route::get('/communes/{arrondissementId}', [LocationController::class, 'getCommunesByArrondissement']);
 
-Route::post('/store', [SecretariatController::class, 'store'])->name('store');
-
-
-
 require __DIR__ . '/auth.php';

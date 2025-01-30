@@ -140,7 +140,7 @@ const submitForm = () => {
     console.log("Soumettre formulaire: ", form);
 
     // Décommenter cette ligne pour soumettre le formulaire dans la base de données.👇
-    form.post(route("store"), {
+    form.post(route("secretariat.store"), {
         onSuccess: (page) => {
             let message = ref("");
             if (page.props.flash.error) {

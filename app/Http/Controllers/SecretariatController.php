@@ -17,7 +17,6 @@ use App\Models\ReferenceCadastrale;
 use App\Models\ReferenceUsage;
 use App\Models\Terrain;
 use App\Models\Titulaire;
-use Illuminate\Foundation\Testing\Concerns\InteractsWithAuthentication;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
