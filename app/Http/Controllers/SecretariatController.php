@@ -35,7 +35,7 @@ class SecretariatController extends Controller
 
     public function create()
     {
-        $regions = Region::all(); 
+        $regions = Region::all();
 
         return Inertia::render("secretariat/create",  [
             "regions" => $regions,
@@ -45,8 +45,6 @@ class SecretariatController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
-
         $validatedData = $request->validate([
             'numDossier' => 'required|string|min:1|max:10|unique:dossiers,numDossier',
             'numDordre' => 'required|integer|min:1|max:255',
@@ -54,9 +52,9 @@ class SecretariatController extends Controller
             'etatCession' => 'required|string|min:1|max:255',
             'cessionDefinitive' => 'required|string|min:1|max:255',
             'dateCreation' => 'required|date',
-          
+
             //table Titulaire_terrain (table association entre Titulaire <=> Terrain)
-                //'titulaire_id'
+            //'titulaire_id'
             //'terrain_id'
 
             // Table region
@@ -71,117 +69,117 @@ class SecretariatController extends Controller
             // Table commune
             'communes' => 'required|string',
 
-             //table Terrain
-             'txt_lotissement' => 'nullable|string|min:1|max:255',
-             'txt_num_lotissement' => 'nullable|string',
-             'txt_num_section' => 'nullable|string',
-             'txt_num_parcelle' => 'nullable|string',
-             'txt_num_titre' => 'nullable|string',
-             'nbr_surface' => 'nullable|integer',
-             'slt_document_admin' => 'nullable|string',
-             'txt_num_deliberation' => 'nullable|string',
-             'dt_date_deliberation' => 'nullable|date',
-             'txt_nicad' => ['nullable', 'string', 'max:25', 'unique:terrains,txt_nicad'],
- 
-             // table Reference_Cadastral
-             'rd_immatriculation_terrain' => 'nullable|boolean',
-             'slt_dependant_domaine' => 'nullable|string',
-             'slt_bornage' => 'nullable|string',
-             'ussu_bornage' => 'nullable|string',
-             'txt_titre_mere' => 'nullable|string',
-             'slt_lf' => 'nullable|string',
-             'txt_num_requisition' => 'nullable|string',
-             'txt_surface_bornage' => 'nullable|string',
-             'dt_date_bornage' => 'nullable|date',
-             'txt_nom_geometre' => 'nullable|string',
- 
-             // table Titulaire
-             'slt_titulaire' => 'required|string|min:1|max:255',
-             'txt_nationalite' => 'required|string|min:1|max:255',
-             'slt_civilite' => 'required|string|min:1|max:255',
-             'txt_prenom' => 'required|string|min:1|max:255',
-             'txt_nom' => 'required|string|min:1|max:255',
-             'slt_piece' => 'required|string|min:1|max:255',
-             'txt_numPiece' => 'required|string|min:1|max:255',
-             'dt_date_delivrance' => 'required|date',
-             'dt_date_naissance' => 'required|date',
-             'txt_lieu_naissance' => 'required|string|min:1|max:255',
-             'txt_adresse' => 'required|string|min:1|max:255',
-             'tel_telephone' => 'required|numeric',
-             'txt_ninea' => 'nullable|string',
-             'eml_email' => 'nullable|string',
-             'txt_representant' => 'nullable|string',
-             'txt_telRepresentant' => 'nullable|numeric',
- 
-             //table Reference_usage
-             'slt_reference_usage' => 'nullable|string',
-             'txt_occupan_habitaion_1' => 'nullable|string',
-             'txt_activite_principal_hbt_1' => 'nullable|string',
-             'txt_ninea_occupan_hbt_1' => 'nullable|string',
-             'tel_tel_occupant_hbt_1' => 'nullable|numeric',
-             'nbr_montant_loyer_hbt_1' => 'nullable|integer',
-             'txt_activite_commercial' => 'nullable|string',
-             'txt_occopan_commercial' => 'nullable|string',
-             'txt_activite_industriel' => 'nullable|string',
-             'txt_occopan_industriel' => 'nullable|string',
-             'txt_activite_agricole' => 'nullable|string',
-             'txt_occopan_agricole' => 'nullable|string',
-             'txt_activite_professionnelle' => 'nullable|string',
-             'txt_occopan_professionnelle' => 'nullable|string',
-             'txt_activite_culte' => 'nullable|string',
-             'txt_occopan_culte' => 'nullable|string',
-             'txt_Activite_administratif' => 'nullable|string',
-             'txt_occupan_administratif' => 'nullable|string',
- 
-             // table evaluation_terrains
-             'txt_date_devaluation' => 'nullable|date',
-             'txt_superficie_totale' => 'nullable|integer',
-             'txt_superficie_bati_sol' => 'nullable|integer',
-             'slt_secteur' => 'nullable|string',
-             'nbr_prix_metre_carré' => 'nullable|integer',
-             'nbr_valeur_terrain' => 'nullable|integer',
- 
-             // table Evaluation_batis
-             'slt_type_residence' => 'nullable|string',
-             'rd_type_maissons' => 'nullable|string',
-             'chk_bati_principal' => 'nullable|boolean',
-             'slt_cat' => 'nullable|string',
-             'nbr_prix_metre_carre' => 'nullable|integer',
-             'nbr_surface_bati_sol' => 'nullable|integer',
-             'nbr_niveau' => 'nullable|integer',
-             'nbr_surface_brute' => 'nullable|integer',
-             'nbr_surface_utile' => 'nullable|integer',
-             'slt_coeff' => 'nullable|string',
-             'nbr_surface_corriger' => 'nullable|integer',
-             'nbr_valeur' => 'nullable|integer',
-             'txt_valeur_terrain_bati' => 'nullable|integer',
- 
-             // table evaluation_cours_amenagees
-             'chk_cours_amenager_totale' => 'nullable|boolean',
-             'nbr_surface_ca_total' => 'nullable|string',
-             'slt_categorie_ca_total' => 'nullable|string',
-             'nbr_prix_metre_carre_ca_total' => 'nullable|string',       //default(false),
-             'nbr_coefficient_ca_total' => 'nullable|string',
-             'nbr_valeur_ca_total' => 'nullable|integer',
-             'nbr_valeur_total_cours' => 'nullable|integer',
- 
-             //table Evaluation_cloture
-             'chk_perimetre_cloture' => 'nullable|boolean',
-             'nbr_longueur_avant_clo' => 'nullable|string',
-             'slt_categorie_clo' => 'nullable|string',
-             'nbr_prix_metre_carre_clo' => 'nullable|boolean',
-             'nbr_coefficient_clo' => 'nullable|string',
-             'nbr_valeur_clo' => 'nullable|integer',
-             'nbr_valeur_total_clotur' => 'nullable|integer',
- 
-             // table Evalution_amenagement
-             'txt_designation_am' => 'nullable|string',
-             'nbr_valeur_unitaire_am' => 'nullable|string',
-             'nbr_quantile_am' => 'nullable|string',
-             'slt_coeficien_am' => 'nullable|boolean',
-             'nbr_valeur_am' => 'nullable|string',
-             'nbr_valeur_totale_ap' => 'nullable|integer',
- 
+            //table Terrain
+            'txt_lotissement' => 'nullable|string|min:1|max:255',
+            'txt_num_lotissement' => 'nullable|string',
+            'txt_num_section' => 'nullable|string',
+            'txt_num_parcelle' => 'nullable|string',
+            'txt_num_titre' => 'nullable|string',
+            'nbr_surface' => 'nullable|integer',
+            'slt_document_admin' => 'nullable|string',
+            'txt_num_deliberation' => 'nullable|string',
+            'dt_date_deliberation' => 'nullable|date',
+            'txt_nicad' => ['nullable', 'string', 'max:25', 'unique:terrains,txt_nicad'],
+
+            // table Reference_Cadastral
+            'rd_immatriculation_terrain' => 'nullable|boolean',
+            'slt_dependant_domaine' => 'nullable|string',
+            'slt_bornage' => 'nullable|string',
+            'ussu_bornage' => 'nullable|string',
+            'txt_titre_mere' => 'nullable|string',
+            'slt_lf' => 'nullable|string',
+            'txt_num_requisition' => 'nullable|string',
+            'txt_surface_bornage' => 'nullable|string',
+            'dt_date_bornage' => 'nullable|date',
+            'txt_nom_geometre' => 'nullable|string',
+
+            // table Titulaire
+            'slt_titulaire' => 'required|string|min:1|max:255',
+            'txt_nationalite' => 'required|string|min:1|max:255',
+            'slt_civilite' => 'required|string|min:1|max:255',
+            'txt_prenom' => 'required|string|min:1|max:255',
+            'txt_nom' => 'required|string|min:1|max:255',
+            'slt_piece' => 'required|string|min:1|max:255',
+            'txt_numPiece' => 'required|string|min:1|max:255',
+            'dt_date_delivrance' => 'required|date',
+            'dt_date_naissance' => 'required|date',
+            'txt_lieu_naissance' => 'required|string|min:1|max:255',
+            'txt_adresse' => 'required|string|min:1|max:255',
+            'tel_telephone' => 'required|numeric',
+            'txt_ninea' => 'nullable|string',
+            'eml_email' => 'nullable|string',
+            'txt_representant' => 'nullable|string',
+            'txt_telRepresentant' => 'nullable|numeric',
+
+            //table Reference_usage
+            'slt_reference_usage' => 'nullable|string',
+            'txt_occupan_habitaion_1' => 'nullable|string',
+            'txt_activite_principal_hbt_1' => 'nullable|string',
+            'txt_ninea_occupan_hbt_1' => 'nullable|string',
+            'tel_tel_occupant_hbt_1' => 'nullable|numeric',
+            'nbr_montant_loyer_hbt_1' => 'nullable|integer',
+            'txt_activite_commercial' => 'nullable|string',
+            'txt_occopan_commercial' => 'nullable|string',
+            'txt_activite_industriel' => 'nullable|string',
+            'txt_occopan_industriel' => 'nullable|string',
+            'txt_activite_agricole' => 'nullable|string',
+            'txt_occopan_agricole' => 'nullable|string',
+            'txt_activite_professionnelle' => 'nullable|string',
+            'txt_occopan_professionnelle' => 'nullable|string',
+            'txt_activite_culte' => 'nullable|string',
+            'txt_occopan_culte' => 'nullable|string',
+            'txt_Activite_administratif' => 'nullable|string',
+            'txt_occupan_administratif' => 'nullable|string',
+
+            // table evaluation_terrains
+            'txt_date_devaluation' => 'nullable|date',
+            'txt_superficie_totale' => 'nullable|integer',
+            'txt_superficie_bati_sol' => 'nullable|integer',
+            'slt_secteur' => 'nullable|string',
+            'nbr_prix_metre_carré' => 'nullable|integer',
+            'nbr_valeur_terrain' => 'nullable|integer',
+
+            // table Evaluation_batis
+            'slt_type_residence' => 'nullable|string',
+            'rd_type_maissons' => 'nullable|string',
+            'chk_bati_principal' => 'nullable|boolean',
+            'slt_cat' => 'nullable|string',
+            'nbr_prix_metre_carre' => 'nullable|integer',
+            'nbr_surface_bati_sol' => 'nullable|integer',
+            'nbr_niveau' => 'nullable|integer',
+            'nbr_surface_brute' => 'nullable|integer',
+            'nbr_surface_utile' => 'nullable|integer',
+            'slt_coeff' => 'nullable|string',
+            'nbr_surface_corriger' => 'nullable|integer',
+            'nbr_valeur' => 'nullable|integer',
+            'txt_valeur_terrain_bati' => 'nullable|integer',
+
+            // table evaluation_cours_amenagees
+            'chk_cours_amenager_totale' => 'nullable|boolean',
+            'nbr_surface_ca_total' => 'nullable|string',
+            'slt_categorie_ca_total' => 'nullable|string',
+            'nbr_prix_metre_carre_ca_total' => 'nullable|string',       //default(false),
+            'nbr_coefficient_ca_total' => 'nullable|string',
+            'nbr_valeur_ca_total' => 'nullable|integer',
+            'nbr_valeur_total_cours' => 'nullable|integer',
+
+            //table Evaluation_cloture
+            'chk_perimetre_cloture' => 'nullable|boolean',
+            'nbr_longueur_avant_clo' => 'nullable|string',
+            'slt_categorie_clo' => 'nullable|string',
+            'nbr_prix_metre_carre_clo' => 'nullable|boolean',
+            'nbr_coefficient_clo' => 'nullable|string',
+            'nbr_valeur_clo' => 'nullable|integer',
+            'nbr_valeur_total_clotur' => 'nullable|integer',
+
+            // table Evalution_amenagement
+            'txt_designation_am' => 'nullable|string',
+            'nbr_valeur_unitaire_am' => 'nullable|string',
+            'nbr_quantile_am' => 'nullable|string',
+            'slt_coeficien_am' => 'nullable|boolean',
+            'nbr_valeur_am' => 'nullable|string',
+            'nbr_valeur_totale_ap' => 'nullable|integer',
+
         ]);
 
         DB::beginTransaction();
@@ -197,8 +195,8 @@ class SecretariatController extends Controller
             ]);
 
 
-            //table Terrain 
-            $terrains = Terrain::create([   
+            //table Terrain
+            $terrains = Terrain::create([
                 'txt_lotissement' => $validatedData['txt_lotissement'] ?? null,
                 'txt_num_lotissement' => $validatedData['txt_num_lotissement'] ?? null,
                 'txt_num_section' => $validatedData['txt_num_section'] ?? null,
@@ -212,7 +210,7 @@ class SecretariatController extends Controller
             ]);
 
             // table Reference_Cadastral
-            $referenceCadastrales = ReferenceCadastrale::create([   
+            $referenceCadastrales = ReferenceCadastrale::create([
                 'rd_immatriculation_terrain' => $validatedData['rd_immatriculation_terrain'] ?? null,
                 'slt_dependant_domaine' => $validatedData['slt_dependant_domaine'] ?? null,
                 'slt_bornage' => $validatedData['slt_bornage'] ?? null,
@@ -226,7 +224,7 @@ class SecretariatController extends Controller
             ]);
 
             // table Titulaire
-            $titulaires = Titulaire::create([  
+            $titulaires = Titulaire::create([
                 'slt_titulaire' => $validatedData['slt_titulaire'],
                 'txt_nationalite' => $validatedData['txt_nationalite'],
                 'slt_civilite' => $validatedData['slt_civilite'],
@@ -242,15 +240,15 @@ class SecretariatController extends Controller
                 'txt_ninea' => $validatedData['txt_ninea'] ?? null,
                 'eml_email' => $validatedData['eml_email'] ?? null,
                 'txt_representant' => $validatedData['txt_representant'] ?? null,
-                'tel_representant'=> $validatedData['tel_representant'],
+                'tel_representant' => $validatedData['tel_representant'],
             ]);
 
 
-            // PAGES GEOMETRE  
+            // PAGES GEOMETRE
 
 
             //table Reference_usage
-            $referenceUsages = ReferenceUsage::create([   
+            $referenceUsages = ReferenceUsage::create([
                 'slt_reference_usage' => $validatedData['slt_reference_usage'] ?? null,
                 'txt_occupan_habitaion_1' => $validatedData['txt_occupan_habitaion_1'] ?? null,
                 'txt_activite_principal_hbt_1' => $validatedData['txt_activite_principal_hbt_1'] ?? null,
@@ -272,7 +270,7 @@ class SecretariatController extends Controller
             ]);
 
             // table evaluation_terrains
-            $evaluationTerrains = EvaluationTerrain::create([ 
+            $evaluationTerrains = EvaluationTerrain::create([
                 'txt_date_devaluation' => $validatedData['txt_date_devaluation'] ?? null,
                 'txt_superficie_totale' => $validatedData['txt_superficie_totale'] ?? null,
                 'txt_superficie_bati_sol' => $validatedData['txt_superficie_bati_sol'] ?? null,
@@ -281,9 +279,9 @@ class SecretariatController extends Controller
                 'nbr_valeur_terrain' => $validatedData['nbr_valeur_terrain'] ?? null,
             ]);
 
-            
+
             // table Evaluation_batis
-            $evaluationBatis = EvaluationBati::create([    
+            $evaluationBatis = EvaluationBati::create([
                 'slt_type_residence' => $validatedData['slt_type_residence'] ?? null,
                 'rd_type_maissons' => $validatedData['rd_type_maissons'] ?? null,
                 'chk_bati_principal' => filter_var($validatedData['chk_bati_principal'] ?? false, FILTER_VALIDATE_BOOLEAN),
@@ -299,9 +297,9 @@ class SecretariatController extends Controller
                 'txt_valeur_terrain_bati' => $validatedData['txt_valeur_terrain_bati'] ?? null,
             ]);
 
-            
+
             // table evaluation_cours_amenagees
-            $evaluationCoursAmenagees = EvaluationCoursAmenagee::create([   
+            $evaluationCoursAmenagees = EvaluationCoursAmenagee::create([
                 'chk_cours_amenager_totale' => $validatedData['chk_cours_amenager_totale'] ?? null,
                 'nbr_surface_ca_total' => $validatedData['nbr_surface_ca_total'] ?? null,
                 'slt_categorie_ca_total' => $validatedData['slt_categorie_ca_total'],
@@ -312,7 +310,7 @@ class SecretariatController extends Controller
             ]);
 
             //table Evaluation_cloture
-            $evaluationClotures = EvaluationCloture::create([ 
+            $evaluationClotures = EvaluationCloture::create([
                 'chk_perimetre_cloture' => $validatedData['chk_perimetre_cloture'] ?? null,
                 'nbr_longueur_avant_clo' => $validatedData['nbr_longueur_avant_clo'] ?? null,
                 'slt_categorie_clo' => $validatedData['slt_categorie_clo'] ?? null,
@@ -323,7 +321,7 @@ class SecretariatController extends Controller
             ]);
 
             // table Evalution_amenagement
-            $evaluationAmenagements = EvaluationAmenagement::create([  
+            $evaluationAmenagements = EvaluationAmenagement::create([
                 'txt_designation_am' => $validatedData['txt_designation_am'] ?? null,
                 'nbr_valeur_unitaire_am' => $validatedData['nbr_valeur_unitaire_am'] ?? null,
                 'nbr_quantile_am' => $validatedData['nbr_quantile_am'] ?? null,
@@ -381,9 +379,5 @@ class SecretariatController extends Controller
             DB::rollback();
             return redirect()->back()->withErrors(['error' => 'Erreur lors de l\'enregistrement.']);
         }
-        
-
     }
-
-
 }
