@@ -13,6 +13,7 @@ use App\Models\EvaluationCoursAmenagee;
 use App\Models\EvaluationTerrain;
 use App\Models\Region;
 use App\Models\Dossier;
+use App\Models\Localite;
 use App\Models\ReferenceCadastrale;
 use App\Models\ReferenceUsage;
 use App\Models\Terrain;
@@ -55,18 +56,6 @@ class SecretariatController extends Controller
             //table Titulaire_terrain (table association entre Titulaire <=> Terrain)
             //'titulaire_id'
             //'terrain_id'
-
-            // Table region
-            'regions' => 'required|string',
-
-            // Table departement
-            'departements' => 'required|string',
-
-            // Table arrondissement
-            'arrondissements' => 'required|string',
-
-            // Table commune
-            'communes' => 'required|string',
 
             //table Terrain
             'txt_lotissement' => 'nullable|string|min:1|max:255',
@@ -178,6 +167,12 @@ class SecretariatController extends Controller
             'slt_coeficien_am' => 'nullable|boolean',
             'nbr_valeur_am' => 'nullable|string',
             'nbr_valeur_totale_ap' => 'nullable|integer',
+
+            // table Localite
+            'region' => 'required|string',
+            'departement' => 'required|string',
+            'arrondissement' => 'required|string',
+            'commune' => 'required|string',
 
         ]);
 
@@ -329,39 +324,24 @@ class SecretariatController extends Controller
                 'nbr_valeur_totale_ap' => $validatedData['nbr_valeur_totale_ap'] ?? null,
             ]);
 
-            $regions = Region::create([
+            $localites = Localite::create([
                 'region' => $validatedData['region'],
-            ]);
-
-            $departements = Departement::create([
                 'departement' => $validatedData['departement'],
-            ]);
-
-            $arrondissements = Arrondissement::create([
                 'arrondissement' => $validatedData['arrondissement'],
-            ]);
-
-            $communes = Commune::create([
                 'commune' => $validatedData['commune'],
             ]);
 
             // Association entre le titulaire et le terrain
             $terrains->dossier()->associate($dossiers);
-            $terrains->region()->associate($regions);
-            $terrains->departement()->associate($departements);
-            $terrains->arrondissement()->associate($arrondissements);
-            $terrains->commune()->associate($communes);
+            $terrains->localote()->associate($localites);
             $evaluationTerrains->evaluationTerrain()->associate($evaluationTerrains);
             $evaluationBatis->evaluationBati()->associate($evaluationBatis);
             $evaluationClotures->evaluationCloture()->associate($evaluationClotures);
             $evaluationAmenagements->evaluationAmenagement()->associate($evaluationAmenagements);
             $evaluationCoursAmenagees->evaluationCoursAmenagee()->associate($evaluationCoursAmenagees);
+            
             $terrains->save();
             $dossiers->save();
-            $regions->save();
-            $departements->save();
-            $arrondissements->save();
-            $communes->save();
             $referenceCadastrales->save();
             $titulaires->save();
             $referenceUsages->save();
@@ -371,6 +351,7 @@ class SecretariatController extends Controller
             $evaluationAmenagements->save();
             $evaluationClotures->save();
             $evaluationCoursAmenagees->save();
+            $localites->save();
 
             DB::commit();
             return redirect()->route('secretariat.create')->with('success', 'Dossier enregistré avec succès.');

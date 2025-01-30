@@ -25,10 +25,7 @@ return new class extends Migration
             $table->string('txt_nicad');
         
             // Foreign keys for location hierarchy
-            $table->foreignId('region_id')->constrained('regions')->onDelete('cascade');
-            $table->foreignId('departement_id')->constrained('departements')->onDelete('cascade');
-            $table->foreignId('arrondissement_id')->constrained('arrondissements')->onDelete('cascade');
-            $table->foreignId('commune_id')->constrained('communes')->onDelete('cascade');
+            $table->foreignId('localite_id')->constrained('localites')->onDelete('cascade');
         
             // Foreign key for dossier
             $table->foreignId('dossier_id')->constrained('dossiers')->onDelete('cascade');

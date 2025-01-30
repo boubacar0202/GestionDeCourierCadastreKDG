@@ -15,16 +15,22 @@
                 <label for="Bornage">Issu de bornage</label>
                 <div class="mt-2">
                     <select
-                        name="ussu_bornage"
+                        name="slt_ussu_bornage"
                         id="Bornage"
                         class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     >
-                        <option value="Immatriculation">Immatriculation</option>
-                        <option value="Morcellement">Morcellement</option>
+                        <option value="Immatriculation">
+                            Immatriculation
+                        </option>
+                        <option value="Morcellement">
+                            Morcellement
+                        </option>
                         <option value="Rectificatif de Limite">
                             Rectificatif de Limite
                         </option>
-                        <option value="Fusion">Fusion</option>
+                        <option value="Fusion">
+                            Fusion
+                        </option>
                         <option value="Morcellement de Copropriété">
                             Morcellement de Copropriété
                         </option>
