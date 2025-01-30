@@ -35,9 +35,9 @@ const form = useForm({
     etatCession: "",
     cessionDefinitive: "",
     dateCreation: "",
-    region: "",
-    departement: "",
-    commune: "",
+    // region: "",
+    // departement: "",
+    // commune: "",
     txt_lotissement: "",
     txt_num_lotissement: "",
     txt_num_section: "",
@@ -131,13 +131,11 @@ const fetchCommunes = async () => {
 };
 
 onMounted(() => {
-    console.log("Les régions: ", props.regions);
+    // console.log("Les régions: ", props.regions);
 });
 
-// Voici ce que vous aviez fait
-
 const submitForm = () => {
-    console.log("Soumettre formulaire: ", form);
+    console.log("Soumettre formulaire: ", form.data());
 
     // Décommenter cette ligne pour soumettre le formulaire dans la base de données.👇
     form.post(route("secretariat.store"), {
