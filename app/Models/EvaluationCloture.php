@@ -16,4 +16,9 @@ class EvaluationCloture extends Model
         'nbr_valeur_clo',
         'nbr_valeur_total_clotur',
     ];
+
+    public function terrain()
+    {
+        return $this->belongsTo(Terrain::class);
+    }
 }

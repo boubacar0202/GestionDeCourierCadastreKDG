@@ -15,4 +15,9 @@ class EvaluationAmenagement extends Model
         'nbr_valeur_am',
         'nbr_valeur_totale_am',
     ];
+
+    public function terrain()
+    {
+        return $this->belongsTo(Terrain::class);
+    }
 }

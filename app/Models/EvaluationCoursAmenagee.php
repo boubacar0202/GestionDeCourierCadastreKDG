@@ -16,4 +16,9 @@ class EvaluationCoursAmenagee extends Model
         'nbr_valeur_ca_total',
         'nbr_valeur_total_cours',
     ];
+
+    public function terrain()
+    {
+        return $this->belongsTo(Terrain::class);
+    }
 }

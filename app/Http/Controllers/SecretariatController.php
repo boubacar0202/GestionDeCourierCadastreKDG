@@ -45,7 +45,7 @@ class SecretariatController extends Controller
 
     public function store(Request $request)
     {
-      
+        dd($request->all());
 
         $validatedData = $request->validate([
             'numDossier' => 'required|string|min:1|max:10|unique:dossiers,numDossier',
@@ -58,6 +58,18 @@ class SecretariatController extends Controller
             //table Titulaire_terrain (table association entre Titulaire <=> Terrain)
                 //'titulaire_id'
             //'terrain_id'
+
+            // Table region
+            'regions' => 'required|string',
+
+            // Table departement
+            'departements' => 'required|string',
+
+            // Table arrondissement
+            'arrondissements' => 'required|string',
+
+            // Table commune
+            'communes' => 'required|string',
 
              //table Terrain
              'txt_lotissement' => 'nullable|string|min:1|max:255',
@@ -175,7 +187,7 @@ class SecretariatController extends Controller
         DB::beginTransaction();
         try {
 
-            $dossier = Dossier::create([
+            $dossiers = Dossier::create([
                 'numDossier' => $validatedData['numDossier'],
                 'numDordre' => $validatedData['numDordre'],
                 'serviceRendu' => $validatedData['serviceRendu'],
@@ -186,7 +198,7 @@ class SecretariatController extends Controller
 
 
             //table Terrain 
-            $terrain = Terrain::create([   
+            $terrains = Terrain::create([   
                 'txt_lotissement' => $validatedData['txt_lotissement'] ?? null,
                 'txt_num_lotissement' => $validatedData['txt_num_lotissement'] ?? null,
                 'txt_num_section' => $validatedData['txt_num_section'] ?? null,
@@ -200,7 +212,7 @@ class SecretariatController extends Controller
             ]);
 
             // table Reference_Cadastral
-            $referenceCadastrale = ReferenceCadastrale::create([   
+            $referenceCadastrales = ReferenceCadastrale::create([   
                 'rd_immatriculation_terrain' => $validatedData['rd_immatriculation_terrain'] ?? null,
                 'slt_dependant_domaine' => $validatedData['slt_dependant_domaine'] ?? null,
                 'slt_bornage' => $validatedData['slt_bornage'] ?? null,
@@ -214,7 +226,7 @@ class SecretariatController extends Controller
             ]);
 
             // table Titulaire
-            $titulaire = Titulaire::create([  
+            $titulaires = Titulaire::create([  
                 'slt_titulaire' => $validatedData['slt_titulaire'],
                 'txt_nationalite' => $validatedData['txt_nationalite'],
                 'slt_civilite' => $validatedData['slt_civilite'],
@@ -230,7 +242,7 @@ class SecretariatController extends Controller
                 'txt_ninea' => $validatedData['txt_ninea'] ?? null,
                 'eml_email' => $validatedData['eml_email'] ?? null,
                 'txt_representant' => $validatedData['txt_representant'] ?? null,
-                'txt_telRepresentant' => $validatedData['txt_telRepresentant'] ?? null,
+                'tel_representant'=> $validatedData['tel_representant'],
             ]);
 
 
@@ -238,7 +250,7 @@ class SecretariatController extends Controller
 
 
             //table Reference_usage
-            $referenceUsage = ReferenceUsage::create([   
+            $referenceUsages = ReferenceUsage::create([   
                 'slt_reference_usage' => $validatedData['slt_reference_usage'] ?? null,
                 'txt_occupan_habitaion_1' => $validatedData['txt_occupan_habitaion_1'] ?? null,
                 'txt_activite_principal_hbt_1' => $validatedData['txt_activite_principal_hbt_1'] ?? null,
@@ -260,7 +272,7 @@ class SecretariatController extends Controller
             ]);
 
             // table evaluation_terrains
-            $evaluationTerrain = EvaluationTerrain::create([ 
+            $evaluationTerrains = EvaluationTerrain::create([ 
                 'txt_date_devaluation' => $validatedData['txt_date_devaluation'] ?? null,
                 'txt_superficie_totale' => $validatedData['txt_superficie_totale'] ?? null,
                 'txt_superficie_bati_sol' => $validatedData['txt_superficie_bati_sol'] ?? null,
@@ -271,7 +283,7 @@ class SecretariatController extends Controller
 
             
             // table Evaluation_batis
-            $evaluationBati = EvaluationBati::create([    
+            $evaluationBatis = EvaluationBati::create([    
                 'slt_type_residence' => $validatedData['slt_type_residence'] ?? null,
                 'rd_type_maissons' => $validatedData['rd_type_maissons'] ?? null,
                 'chk_bati_principal' => filter_var($validatedData['chk_bati_principal'] ?? false, FILTER_VALIDATE_BOOLEAN),
@@ -289,7 +301,7 @@ class SecretariatController extends Controller
 
             
             // table evaluation_cours_amenagees
-            $evaluationCoursAmenagee = EvaluationCoursAmenagee::create([   
+            $evaluationCoursAmenagees = EvaluationCoursAmenagee::create([   
                 'chk_cours_amenager_totale' => $validatedData['chk_cours_amenager_totale'] ?? null,
                 'nbr_surface_ca_total' => $validatedData['nbr_surface_ca_total'] ?? null,
                 'slt_categorie_ca_total' => $validatedData['slt_categorie_ca_total'],
@@ -300,7 +312,7 @@ class SecretariatController extends Controller
             ]);
 
             //table Evaluation_cloture
-            $evaluationCloture = EvaluationCloture::create([ 
+            $evaluationClotures = EvaluationCloture::create([ 
                 'chk_perimetre_cloture' => $validatedData['chk_perimetre_cloture'] ?? null,
                 'nbr_longueur_avant_clo' => $validatedData['nbr_longueur_avant_clo'] ?? null,
                 'slt_categorie_clo' => $validatedData['slt_categorie_clo'] ?? null,
@@ -311,7 +323,7 @@ class SecretariatController extends Controller
             ]);
 
             // table Evalution_amenagement
-            $evaluationAmenagement = EvaluationAmenagement::create([  
+            $evaluationAmenagements = EvaluationAmenagement::create([  
                 'txt_designation_am' => $validatedData['txt_designation_am'] ?? null,
                 'nbr_valeur_unitaire_am' => $validatedData['nbr_valeur_unitaire_am'] ?? null,
                 'nbr_quantile_am' => $validatedData['nbr_quantile_am'] ?? null,
@@ -320,34 +332,58 @@ class SecretariatController extends Controller
                 'nbr_valeur_totale_ap' => $validatedData['nbr_valeur_totale_ap'] ?? null,
             ]);
 
+            $regions = Region::create([
+                'region' => $validatedData['region'],
+            ]);
+
+            $departements = Departement::create([
+                'departement' => $validatedData['departement'],
+            ]);
+
+            $arrondissements = Arrondissement::create([
+                'arrondissement' => $validatedData['arrondissement'],
+            ]);
+
+            $communes = Commune::create([
+                'commune' => $validatedData['commune'],
+            ]);
+
             // Association entre le titulaire et le terrain
-            $terrain->dossier()->associate($dossier);
-            $terrain->region()->associate($region);
-            $terrain->save();
-            $dossier->save();
-            $referenceCadastrale->save();
-            $titulaire->save();
-            $referenceUsage->save();
-            $evaluationBati->save();
-            $evaluationTerrain->save();
-            $evaluationBati->save();
-            $evaluationAmenagement->save();
-            $evaluationCloture->save();
-            $evaluationCoursAmenagee->save();
+            $terrains->dossier()->associate($dossiers);
+            $terrains->region()->associate($regions);
+            $terrains->departement()->associate($departements);
+            $terrains->arrondissement()->associate($arrondissements);
+            $terrains->commune()->associate($communes);
+            $evaluationTerrains->evaluationTerrain()->associate($evaluationTerrains);
+            $evaluationBatis->evaluationBati()->associate($evaluationBatis);
+            $evaluationClotures->evaluationCloture()->associate($evaluationClotures);
+            $evaluationAmenagements->evaluationAmenagement()->associate($evaluationAmenagements);
+            $evaluationCoursAmenagees->evaluationCoursAmenagee()->associate($evaluationCoursAmenagees);
+            $terrains->save();
+            $dossiers->save();
+            $regions->save();
+            $departements->save();
+            $arrondissements->save();
+            $communes->save();
+            $referenceCadastrales->save();
+            $titulaires->save();
+            $referenceUsages->save();
+            $evaluationBatis->save();
+            $evaluationTerrains->save();
+            $evaluationBatis->save();
+            $evaluationAmenagements->save();
+            $evaluationClotures->save();
+            $evaluationCoursAmenagees->save();
 
             DB::commit();
-            return response()->json(['message' => 'Enregistrement réussi', 'dossier' => $dossier], 201);
+            return redirect()->route('secretariat.create')->with('success', 'Dossier enregistré avec succès.');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Enregistrement non réussi'], 500);
+            DB::rollback();
+            return redirect()->back()->withErrors(['error' => 'Erreur lors de l\'enregistrement.']);
         }
+        
+
     }
-    private function getOrCreateLocation($validatedData)
-    {
-        $region = Region::firstOrCreate(['nom' => $validatedData['slt_region']]);
-        $departement = Departement::firstOrCreate(['nom' => $validatedData['slt_departement'], 'region_id' => $region->id]);
-        $arrondissement = Arrondissement::firstOrCreate(['nom' => $validatedData['slt_arrondissement'], 'departement_id' => $departement->id]);
-        return Commune::firstOrCreate(['nom' => $validatedData['slt_commune'], 'arrondissement_id' => $arrondissement->id]);
-    }
+
 
 }

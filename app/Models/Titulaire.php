@@ -23,6 +23,6 @@ class Titulaire extends Model
         'txt_ninea',
         'eml_email',
         'txt_representant',
-        'txt_telRepresentant',
+        'tel_telRepresentant',
         ];
 }

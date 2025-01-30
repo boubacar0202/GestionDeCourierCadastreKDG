@@ -22,4 +22,9 @@ class EvaluationBati extends Model
         'nbr_valeur',
         'txt_valeur_terrain_bati',
     ];
+
+    public function terrain()
+    {
+        return $this->belongsTo(Terrain::class);
+    }
 }

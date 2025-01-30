@@ -15,4 +15,9 @@ class EvaluationTerrain extends Model
         'nbr_prix_metre_carré',
         'nbr_valeur_terrain',
     ];
+
+    public function terrain()
+    {
+        return $this->belongsTo(Terrain::class);
+    }
 }
