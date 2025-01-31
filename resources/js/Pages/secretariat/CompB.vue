@@ -16,6 +16,7 @@
                 <div class="mt-2">
                     <select
                         name="slt_ussu_bornage"
+                        v-model="form.slt_ussu_bornage"
                         id="Bornage"
                         class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     >
@@ -43,6 +44,7 @@
                     <input
                         type="text"
                         name="txt_titre_mere"
+                        v-model="form.txt_titre_mere"
                         id="Titre_mere"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -54,6 +56,7 @@
                 <div class="mt-2">
                     <select
                         name="slt_lf"
+                        v-model="form.slt_lf"
                         id="LF"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -72,6 +75,7 @@
                     <input
                         type="text"
                         name="txt_num_requisition"
+                        v-model="form.txt_num_requisition"
                         id="Num_requisition"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -84,6 +88,7 @@
                     <input
                         type="text"
                         name="txt_surface_bornage"
+                        v-model="txt_surface_bornage"
                         id="Surface_bornage"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -96,6 +101,7 @@
                     <input
                         type="date"
                         name="dt_date_bornage"
+                        v-model="form.dt_date_bornage"
                         id="Date_bornage"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -108,6 +114,7 @@
                     <input
                         type="text"
                         name="txt_nom_geometre"
+                        v-model="form.txt_nom_geometre"
                         id="Nom_geometre"
                         autocomplete="address-level2"
                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
