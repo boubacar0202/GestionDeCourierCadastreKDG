@@ -87,9 +87,9 @@ class SecretariatController extends Controller
             'txt_adresse' => 'required|string|min:1|max:255',
             'tel_telephone' => 'required|numeric',
             'txt_ninea' => 'nullable|string',
-            'eml_email' => 'nullable|string',
+            'eml_email' => 'nullable|email',
             'txt_representant' => 'nullable|string',
-            'txt_telRepresentant' => 'nullable|numeric',
+            'tel_Representant' => 'nullable|numeric|digits_between:10,15',
 
             // table Localite
             'region' => 'required|string',
@@ -101,6 +101,18 @@ class SecretariatController extends Controller
 
         DB::beginTransaction();
         try {
+
+            // Vérification de la duplication du dossier
+            $dossierExist = Dossier::where('numDossier', $validatedData['numDossier'])->first();
+            if ($dossierExist) {
+                return redirect()->back()->withErrors(['error' => 'Le dossier avec ce numéro existe déjà.']);
+            }
+
+            // Vérification de la duplication du terrain
+            $terrainExist = Terrain::where('txt_nicad', $validatedData['txt_nicad'])->first();
+            if ($terrainExist) {
+                return redirect()->back()->withErrors(['error' => 'Le terrain avec ce NICAD existe déjà.']);
+            }
 
             $dossiers = Dossier::create([
                 'numDossier' => $validatedData['numDossier'],
@@ -168,7 +180,7 @@ class SecretariatController extends Controller
 
             // Association entre le titulaire et le terrain
             $terrains->dossier()->associate($dossiers);
-            $terrains->localote()->associate($localites);
+            $terrains->localite()->associate($localites);
             
             $terrains->save();
             $dossiers->save();

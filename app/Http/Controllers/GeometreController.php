@@ -195,13 +195,12 @@ class GeometreController extends Controller
             ]);
 
 
-            $evaluationTerrains->evaluationTerrain()->associate($evaluationTerrains);
-            $evaluationBatis->evaluationBati()->associate($evaluationBatis);
-            $evaluationClotures->evaluationCloture()->associate($evaluationClotures);
-            $evaluationAmenagements->evaluationAmenagement()->associate($evaluationAmenagements);
-            $evaluationCoursAmenagees->evaluationCoursAmenagee()->associate($evaluationCoursAmenagees);
+            $evaluationTerrains->evaluationTerrains()->associate($evaluationTerrains);
+            $evaluationBatis->evaluationBatis()->associate($evaluationBatis);
+            $evaluationClotures->evaluationClotures()->associate($evaluationClotures);
+            $evaluationAmenagements->evaluationAmenagements()->associate($evaluationAmenagements);
+            $evaluationCoursAmenagees->evaluationCoursAmenagees()->associate($evaluationCoursAmenagees);
             
-
             $referenceUsages->save();
             $evaluationBatis->save();
             $evaluationTerrains->save();
