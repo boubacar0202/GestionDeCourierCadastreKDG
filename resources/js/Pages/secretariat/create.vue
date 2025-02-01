@@ -73,6 +73,8 @@ const form = useForm({
     eml_email: "",
     txt_representant: "",
     tel_representant: "",
+
+    dependantDomaine: "",
     // Ajouter d'autres champs nécessaires
 });
 
@@ -785,7 +787,11 @@ const mazTabs = [
                                                 class="maz-py-4"
                                             >
                                                 <!-- contenu du tab 1 ici.... -->
-                                                <CompA />
+                                                <CompA
+                                                    v-model="
+                                                        form.dependantDomaine
+                                                    "
+                                                />
                                             </MazTabsContentItem>
                                             <MazTabsContentItem
                                                 :tab="2"
