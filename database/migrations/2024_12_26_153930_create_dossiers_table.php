@@ -26,11 +26,11 @@ return new class extends Migration
     }
 
     public function down()
-{
-    Schema::table('dossiers', function (Blueprint $table) {
-        $table->dropColumn('numDossier');
-    });
-}
+    {
+        Schema::table('dossiers', function (Blueprint $table) {
+            $table->dropColumn('numDossier');
+        });
+    }
 
 
 };

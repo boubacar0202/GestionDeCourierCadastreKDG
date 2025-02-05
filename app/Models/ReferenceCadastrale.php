@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ReferenceCadastrale extends Model
 {
     //
+    protected $table = 'referenceCadastrales';
     protected $fillable = [
         'rd_immatriculation_terrain',
         'slt_dependant_domaine',

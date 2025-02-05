@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Model;
 
 class Terrain extends Model
@@ -12,31 +13,43 @@ class Terrain extends Model
         'txt_num_lotissement',
         'txt_num_section',
         'txt_num_parcelle',
+        'txt_num_titre',
         'nbr_surface',
         'slt_document_admin',
         'txt_num_deliberation',
         'dt_date_deliberation',
         'txt_nicad',
+        'region_id',
+        'departement_id',
+        'arrondissement_id',
+        'commune_id',
     ];
 
     public function region()
     {
-        return $this->belongsTo(Region::class);
+        return $this->belongsTo(Region::class,  'region_id', 'id');
     }
+
     public function departement()
     {
-        return $this->belongsTo(Departement::class);
+        return $this->belongsTo(Departement::class, 'departement_id', 'id');
     }
+
     public function arrondissement()
     {
-        return $this->belongsTo(Arrondissement::class);
+        return $this->belongsTo(Arrondissement::class, 'arrondissement_id', 'id');
     }
+
     public function commune()
     {
-        return $this->belongsTo(Commune::class);
+        return $this->belongsTo(Commune::class, 'commune_id', 'id');
     }
+
     public function dossier()
     {
         return $this->belongsTo(Dossier::class);
     }
+
+
+
 }

@@ -23,6 +23,11 @@ class Titulaire extends Model
         'txt_ninea',
         'eml_email',
         'txt_representant',
-        'tel_telRepresentant',
+        'tel_representant',
         ];
+
+        public function terrains()
+        {
+            return $this->belongsToMany(Terrain::class, 'titulaire_terrain');
+        }
 }

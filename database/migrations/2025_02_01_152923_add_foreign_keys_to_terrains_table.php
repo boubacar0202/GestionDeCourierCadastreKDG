@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('localites', function (Blueprint $table) {
-            $table->id();
-            $table->string('region');
-            $table->string('departement');
-            $table->string('arrondissement');
-            $table->string('commune');
-            $table->timestamps();
+        Schema::table('terrains', function (Blueprint $table) {
+            //
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('localites');
+        Schema::table('terrains', function (Blueprint $table) {
+            //
+        });
     }
 };

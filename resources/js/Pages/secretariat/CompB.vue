@@ -2,13 +2,13 @@
 import { ref, watch } from "vue";
 
 const form = ref({
-    ussuBornage: "",
-    titreMere: "",
-    lf: "",
-    numRequisition: "",
-    surfaceBornage: "",
-    dateBornage: "",
-    nomGeometre: "",
+    slt_ussu_bornage: "",
+    txt_titre_mere: "",
+    slt_lf: "",
+    txt_num_requisition: "",
+    txt_surface_bornage: "",
+    dt_date_bornage: "",
+    txt_nom_geometre: "",
 });
 
 watch(
@@ -76,7 +76,7 @@ watch(
                 </div>
             </div>
             <div class="sm:col-span-1">
-                <label for="NumRequisition">N° Requisition</label>
+                <label for="Num_requisition">N° Requisition</label>
                 <div class="mt-2">
                     <input
                         v-model="form.txt_num_requisition"
@@ -115,7 +115,7 @@ watch(
                 </div>
             </div>
             <div class="sm:col-span-2">
-                <label for="NomGeometre">Nom Geometre</label>
+                <label for="Nom_geometre">Nom Geometre</label>
                 <div class="mt-2">
                     <input
                         v-model="form.txt_nom_geometre"

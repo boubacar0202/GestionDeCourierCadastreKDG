@@ -4,16 +4,18 @@ import { Head, Link, useForm } from "@inertiajs/vue3";
 import MazBtn from "maz-ui/components/MazBtn";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import CompA from "./CompA.vue";
 import CompB from "./CompB.vue";
 import axios from "axios";
 import { useToast } from "maz-ui";
+import DefaultLayout from '@/Layouts/DefaultLayout.vue';
+defineOptions({ layout: DefaultLayout });
 
-const selectedRegion = ref();
-const selectedArrondissement = ref();
-const selectedDepartement = ref();
-const selectedCommune = ref();
+const slt_region = ref();
+const slt_arrondissement = ref();
+const slt_departement = ref();
+const slt_commune = ref();
 
 const departements = ref(null);
 const arrondissements = ref(null);
@@ -35,23 +37,23 @@ const form = useForm({
     etatCession: "",
     cessionDefinitive: "",
     dateCreation: "",
-    region: "",
-    departement: "",
-    commune: "",
+    slt_region: '',
+    slt_departement: '',
+    slt_arrondissement: '',
+    slt_commune: '',
     txt_lotissement: "",
     txt_num_lotissement: "",
     txt_num_section: "",
     txt_num_parcelle: "",
     txt_num_titre: "",
-    txt_titre_mere: "",
+    txt_titre_mere: "",  // Supprimez l'une des occurrences
     nbr_surface: "",
     slt_document_admin: "",
     txt_num_deliberation: "",
     dt_date_deliberation: "",
-    txt_nicad: "",
+    txt_nicad: "",  // Supprimez l'une des occurrences
     slt_dependant_domaine: "",
     slt_ussu_bornage: "",
-    txt_titre_mere: "",
     slt_lf: "",
     txt_num_requisition: "",
     txt_surface_bornage: "",
@@ -69,26 +71,38 @@ const form = useForm({
     txt_lieu_naissance: "",
     txt_adresse: "",
     tel_telephone: "",
-    txt_nicad: "",
     eml_email: "",
     txt_representant: "",
     tel_representant: "",
-
-    dependantDomaine: "",
-    // Ajouter d'autres champs nécessaires
 });
 
+
+// Mettez à jour les watchers pour utiliser form.selectedRegion, etc.
+watch(() => form.slt_region, (newValue) => {
+    console.log("🔄 Région sélectionnée :", newValue);
+    fetchDepartements();
+});
+
+watch(() => form.slt_departement, (newValue) => {
+    console.log("🔄 Département sélectionné :", newValue);
+    fetchArrondissements();
+});
+
+watch(() => form.slt_arrondissement, (newValue) => {
+    console.log("🔄 Arrondissement sélectionné :", newValue);
+    fetchCommunes();
+});
 // Les modification pour tenter de auvegarder dasn la base de donnéé
 
 const fetchDepartements = async () => {
-    if (!selectedRegion.value) {
+    if (!slt_region.value) {
         departements.value = [];
         return;
     }
 
     try {
         const response = await axios.get(
-            `/departements/${selectedRegion.value}`
+            `/departements/${slt_region.value}`
         );
         departements.value = response.data.departements;
         console.log("Départements: ", departements.value);
@@ -97,15 +111,16 @@ const fetchDepartements = async () => {
     }
 };
 
+
 const fetchArrondissements = async () => {
-    if (!selectedDepartement.value) {
+    if (!slt_departement.value) {
         arrondissements.value = [];
         return;
     }
 
     try {
         const response = await axios.get(
-            `/arrondissements/${selectedDepartement.value}`
+            `/arrondissements/${slt_departement.value}`
         );
         arrondissements.value = response.data.arrondissements;
         console.log("Arrondissements : ", arrondissements.value);
@@ -115,14 +130,14 @@ const fetchArrondissements = async () => {
 };
 
 const fetchCommunes = async () => {
-    if (!selectedArrondissement.value) {
+    if (!slt_arrondissement.value) {
         communes.value = [];
         return;
     }
 
     try {
         const response = await axios.get(
-            `/communes/${selectedArrondissement.value}`
+            `/communes/${slt_arrondissement.value}`
         );
         communes.value = response.data.communes;
         console.log("communes : ", communes.value);
@@ -132,22 +147,26 @@ const fetchCommunes = async () => {
 };
 
 onMounted(() => {
-    // console.log("Les régions: ", props.regions);
+    console.log("Les régions: ", props.regions);
+    // Vous pouvez ajouter une logique pour initialiser les données ici
 });
 
-const submitForm = () => {
-    console.log("Soumettre formulaire: ", form.data());
 
-    // Décommenter cette ligne pour soumettre le formulaire dans la base de données.👇
+
+const submitForm = () => {
+    console.log("Soumettre formulaire: ", form);
+    console.log(slt_region.value, slt_departement.value, slt_arrondissement.value, slt_commune.value);
+    
+    form.slt_region = slt_region.value;
+    form.slt_departement = slt_departement.value;
+    form.slt_arrondissement = slt_arrondissement.value;
+    form.slt_commune = slt_commune.value;
+
     form.post(route("secretariat.store"), {
         onSuccess: (page) => {
-            let message = ref("");
-            if (page.props.flash.error) {
-                message = page.props.flash.error;
-            } else {
-                message = page.props.flash.success;
-            }
+            let message = page.props.flash?.error || page.props.flash?.success || "Opération réussie !";
             toast.success(message);
+            console.log("✅ Succès Laravel :", page);
         },
         onError: (errors) => {
             if (errors) {
@@ -155,10 +174,19 @@ const submitForm = () => {
                     toast.error(errorMessage);
                 });
             }
+            console.error("❌ Erreurs Laravel :", errors);
         },
-        // onFinish: () => form.reset("name"),
+        data: {
+            slt_region: slt_region.value,
+            slt_departement: slt_departement.value,
+            slt_arrondissement: slt_arrondissement.value,
+            slt_commune: slt_commune.value,
+            
+        },
+        
     });
 };
+
 
 const mazTabs = [
     { label: "Terrain Non Immatriculé", disabled: false },
@@ -167,6 +195,7 @@ const mazTabs = [
         disabled: false,
     },
 ];
+
 </script>
 
 <template>
@@ -393,9 +422,10 @@ const mazTabs = [
                                     <div
                                         class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
                                     >
+                                    
                                         <div class="sm:col-span-1">
                                             <label
-                                                for="Region"
+                                                for="slt_region"
                                                 class="block text-sm font-medium"
                                             >
                                                 Région
@@ -403,8 +433,8 @@ const mazTabs = [
                                             <div class="mt-2">
                                                 <select
                                                     id="slt_region"
-                                                    name="selectedRegion"
-                                                    v-model="selectedRegion"
+                                                    name="slt_region"
+                                                    v-model="slt_region"
                                                     @change="
                                                         fetchDepartements()
                                                     "
@@ -422,16 +452,16 @@ const mazTabs = [
                                         </div>
                                         <div class="sm:col-span-1">
                                             <label
-                                                for="Departement"
+                                                for="departements"
                                                 class="block text-sm font-medium"
                                                 >Département</label
                                             >
                                             <div class="mt-2">
                                                 <select
                                                     id="departements"
-                                                    name="selectedDepartement"
+                                                    name="slt_departement"
                                                     v-model="
-                                                        selectedDepartement
+                                                        slt_departement
                                                     "
                                                     @change="
                                                         fetchArrondissements()
@@ -459,16 +489,16 @@ const mazTabs = [
                                         </div>
                                         <div class="sm:col-span-1">
                                             <label
-                                                for="Arrondissement"
+                                                for="arrondissements"
                                                 class="block text-sm font-medium"
                                                 >Arrondissement</label
                                             >
                                             <div class="mt-2">
                                                 <select
                                                     id="arrondissements"
-                                                    name="selectedArrondissement"
+                                                    name="slt_arrondissement"
                                                     v-model="
-                                                        selectedArrondissement
+                                                        slt_arrondissement
                                                     "
                                                     @change="fetchCommunes()"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -496,15 +526,15 @@ const mazTabs = [
                                         </div>
                                         <div class="sm:col-span-1">
                                             <label
-                                                for="Departement"
+                                                for="communes"
                                                 class="block text-sm font-medium"
                                                 >Commune</label
                                             >
                                             <div class="mt-2">
                                                 <select
                                                     id="communes"
-                                                    name="selectedCommune"
-                                                    v-model="selectedCommune"
+                                                    name="slt_commune  "
+                                                    v-model="slt_commune"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
                                                     <option
@@ -526,6 +556,7 @@ const mazTabs = [
                                                 </select>
                                             </div>
                                         </div>
+
                                         <div class="sm:col-span-1">
                                             <label
                                                 for="Lotissement"
@@ -643,7 +674,7 @@ const mazTabs = [
                                             >
                                             <div class="mt-2">
                                                 <input
-                                                    type="numbrer"
+                                                    type="number"
                                                     name="nbr_surface"
                                                     v-model="form.nbr_surface"
                                                     id="surface"
@@ -1086,7 +1117,7 @@ const mazTabs = [
                                                     type="email"
                                                     name="eml_email"
                                                     v-model="form.eml_email"
-                                                    id="email"
+                                                    id="Email"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />

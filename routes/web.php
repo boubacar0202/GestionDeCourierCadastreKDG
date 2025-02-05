@@ -33,6 +33,8 @@ Route::resource('secretariat', SecretariatController::class);
 Route::resource('geometre', GeometreController::class);
 Route::resource('donnee', DonneeController::class);
 Route::resource('matriceCadastrale', MatriceCadastraleController::class);
+Route::post('/secretariat/create', [SecretariatController::class, 'store']);
+
 
 
 Route::get('/departements/{regionId}', [LocationController::class, 'getDepartementsByRegion']);
