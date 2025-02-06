@@ -180,19 +180,19 @@ class SecretariatController extends Controller
 
             // return response()->json(['message' => 'Terrain créé avec succès', 'terrain' => $terrain], 201);
 
-            // // table Reference_Cadastral
-            // ReferenceCadastrale::create([
-            //     'rd_immatriculation_terrain' => $validatedData['rd_immatriculation_terrain'] ?? null,
-            //     'slt_dependant_domaine' => $validatedData['slt_dependant_domaine'] ?? null,
-            //     'slt_bornage' => $validatedData['slt_bornage'] ?? null,
-            //     'ussu_bornage' => $validatedData['ussu_bornage'] ?? null,
-            //     'txt_titre_mere' => $validatedData['txt_titre_mere'] ?? null,
-            //     'slt_lf' => $validatedData['slt_lf'] ?? null,
-            //     'txt_num_requisition' => $validatedData['txt_num_requisition'] ?? null,
-            //     'txt_surface_bornage' => $validatedData['txt_surface_bornage'] ?? null,
-            //     'dt_date_bornage' => $validatedData['dt_date_bornage'] ?? null,
-            //     'txt_nom_geometre' => $validatedData['txt_nom_geometre'] ?? null,
-            // ]);
+            // table Reference_Cadastral
+            ReferenceCadastrale::create([
+                'rd_immatriculation_terrain' => $validatedData['rd_immatriculation_terrain'] ?? null,
+                'slt_dependant_domaine' => $validatedData['slt_dependant_domaine'] ?? null,
+                'slt_bornage' => $validatedData['slt_bornage'] ?? null,
+                'ussu_bornage' => $validatedData['ussu_bornage'] ?? null,
+                'txt_titre_mere' => $validatedData['txt_titre_mere'] ?? null,
+                'slt_lf' => $validatedData['slt_lf'] ?? null,
+                'txt_num_requisition' => $validatedData['txt_num_requisition'] ?? null,
+                'txt_surface_bornage' => $validatedData['txt_surface_bornage'] ?? null,
+                'dt_date_bornage' => $validatedData['dt_date_bornage'] ?? null,
+                'txt_nom_geometre' => $validatedData['txt_nom_geometre'] ?? null,
+            ]);
 
             // table Titulaire
             Titulaire::create([

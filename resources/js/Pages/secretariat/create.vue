@@ -30,6 +30,13 @@ const props = defineProps({
     },
 });
 
+const activeTab = ref(1);
+
+const handleTabClick = (event, tab) => {
+    event.preventDefault();
+    activeTab.value = tab;
+};
+
 const form = useForm({
     numDossier: "",
     numDordre: "",
@@ -812,26 +819,28 @@ const mazTabs = [
                                 <br />
                                 <div>
                                     <!-- Exemple de tabs avec MazUi -->
-                                    <MazTabs>
-                                        <MazTabsBar :items="mazTabs" />
+                                    <MazTabs v-model="activeTab">
+                                        <MazTabsBar
+                                            :items="mazTabs"
+                                            @click="handleTabClick"
+                                        />
                                         <MazTabsContent>
-
                                             <MazTabsContentItem
                                                 :tab="1"
                                                 class="maz-py-4"
                                             >
                                                 <!-- contenu du tab 1 ici.... -->
-                                                <CompA />
+                                                <CompA
+                                                />
                                             </MazTabsContentItem>
-
                                             <MazTabsContentItem
                                                 :tab="2"
                                                 class="maz-py-4"
                                             >
                                                 <!-- contenu du tab 2 ici....  -->
-                                                <CompB />
+                                                <CompB
+                                                />
                                             </MazTabsContentItem>
-                                            
                                         </MazTabsContent>
                                     </MazTabs>
                                 </div>
