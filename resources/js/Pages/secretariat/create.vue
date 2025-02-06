@@ -9,7 +9,7 @@ import CompA from "./CompA.vue";
 import CompB from "./CompB.vue";
 import axios from "axios";
 import { useToast } from "maz-ui";
-import DefaultLayout from '@/Layouts/DefaultLayout.vue';
+import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 defineOptions({ layout: DefaultLayout });
 
 const slt_region = ref();
@@ -30,6 +30,13 @@ const props = defineProps({
     },
 });
 
+const activeTab = ref(1);
+
+const handleTabClick = (event, tab) => {
+    event.preventDefault();
+    activeTab.value = tab;
+};
+
 const form = useForm({
     numDossier: "",
     numDordre: "",
@@ -37,21 +44,21 @@ const form = useForm({
     etatCession: "",
     cessionDefinitive: "",
     dateCreation: "",
-    slt_region: '',
-    slt_departement: '',
-    slt_arrondissement: '',
-    slt_commune: '',
+    slt_region: "",
+    slt_departement: "",
+    slt_arrondissement: "",
+    slt_commune: "",
     txt_lotissement: "",
     txt_num_lotissement: "",
     txt_num_section: "",
     txt_num_parcelle: "",
     txt_num_titre: "",
-    txt_titre_mere: "",  // Supprimez l'une des occurrences
+    txt_titre_mere: "", // Supprimez l'une des occurrences
     nbr_surface: "",
     slt_document_admin: "",
     txt_num_deliberation: "",
     dt_date_deliberation: "",
-    txt_nicad: "",  // Supprimez l'une des occurrences
+    txt_nicad: "", // Supprimez l'une des occurrences
     slt_dependant_domaine: "",
     slt_ussu_bornage: "",
     slt_lf: "",
@@ -76,22 +83,30 @@ const form = useForm({
     tel_representant: "",
 });
 
-
 // Mettez à jour les watchers pour utiliser form.selectedRegion, etc.
-watch(() => form.slt_region, (newValue) => {
-    console.log("🔄 Région sélectionnée :", newValue);
-    fetchDepartements();
-});
+watch(
+    () => form.slt_region,
+    (newValue) => {
+        console.log("🔄 Région sélectionnée :", newValue);
+        fetchDepartements();
+    }
+);
 
-watch(() => form.slt_departement, (newValue) => {
-    console.log("🔄 Département sélectionné :", newValue);
-    fetchArrondissements();
-});
+watch(
+    () => form.slt_departement,
+    (newValue) => {
+        console.log("🔄 Département sélectionné :", newValue);
+        fetchArrondissements();
+    }
+);
 
-watch(() => form.slt_arrondissement, (newValue) => {
-    console.log("🔄 Arrondissement sélectionné :", newValue);
-    fetchCommunes();
-});
+watch(
+    () => form.slt_arrondissement,
+    (newValue) => {
+        console.log("🔄 Arrondissement sélectionné :", newValue);
+        fetchCommunes();
+    }
+);
 // Les modification pour tenter de auvegarder dasn la base de donnéé
 
 const fetchDepartements = async () => {
@@ -101,16 +116,13 @@ const fetchDepartements = async () => {
     }
 
     try {
-        const response = await axios.get(
-            `/departements/${slt_region.value}`
-        );
+        const response = await axios.get(`/departements/${slt_region.value}`);
         departements.value = response.data.departements;
         console.log("Départements: ", departements.value);
     } catch (error) {
         console.error("Erreur lors du chargement des départements :", error);
     }
 };
-
 
 const fetchArrondissements = async () => {
     if (!slt_departement.value) {
@@ -151,12 +163,15 @@ onMounted(() => {
     // Vous pouvez ajouter une logique pour initialiser les données ici
 });
 
-
-
 const submitForm = () => {
     console.log("Soumettre formulaire: ", form);
-    console.log(slt_region.value, slt_departement.value, slt_arrondissement.value, slt_commune.value);
-    
+    console.log(
+        slt_region.value,
+        slt_departement.value,
+        slt_arrondissement.value,
+        slt_commune.value
+    );
+
     form.slt_region = slt_region.value;
     form.slt_departement = slt_departement.value;
     form.slt_arrondissement = slt_arrondissement.value;
@@ -164,7 +179,10 @@ const submitForm = () => {
 
     form.post(route("secretariat.store"), {
         onSuccess: (page) => {
-            let message = page.props.flash?.error || page.props.flash?.success || "Opération réussie !";
+            let message =
+                page.props.flash?.error ||
+                page.props.flash?.success ||
+                "Opération réussie !";
             toast.success(message);
             console.log("✅ Succès Laravel :", page);
         },
@@ -181,12 +199,9 @@ const submitForm = () => {
             slt_departement: slt_departement.value,
             slt_arrondissement: slt_arrondissement.value,
             slt_commune: slt_commune.value,
-            
         },
-        
     });
 };
-
 
 const mazTabs = [
     { label: "Terrain Non Immatriculé", disabled: false },
@@ -195,7 +210,6 @@ const mazTabs = [
         disabled: false,
     },
 ];
-
 </script>
 
 <template>
@@ -422,7 +436,6 @@ const mazTabs = [
                                     <div
                                         class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
                                     >
-                                    
                                         <div class="sm:col-span-1">
                                             <label
                                                 for="slt_region"
@@ -460,9 +473,7 @@ const mazTabs = [
                                                 <select
                                                     id="departements"
                                                     name="slt_departement"
-                                                    v-model="
-                                                        slt_departement
-                                                    "
+                                                    v-model="slt_departement"
                                                     @change="
                                                         fetchArrondissements()
                                                     "
@@ -497,9 +508,7 @@ const mazTabs = [
                                                 <select
                                                     id="arrondissements"
                                                     name="slt_arrondissement"
-                                                    v-model="
-                                                        slt_arrondissement
-                                                    "
+                                                    v-model="slt_arrondissement"
                                                     @change="fetchCommunes()"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 >
@@ -810,8 +819,11 @@ const mazTabs = [
                                 <br />
                                 <div>
                                     <!-- Exemple de tabs avec MazUi -->
-                                    <MazTabs>
-                                        <MazTabsBar :items="mazTabs" />
+                                    <MazTabs v-model="activeTab">
+                                        <MazTabsBar
+                                            :items="mazTabs"
+                                            @click="handleTabClick"
+                                        />
                                         <MazTabsContent>
                                             <MazTabsContentItem
                                                 :tab="1"
