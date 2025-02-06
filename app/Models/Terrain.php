@@ -23,6 +23,7 @@ class Terrain extends Model
         'departement_id',
         'arrondissement_id',
         'commune_id',
+        'dossier_id',
     ];
 
     public function region()
@@ -45,11 +46,13 @@ class Terrain extends Model
         return $this->belongsTo(Commune::class, 'commune_id', 'id');
     }
 
+    // public function dossier()
+    // {
+    //     return $this->belongsTo(Dossier::class, 'dossier_id', 'id');
+    // }
     public function dossier()
     {
-        return $this->belongsTo(Dossier::class);
+        return $this->belongsTo(Dossier::class, 'dossier_id', 'id');
     }
-
-
 
 }

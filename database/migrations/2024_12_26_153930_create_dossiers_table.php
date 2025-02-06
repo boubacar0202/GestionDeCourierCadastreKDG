@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('dossiers', function (Blueprint $table) {
             $table->id();
-            $table->string('numDossier');
+            $table->string('numDossier')->unique();
             $table->integer('numDordre');
             $table->string('serviceRendu');
             $table->string('etatCession');
@@ -31,6 +31,5 @@ return new class extends Migration
             $table->dropColumn('numDossier');
         });
     }
-
 
 };

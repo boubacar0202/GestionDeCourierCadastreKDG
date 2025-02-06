@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 
 class SecretariatController extends Controller
 {
+    
     //
     public function index()
     {
@@ -41,14 +42,15 @@ class SecretariatController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         //   $validatedData = $request->all();
 
         $validatedData = $request->validate([
-            'numDossier' => 'required|string|min:1|max:10|unique:dossiers,numDossier',
-            'numDordre' => 'required|integer|min:1|max:255',
-            'serviceRendu' => 'required|string|min:1|max:255',
-            'etatCession' => 'required|string|min:1|max:255',
-            'cessionDefinitive' => 'required|string|min:1|max:255',
+            'numDossier' => 'required|string',
+            'numDordre' => 'required|integer',
+            'serviceRendu' => 'required|string',
+            'etatCession' => 'required|string',
+            'cessionDefinitive' => 'required|string',
             'dateCreation' => 'required|date',
 
             //table Titulaire_terrain (table association entre Titulaire <=> Terrain)
@@ -56,7 +58,8 @@ class SecretariatController extends Controller
             //'terrain_id'
 
             //table Terrain
-            'txt_lotissement' => 'nullable|string|min:1|max:255',
+            // 'numDossier' => 'required|exists:dossiers,id',
+            'txt_lotissement' => 'nullable|string',
             'txt_num_lotissement' => 'nullable|string',
             'txt_num_section' => 'nullable|string',
             'txt_num_parcelle' => 'nullable|string',
@@ -65,11 +68,16 @@ class SecretariatController extends Controller
             'slt_document_admin' => 'nullable|string',
             'txt_num_deliberation' => 'nullable|string',
             'dt_date_deliberation' => 'nullable|date',
-            'txt_nicad' => ['nullable', 'string', 'max:25', 'unique:terrains,txt_nicad'],
-            'slt_region' => 'required|string',
-            'selectedDepartement' => 'required|string',
-            'selectedArrondissement' => 'required|string',
-            'selectedCommune' => 'required|string',
+            'txt_nicad' => 'nullable|string',
+            'slt_region' => '',
+            'slt_departement' => '',
+            'slt_arrondissement' => '',
+            'slt_commune' => '',
+            // 'region_id' => 'required|exists:regions,id',
+            // 'departement_id' => 'required|exists:departements,id',
+            // 'arrondissement_id' => 'required|exists:arrondissements,id',
+            // 'commune_id' => 'required|exists:arrondissements,id',
+
 
             // table Reference_Cadastral
             'rd_immatriculation_terrain' => 'nullable|boolean',
@@ -84,61 +92,68 @@ class SecretariatController extends Controller
             'txt_nom_geometre' => 'nullable|string',
 
             // table Titulaire
-            'slt_titulaire' => 'nullable|string|min:1|max:255',
-            'txt_nationalite' => 'nullable|string|min:1|max:255',
-            'slt_civilite' => 'nullable|string|min:1|max:255',
-            'txt_prenom' => 'nullable|string|min:1|max:255',
-            'txt_nom' => 'nullable|string|min:1|max:255',
-            'slt_piece' => 'nullable|string|min:1|max:255',
-            'txt_numPiece' => 'nullable|string|min:1|max:255',
+
+            'slt_titulaire' => 'nullable|string',
+            'txt_nationalite' => 'nullable|string',
+            'slt_civilite' => 'nullable|string',
+            'txt_prenom' => 'nullable|string',
+            'txt_nom' => 'nullable|string',
+            'slt_piece' => 'nullable|string',
+            'txt_numPiece' => 'nullable|string',
             'dt_date_delivrance' => 'nullable|date',
             'dt_date_naissance' => 'nullable|date',
-            'txt_lieu_naissance' => 'nullable|string|min:1|max:255',
-            'txt_adresse' => 'nullable|string|min:1|max:255',
-            'tel_telephone' => 'nullable|numeric',
+            'txt_lieu_naissance' => 'nullable|string',
+            'txt_adresse' => 'nullable|string',
+            'tel_telephone' => 'nullable|string',
             'txt_ninea' => 'nullable|string',
-            'eml_email' => 'nullable|email',
+            'eml_email' => 'nullable|string',
             'txt_representant' => 'nullable|string',
-            'tel_Representant' => 'nullable|numeric|digits_between:10,15',
+            'tel_telRepresentant' => 'nullable|string',
 
             // table Localite
 
         ]);
+        // dd(vars: $validatedData);
+        // try {
+        //     DB::beginTransaction();
 
-        DB::beginTransaction();
-        try {
+            // // Vérification de la duplication du dossier
+            // $dossierExist = Dossier::where('numDossier', $validatedData['numDossier'])->first();
+           
 
-            // Vérification de la duplication du dossier
-            $dossierExist = Dossier::where('numDossier', $validatedData['numDossier'])->first();
-            if ($dossierExist) {
-                return response()->json(['error' => 'Le dossier avec ce numéro existe déjà.']);
-            }
+            // if ($dossierExist) {
+            //     return response()->json(['error' => 'Le dossier avec ce numéro existe déjà.']);
+            // }
 
-            // Vérification de la duplication du terrain
-            $terrainExist = Terrain::where('txt_nicad', $validatedData['txt_nicad'])->first();
-            if ($terrainExist) {
-                return response()->json(['error' => 'Le terrain avec ce NICAD existe déjà.']);
-            }
+            // // Vérification de la duplication du terrain
+            // $terrainExist = Terrain::where('txt_nicad', $validatedData['txt_nicad'])->first();
+            // if ($terrainExist) {
+            //     return response()->json(['error' => 'Le terrain avec ce NICAD existe déjà.']);
+            // }
+        
 
+
+
+            Dossier::create([
+                'numDossier' => $validatedData['numDossier'],
+                'numDordre' => $validatedData['numDordre'],
+                'serviceRendu' => $validatedData['serviceRendu'],
+                'etatCession' => $validatedData['etatCession'],
+                'cessionDefinitive' => $validatedData['cessionDefinitive'],
+                'dateCreation' => $validatedData['dateCreation'],
+            ]);
             
-            $region = Region::where('id', $validatedData['slt_region'])->firstOrFail();
-            $departement = Departement::where('id', $validatedData['slt_departement'])->firstOrFail();
-            $arrondissement = Arrondissement::where('id', $validatedData['slt_arrondissement'])->firstOrFail();
-            $commune = Commune::where('id', $validatedData['slt_commune'])->firstOrFail();
-
-            // dd($region);
-            
-            // $dossier = Dossier::create([
-            //     'numDossier' => $validatedData['numDossier'],
-            //     'numDordre' => $validatedData['numDordre'],
-            //     'serviceRendu' => $validatedData['serviceRendu'],
-            //     'etatCession' => $validatedData['etatCession'],
-            //     'cessionDefinitive' => $validatedData['cessionDefinitive'],
-            //     'dateCreation' => $validatedData['dateCreation'],
-            // ]);
+            // Récupération des relations (Vérification des IDs)
+           
+            // $region = Region::findOrFail($validatedData['slt_region']);
+            // $departement = Departement::findOrFail($validatedData['slt_departement']);
+            // $arrondissement = Arrondissement::findOrFail($validatedData['slt_arrondissement']);
+            // $commune = Commune::findOrFail($validatedData['slt_commune']);
+            // $dossier = Dossier::findOrFail($validatedData['numDossier']);
 
             // //table Terrain
-            // $terrain = Terrain::create([
+            // Terrain::create([
+            //     'dossier_id' => $dossier->id, // Correction ici
             //     'txt_lotissement' => $validatedData['txt_lotissement'] ?? null,
             //     'txt_num_lotissement' => $validatedData['txt_num_lotissement'] ?? null,
             //     'txt_num_section' => $validatedData['txt_num_section'] ?? null,
@@ -154,10 +169,19 @@ class SecretariatController extends Controller
             //     'arrondissement_id' => $arrondissement->id,
             //     'commune_id' => $commune->id,
             // ]);
-            
+
+            // $terrain = Terrain::findOrFail(); // Récupère un terrain par son ID
+            // $region = $terrain->region; // Accède à la région associée
+            // $departement = $terrain->departement; // Accède au département associé
+            // $arrondissement = $terrain->arrondissement; // Accède au arrondissement associé
+            // $commune = $terrain->$commune;
+            // $dossier = $terrain->$dossier;
+
+
+            // return response()->json(['message' => 'Terrain créé avec succès', 'terrain' => $terrain], 201);
 
             // // table Reference_Cadastral
-            // $referenceCadastrale = ReferenceCadastrale::create([
+            // ReferenceCadastrale::create([
             //     'rd_immatriculation_terrain' => $validatedData['rd_immatriculation_terrain'] ?? null,
             //     'slt_dependant_domaine' => $validatedData['slt_dependant_domaine'] ?? null,
             //     'slt_bornage' => $validatedData['slt_bornage'] ?? null,
@@ -170,33 +194,39 @@ class SecretariatController extends Controller
             //     'txt_nom_geometre' => $validatedData['txt_nom_geometre'] ?? null,
             // ]);
 
-            // // table Titulaire
-            // $titulaire = Titulaire::create([
-            //     'slt_titulaire' => $validatedData['slt_titulaire'],
-            //     'txt_nationalite' => $validatedData['txt_nationalite'],
-            //     'slt_civilite' => $validatedData['slt_civilite'],
-            //     'txt_prenom' => $validatedData['txt_prenom'],
-            //     'txt_nom' => $validatedData['txt_nom'],
-            //     'slt_piece' => $validatedData['slt_piece'],
-            //     'txt_numPiece' => $validatedData['txt_numPiece'],
-            //     'dt_date_delivrance' => $validatedData['dt_date_delivrance'],
-            //     'dt_date_naissance' => $validatedData['dt_date_naissance'],
-            //     'txt_lieu_naissance' => $validatedData['txt_lieu_naissance'],
-            //     'txt_adresse' => $validatedData['txt_adresse'],
-            //     'tel_telephone' => $validatedData['tel_telephone'],
-            //     'txt_ninea' => $validatedData['txt_ninea'] ?? null,
-            //     'eml_email' => $validatedData['eml_email'] ?? null,
-            //     'txt_representant' => $validatedData['txt_representant'] ?? null,
-            //     'tel_representant' => $validatedData['tel_representant'],
-            // ]);
+            // table Titulaire
+            Titulaire::create([
+                'slt_titulaire' => $validatedData['slt_titulaire'],
+                'txt_nationalite' => $validatedData['txt_nationalite'],
+                'slt_civilite' => $validatedData['slt_civilite'],
+                'txt_prenom' => $validatedData['txt_prenom'],
+                'txt_nom' => $validatedData['txt_nom'],
+                'slt_piece' => $validatedData['slt_piece'],
+                'txt_numPiece' => $validatedData['txt_numPiece'],
+                'dt_date_delivrance' => $validatedData['dt_date_delivrance'],
+                'dt_date_naissance' => $validatedData['dt_date_naissance'],
+                'txt_lieu_naissance' => $validatedData['txt_lieu_naissance'],
+                'txt_adresse' => $validatedData['txt_adresse'],
+                'tel_telephone' => $validatedData['tel_telephone'],
+                'txt_ninea' => $validatedData['txt_ninea'] ?? null,
+                'eml_email' => $validatedData['eml_email'] ?? null,
+                'txt_representant' => $validatedData['txt_representant'] ?? null,
+                'tel_telRepresentant' => $validatedData['tel_telRepresentant'],
+            ]);
 
-            Model::create($validatedData);
+            // dd($validatedData);
+
+            //  Model::create($validatedData);
             
-          
-            return redirect()->json(['message'=> 'Dossier enregistré avec succès.']);
-        } catch (\Exception $e) {
-            DB::rollback();
-            return back()->json(['error' =>  $e->getMessage()]);
-        }
+        //     DB::commit();
+        //     return redirect()->json(['Réussis'=> 'Dossier enregistré avec succès.']);
+        // } catch (\Exception $e) {
+
+        //     DB::rollback();
+        //     return back()->json(['error' =>  $e->getMessage()]);
+        // }
+
+        return redirect()->back()->with('success', 'Donnée enregistrée !');
+
     }
 }

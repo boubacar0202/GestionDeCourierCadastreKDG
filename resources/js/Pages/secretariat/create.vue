@@ -65,15 +65,16 @@ const form = useForm({
     txt_prenom: "",
     txt_nom: "",
     slt_piece: "",
-    txt_num_piece: "",
+    txt_numPiece: "",
     dt_date_delivrance: "",
     dt_date_naissance: "",
     txt_lieu_naissance: "",
     txt_adresse: "",
     tel_telephone: "",
+    txt_ninea:"",
     eml_email: "",
     txt_representant: "",
-    tel_representant: "",
+    tel_telRepresentant: "",
 });
 
 
@@ -164,26 +165,28 @@ const submitForm = () => {
 
     form.post(route("secretariat.store"), {
         onSuccess: (page) => {
-            let message = page.props.flash?.error || page.props.flash?.success || "Opération réussie !";
+            const flash = page.props.flash || {};
+            const message = flash.error || flash.success || "Opération réussie !";
+            
             toast.success(message);
             console.log("✅ Succès Laravel :", page);
         },
         onError: (errors) => {
-            if (errors) {
+            if (errors && typeof errors === "object") {
                 Object.values(errors).forEach((errorMessage) => {
-                    toast.error(errorMessage);
+                    if (errorMessage) {
+                        toast.error(errorMessage);
+                    }
                 });
             }
             console.error("❌ Erreurs Laravel :", errors);
         },
         data: {
-            slt_region: slt_region.value,
-            slt_departement: slt_departement.value,
-            slt_arrondissement: slt_arrondissement.value,
-            slt_commune: slt_commune.value,
-            
+            slt_region: slt_region?.value || "",
+            slt_departement: slt_departement?.value || "",
+            slt_arrondissement: slt_arrondissement?.value || "",
+            slt_commune: slt_commune?.value || "",
         },
-        
     });
 };
 
@@ -678,7 +681,6 @@ const mazTabs = [
                                                     name="nbr_surface"
                                                     v-model="form.nbr_surface"
                                                     id="surface"
-                                                    oninput="calculeSurfaceBrute()"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />
@@ -813,17 +815,15 @@ const mazTabs = [
                                     <MazTabs>
                                         <MazTabsBar :items="mazTabs" />
                                         <MazTabsContent>
+
                                             <MazTabsContentItem
                                                 :tab="1"
                                                 class="maz-py-4"
                                             >
                                                 <!-- contenu du tab 1 ici.... -->
-                                                <CompA
-                                                    v-model="
-                                                        form.dependantDomaine
-                                                    "
-                                                />
+                                                <CompA />
                                             </MazTabsContentItem>
+
                                             <MazTabsContentItem
                                                 :tab="2"
                                                 class="maz-py-4"
@@ -831,6 +831,7 @@ const mazTabs = [
                                                 <!-- contenu du tab 2 ici....  -->
                                                 <CompB />
                                             </MazTabsContentItem>
+                                            
                                         </MazTabsContent>
                                     </MazTabs>
                                 </div>
@@ -991,7 +992,7 @@ const mazTabs = [
                                                 <input
                                                     type="text"
                                                     name="txt_num_piece"
-                                                    v-model="form.txt_num_piece"
+                                                    v-model="form.txt_numPiece"
                                                     id="numPiece"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -1151,11 +1152,11 @@ const mazTabs = [
                                             <div class="mt-2">
                                                 <input
                                                     type="text"
-                                                    name="tel_representant"
+                                                    name="tel_telRepresentant"
                                                     v-model="
-                                                        form.tel_representant
+                                                        form.tel_telRepresentant
                                                     "
-                                                    id="telephoneRepresentant"
+                                                    id="tel_telRepresentant"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />

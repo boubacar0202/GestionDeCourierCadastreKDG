@@ -23,7 +23,7 @@ class Titulaire extends Model
         'txt_ninea',
         'eml_email',
         'txt_representant',
-        'tel_representant',
+        'tel_telRepresentant',
         ];
 
         public function terrains()

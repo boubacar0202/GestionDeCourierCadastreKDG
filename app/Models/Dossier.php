@@ -19,5 +19,4 @@ class Dossier extends Model
         'dateCreation' => 'date',
     ];
 
-
 }
