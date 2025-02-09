@@ -33,6 +33,13 @@ Route::resource('secretariat', SecretariatController::class);
 Route::resource('geometre', GeometreController::class);
 Route::resource('donnee', DonneeController::class);
 Route::resource('matriceCadastrale', MatriceCadastraleController::class);
+Route::get('/secretariat/create', [SecretariatController::class, 'create'])->name('secretariat.create');
+
+// Route::get('/secretariat/create', function () {
+//     return Inertia::render('Secretariat/Create');
+// })->name('secretariat.create');
+Route::post('/secretariat', [SecretariatController::class, 'store'])->name('secretariat.store');
+
 // Route::post('/secretariat', [SecretariatController::class, 'store'])->name('secretariat.store');
 // Route::get('/secretariat', [SecretariatController::class, 'crate']);
 

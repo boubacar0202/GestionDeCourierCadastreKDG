@@ -13,16 +13,15 @@ return new class extends Migration
     {
         Schema::create('references_cadastrales', function (Blueprint $table) {
             $table->id();
-            $table->boolean('rd_immatriculation_terrain');
-            $table->string('slt_dependant_domaine');
-            $table->string('slt_bornage');
-            $table->string('ussu_bornage');
-            $table->string('txt_titre_mere');
-            $table->string('slt_lf');
-            $table->string('txt_num_requisition');
-            $table->string('txt_surface_bornage');
-            $table->string('dt_date_bornage');
-            $table->string('txt_nom_geometre');
+            $table->string('rd_immatriculation_terrain');
+            $table->string('slt_dependant_domaine')->nullable()->change();
+            $table->string('ussu_bornage')->nullable()->change();
+            $table->string('txt_titre_mere')->nullable()->change();
+            $table->string('slt_lf')->nullable()->change();
+            $table->string('txt_num_requisition')->nullable()->change();
+            $table->string('txt_surface_bornage')->nullable()->change();
+            $table->string('dt_date_bornage')->nullable()->change();
+            $table->string('txt_nom_geometre')->nullable()->change();
             $table->timestamps();
         });
     }

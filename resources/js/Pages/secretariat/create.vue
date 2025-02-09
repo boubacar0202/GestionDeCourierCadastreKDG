@@ -2,6 +2,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import MazBtn from "maz-ui/components/MazBtn";
+import MazRadio from "maz-ui/components/MazRadio";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import { onMounted, ref, watch } from "vue";
@@ -16,10 +17,12 @@ const slt_region = ref();
 const slt_arrondissement = ref();
 const slt_departement = ref();
 const slt_commune = ref();
+const slt_dependant_domaine = ref();
 
 const departements = ref(null);
 const arrondissements = ref(null);
 const communes = ref(null);
+
 
 const toast = useToast();
 
@@ -30,12 +33,15 @@ const props = defineProps({
     },
 });
 
-const activeTab = ref(1);
+const dependantDomaine = ref("Domaine National")
+// const activeTab = ref(1);
+const activeTab = ref(''); // Valeur de la tab active
 
 const handleTabClick = (event, tab) => {
     event.preventDefault();
     activeTab.value = tab;
 };
+
 
 const form = useForm({
     numDossier: "",
@@ -44,6 +50,7 @@ const form = useForm({
     etatCession: "",
     cessionDefinitive: "",
     dateCreation: "",
+
     slt_region: '',
     slt_departement: '',
     slt_arrondissement: '',
@@ -59,13 +66,16 @@ const form = useForm({
     txt_num_deliberation: "",
     dt_date_deliberation: "",
     txt_nicad: "",  // Supprimez l'une des occurrences
+
+    rd_immatriculation_terrain:"",
     slt_dependant_domaine: "",
-    slt_ussu_bornage: "",
+    ussu_bornage: "",
     slt_lf: "",
     txt_num_requisition: "",
     txt_surface_bornage: "",
     dt_date_bornage: "",
     txt_nom_geometre: "",
+
     slt_titulaire: "",
     txt_nationalite: "",
     slt_civilite: "",
@@ -162,13 +172,15 @@ onMounted(() => {
 
 
 const submitForm = () => {
-    console.log("Soumettre formulaire: ", form);
-    console.log(slt_region.value, slt_departement.value, slt_arrondissement.value, slt_commune.value);
-    
-    form.slt_region = slt_region.value;
-    form.slt_departement = slt_departement.value;
-    form.slt_arrondissement = slt_arrondissement.value;
-    form.slt_commune = slt_commune.value;
+
+    form.nbr_surface = parseFloat(form.nbr_surface).toFixed(2);
+    console.log({
+        slt_region: slt_region?.value,
+        slt_departement: slt_departement?.value,
+        slt_arrondissement: slt_arrondissement?.value,
+        slt_commune: slt_commune?.value,
+        nbr_surface: form.nbr_surface,
+    });
 
     form.post(route("secretariat.store"), {
         onSuccess: (page) => {
@@ -193,8 +205,13 @@ const submitForm = () => {
             slt_departement: slt_departement?.value || "",
             slt_arrondissement: slt_arrondissement?.value || "",
             slt_commune: slt_commune?.value || "",
+            rd_immatriculation_terrain: activeTab.value || "",
+            slt_dependant_domaine: form.slt_dependant_domaine || "Non spécifié",
+            numDossier: form.numDossier || "",
+            
         },
     });
+
 };
 
 
@@ -569,7 +586,7 @@ const mazTabs = [
 
                                         <div class="sm:col-span-1">
                                             <label
-                                                for="Lotissement"
+                                                for="txt_lotissement"
                                                 class="block text-sm font-medium"
                                                 >Lotissement/Quartier</label
                                             >
@@ -580,14 +597,14 @@ const mazTabs = [
                                                     v-model="
                                                         form.txt_lotissement
                                                     "
-                                                    id="Lotissement"
+                                                    id="txt_lotissement"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
                                         <div class="sm:col-span-1">
                                             <label
-                                                for="Num_lotissement"
+                                                for="txt_num_lotissement"
                                                 class="block text-sm font-medium"
                                                 >N° Lot</label
                                             >
@@ -598,7 +615,7 @@ const mazTabs = [
                                                     v-model="
                                                         form.txt_num_lotissement
                                                     "
-                                                    id="Num_lotissement"
+                                                    id="txt_num_lotissement"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />
                                             </div>
@@ -685,6 +702,7 @@ const mazTabs = [
                                             <div class="mt-2">
                                                 <input
                                                     type="number"
+                                                    step="0.01" min="0" 
                                                     name="nbr_surface"
                                                     v-model="form.nbr_surface"
                                                     id="surface"
@@ -819,30 +837,158 @@ const mazTabs = [
                                 <br />
                                 <div>
                                     <!-- Exemple de tabs avec MazUi -->
-                                    <MazTabs v-model="activeTab">
-                                        <MazTabsBar
-                                            :items="mazTabs"
-                                            @click="handleTabClick"
-                                        />
-                                        <MazTabsContent>
-                                            <MazTabsContentItem
-                                                :tab="1"
-                                                class="maz-py-4"
-                                            >
-                                                <!-- contenu du tab 1 ici.... -->
-                                                <CompA
-                                                />
-                                            </MazTabsContentItem>
-                                            <MazTabsContentItem
-                                                :tab="2"
-                                                class="maz-py-4"
-                                            >
-                                                <!-- contenu du tab 2 ici....  -->
-                                                <CompB
-                                                />
-                                            </MazTabsContentItem>
-                                        </MazTabsContent>
-                                    </MazTabs>
+                                    <MazRadio
+                                        v-model="activeTab"
+                                        value="Terrain Non Immatriculé"
+                                        label="Terrain Non Immatriculé  ."
+                                    />
+                                    <MazRadio
+                                        v-model="activeTab"
+                                        value="Terrain Immatriculé"
+                                        label="Terrain Immatriculé"
+                                    />
+
+                                        <!-- Contenus de chaque section selon les checkboxes sélectionnées -->
+                                    <div v-if="activeTab.includes('Terrain Non Immatriculé')" class="maz-py-4">
+                                        <!-- Contenu du Tab 1 ici -->
+                                        <br/>
+                                        <div class="sm:col-span-12">
+                                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                                                <div class="sm:col-span-2">
+                                                    <label
+                                                        for="slt_dependant_domaine"
+                                                        class="block text-sm font-medium"
+                                                    >
+                                                        Dépendant du domaine
+                                                    </label>
+                                                    <div class="mt-2">
+                                                        <select
+                                                            v-model="slt_dependant_domaine"
+                                                            name="slt_dependant_domaine"
+                                                            id="slt_dependant_domaine"
+                                                            class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        >
+                                                            <option selected disabled>choisi ici</option>
+                                                            <option value="Domaine National">Domaine National</option>
+                                                            <option value="Domaine Public">Domaine Public</option>
+                                                            <option value="Domaine Fluvial">Domaine Fluvial</option>
+                                                            <option value="Domaine Maritime">Domaine Maritime</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <br/>
+                                    <div v-if="activeTab.includes('Terrain Immatriculé')" class="maz-py-4">
+                                        <!-- Contenu du Tab 2 ici -->
+                                         <br>
+                                        <div class="sm:col-span-12">
+                                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                                                <div class="sm:col-span-1">
+                                                    <label for="Bornage">Issu de bornage</label>
+                                                    <div class="mt-2">
+                                                        <select
+                                                            v-model="form.ussu_bornage"
+                                                            name="ussu_bornage"
+                                                            id="Bornage"
+                                                            class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        >
+                                                            <option value="Immatriculation">Immatriculation</option>
+                                                            <option value="Morcellement">Morcellement</option>
+                                                            <option value="Rectificatif de Limite">Rectificatif de Limite</option>
+                                                            <option value="Fusion">Fusion</option>
+                                                            <option value="Morcellement de Copropriété">Morcellement de Copropriété</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="sm:col-span-1">
+                                                    <label for="Titre_mere">Titre Mere</label>
+                                                    <div class="mt-2">
+                                                        <input
+                                                            v-model="form.txt_titre_mere"
+                                                            type="text"
+                                                            name="txt_titre_mere"
+                                                            id="Titre_mere"
+                                                            autocomplete="address-level2"
+                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="sm:col-span-1">
+                                                    <label for="LF">LF</label>
+                                                    <div class="mt-2">
+                                                        <select
+                                                            v-model="form.slt_lf"
+                                                            name="slt_lf"
+                                                            id="LF"
+                                                            autocomplete="address-level2"
+                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        >
+                                                            <option selected desabled></option>
+                                                            <option value="NO">NO</option>
+                                                            <option value="KG">KG</option>
+                                                            <option value="SM">SM</option>
+                                                            <option value="SR">SR</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="sm:col-span-1">
+                                                    <label for="Num_requisition">N° Requisition</label>
+                                                    <div class="mt-2">
+                                                        <input
+                                                            v-model="form.txt_num_requisition"
+                                                            type="text"
+                                                            name="txt_num_requisition"
+                                                            id="Num_requisition"
+                                                            autocomplete="address-level2"
+                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="sm:col-span-1">
+                                                    <label for="Surface_bornage">Surfacce au bornage</label>
+                                                    <div class="mt-2">
+                                                        <input
+                                                            v-model="form.txt_surface_bornage"
+                                                            type="text"
+                                                            name="txt_surface_bornage"
+                                                            id="Surface_bornage"
+                                                            autocomplete="address-level2"
+                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="sm:col-span-1">
+                                                    <label for="Date_bornage">Date Bornage</label>
+                                                    <div class="mt-2">
+                                                        <input
+                                                            v-model="form.dt_date_bornage"
+                                                            type="date"
+                                                            name="dt_date_bornage"
+                                                            id="Date_bornage"
+                                                            autocomplete="address-level2"
+                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="sm:col-span-2">
+                                                    <label for="Nom_geometre">Nom Geometre</label>
+                                                    <div class="mt-2">
+                                                        <input
+                                                            v-model="form.txt_nom_geometre"
+                                                            type="text"
+                                                            name="txt_nom_geometre"
+                                                            id="Nom_geometre"
+                                                            autocomplete="address-level2"
+                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <br />
 
@@ -1135,7 +1281,7 @@ const mazTabs = [
                                         </div>
                                         <div class="sm:col-span-1">
                                             <label
-                                                for="representant"
+                                                for="txt_representant"
                                                 class="block text-sm/6 font-medium text-gray-900"
                                                 >Representant</label
                                             >
@@ -1146,7 +1292,7 @@ const mazTabs = [
                                                     v-model="
                                                         form.txt_representant
                                                     "
-                                                    id="representant"
+                                                    id="txt_representant"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />
@@ -1154,7 +1300,7 @@ const mazTabs = [
                                         </div>
                                         <div class="sm:col-span-1">
                                             <label
-                                                for="telephoneRepresentant"
+                                                for="tel_telRepresentant"
                                                 class="block text-sm/6 font-medium text-gray-900"
                                                 >Telephone Representant</label
                                             >

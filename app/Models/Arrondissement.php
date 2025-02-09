@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Arrondissement extends Model
 {
     //
+    use HasFactory;
     protected $fillable = [
         'slt_arrondissement',
     ];
@@ -21,5 +23,10 @@ class Arrondissement extends Model
     public function communes()
     {
         return $this->hasMany(Commune::class);
+    }
+
+    public function terrains()
+    {
+        return $this->hasMany(Terrain::class);
     }
 }

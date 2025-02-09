@@ -2,19 +2,20 @@
 
 namespace App\Models;
 
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Terrain extends Model
 {
     //
+    use HasFactory;
     protected $fillable = [
         'txt_lotissement',
         'txt_num_lotissement',
         'txt_num_section',
         'txt_num_parcelle',
         'txt_num_titre',
-        'nbr_surface',
+        'nbr_surface' => 'decimal:2',
         'slt_document_admin',
         'txt_num_deliberation',
         'dt_date_deliberation',
@@ -28,31 +29,27 @@ class Terrain extends Model
 
     public function region()
     {
-        return $this->belongsTo(Region::class,  'region_id', 'id');
+        return $this->belongsTo(Region::class);
     }
 
     public function departement()
     {
-        return $this->belongsTo(Departement::class, 'departement_id', 'id');
+        return $this->belongsTo(Departement::class);
     }
 
     public function arrondissement()
     {
-        return $this->belongsTo(Arrondissement::class, 'arrondissement_id', 'id');
+        return $this->belongsTo(Arrondissement::class);
     }
 
     public function commune()
     {
-        return $this->belongsTo(Commune::class, 'commune_id', 'id');
+        return $this->belongsTo(Commune::class);
     }
 
-    // public function dossier()
-    // {
-    //     return $this->belongsTo(Dossier::class, 'dossier_id', 'id');
-    // }
     public function dossier()
     {
-        return $this->belongsTo(Dossier::class, 'dossier_id', 'id');
+        return $this->belongsTo(Dossier::class);
     }
 
 }

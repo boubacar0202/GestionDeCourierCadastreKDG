@@ -8,6 +8,9 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     MazBtn: typeof import('maz-ui/components/MazBtn')['default']
+    MazCheckbo: typeof import('maz-ui/components/MazCheckbo')['default']
+    MazCheckbox: typeof import('maz-ui/components/MazCheckbox')['default']
+    MazRadio: typeof import('maz-ui/components/MazRadio')['default']
     MazTabs: typeof import('maz-ui/components/MazTabs')['default']
     MazTabsBar: typeof import('maz-ui/components/MazTabsBar')['default']
     MazTabsContent: typeof import('maz-ui/components/MazTabsContent')['default']
