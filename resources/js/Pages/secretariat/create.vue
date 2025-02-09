@@ -45,6 +45,7 @@ const handleTabClick = (event, tab) => {
 
 const form = useForm({
 <<<<<<< HEAD
+<<<<<<< HEAD
     numDossier: "",
     numDordre: "",
     serviceRendu: "",
@@ -57,12 +58,16 @@ const form = useForm({
     slt_arrondissement: '',
     slt_commune: '',
 =======
+=======
+    // Dossier (Faire la meme chose pour les autres tables)
+>>>>>>> bac32d05aa7d69a41b31419768c34db0dbdaf141
     txt_num_dossier: "",
     txt_num_dordre: "",
     slt_service_rendu: "",
     txt_etat_cession: "",
     txt_cession_definitive: "",
     dt_date_creation: "",
+
     slt_region: "",
     slt_departement: "",
     slt_arrondissement: "",
