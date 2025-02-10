@@ -9,6 +9,7 @@ class Commune extends Model
 {
     //
     use HasFactory;
+
     protected $fillable = [
         'slt_commune',
     ];

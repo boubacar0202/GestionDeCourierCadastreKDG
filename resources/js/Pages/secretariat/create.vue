@@ -44,23 +44,7 @@ const handleTabClick = (event, tab) => {
 
 
 const form = useForm({
-<<<<<<< HEAD
-<<<<<<< HEAD
-    numDossier: "",
-    numDordre: "",
-    serviceRendu: "",
-    etatCession: "",
-    cessionDefinitive: "",
-    dateCreation: "",
-
-    slt_region: '',
-    slt_departement: '',
-    slt_arrondissement: '',
-    slt_commune: '',
-=======
-=======
-    // Dossier (Faire la meme chose pour les autres tables)
->>>>>>> bac32d05aa7d69a41b31419768c34db0dbdaf141
+    // Table Dossier
     txt_num_dossier: "",
     txt_num_dordre: "",
     slt_service_rendu: "",
@@ -68,11 +52,15 @@ const form = useForm({
     txt_cession_definitive: "",
     dt_date_creation: "",
 
+    //Table Terrain
+    slt_region: '',
+    slt_departement: '',
+    slt_arrondissement: '',
+    slt_commune: '',
     slt_region: "",
     slt_departement: "",
     slt_arrondissement: "",
     slt_commune: "",
->>>>>>> f532143f9baf5b101836f86b9efee2216f2d363d
     txt_lotissement: "",
     txt_num_lotissement: "",
     txt_num_section: "",
@@ -83,13 +71,10 @@ const form = useForm({
     slt_document_admin: "",
     txt_num_deliberation: "",
     dt_date_deliberation: "",
-<<<<<<< HEAD
     txt_nicad: "",  // Supprimez l'une des occurrences
 
+    // Table ReferenceCadastrale
     rd_immatriculation_terrain:"",
-=======
-    txt_nicad: "", // Supprimez l'une des occurrences
->>>>>>> f532143f9baf5b101836f86b9efee2216f2d363d
     slt_dependant_domaine: "",
     ussu_bornage: "",
     slt_lf: "",
@@ -98,6 +83,7 @@ const form = useForm({
     dt_date_bornage: "",
     txt_nom_geometre: "",
 
+    // Table Titulaire
     slt_titulaire: "",
     txt_nationalite: "",
     slt_civilite: "",
@@ -197,8 +183,6 @@ onMounted(() => {
 });
 
 const submitForm = () => {
-<<<<<<< HEAD
-
     form.nbr_surface = parseFloat(form.nbr_surface).toFixed(2);
     console.log({
         slt_region: slt_region?.value,
@@ -207,7 +191,7 @@ const submitForm = () => {
         slt_commune: slt_commune?.value,
         nbr_surface: form.nbr_surface,
     });
-=======
+
     console.log("Soumettre formulaire: ", form);
     console.log(
         slt_region.value,
@@ -220,7 +204,7 @@ const submitForm = () => {
     form.slt_departement = slt_departement.value;
     form.slt_arrondissement = slt_arrondissement.value;
     form.slt_commune = slt_commune.value;
->>>>>>> f532143f9baf5b101836f86b9efee2216f2d363d
+    form.txt_num_dossier = txt_num_dossier.value;
 
     form.post(route("secretariat.store"), {
         onSuccess: (page) => {
@@ -248,7 +232,7 @@ const submitForm = () => {
             slt_commune: slt_commune?.value || "",
             rd_immatriculation_terrain: activeTab.value || "",
             slt_dependant_domaine: form.slt_dependant_domaine || "Non spécifié",
-            numDossier: form.numDossier || "",
+            txt_num_dossier: form.txt_num_dossier || "",
             
         },
     });
@@ -873,7 +857,7 @@ const mazTabs = [
                                 <br />
                                 <div>
                                     <!-- Exemple de tabs avec MazUi -->
-<<<<<<< HEAD
+<!-- <<<<<<< HEAD -->
                                     <MazRadio
                                         v-model="activeTab"
                                         value="Terrain Non Immatriculé"
@@ -1026,30 +1010,6 @@ const mazTabs = [
                                             </div>
                                         </div>
                                     </div>
-=======
-                                    <MazTabs v-model="activeTab">
-                                        <MazTabsBar
-                                            :items="mazTabs"
-                                            @click="handleTabClick"
-                                        />
-                                        <MazTabsContent>
-                                            <MazTabsContentItem
-                                                :tab="1"
-                                                class="maz-py-4"
-                                            >
-                                                <!-- contenu du tab 1 ici.... -->
-                                                <CompA />
-                                            </MazTabsContentItem>
-                                            <MazTabsContentItem
-                                                :tab="2"
-                                                class="maz-py-4"
-                                            >
-                                                <!-- contenu du tab 2 ici....  -->
-                                                <CompB />
-                                            </MazTabsContentItem>
-                                        </MazTabsContent>
-                                    </MazTabs>
->>>>>>> f532143f9baf5b101836f86b9efee2216f2d363d
                                 </div>
                                 <br />
 

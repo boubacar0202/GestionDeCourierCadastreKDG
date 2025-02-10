@@ -11,6 +11,7 @@ class Departement extends Model
     use HasFactory;
     protected $fillable = [
         'slt_departement',
+        'region_id',
     ];
 
     protected $with = ['arrondissements'];
