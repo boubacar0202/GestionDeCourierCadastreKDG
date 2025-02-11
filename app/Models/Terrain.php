@@ -16,7 +16,7 @@ class Terrain extends Model
         'txt_num_section',
         'txt_num_parcelle',
         'txt_num_titre',
-        'nbr_surface' => 'decimal:2',
+        'nbr_surface',
         'slt_document_admin',
         'txt_num_deliberation',
         'dt_date_deliberation',

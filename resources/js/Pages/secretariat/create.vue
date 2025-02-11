@@ -17,7 +17,9 @@ const slt_region = ref();
 const slt_arrondissement = ref();
 const slt_departement = ref();
 const slt_commune = ref();
-const slt_dependant_domaine = ref();
+
+
+
 
 const departements = ref(null);
 const arrondissements = ref(null);
@@ -33,7 +35,7 @@ const props = defineProps({
     },
 });
 
-const dependantDomaine = ref("Domaine National")
+
 // const activeTab = ref(1);
 const activeTab = ref(''); // Valeur de la tab active
 
@@ -60,7 +62,6 @@ const form = useForm({
     slt_region: "",
     slt_departement: "",
     slt_arrondissement: "",
-    slt_commune: "",
     txt_lotissement: "",
     txt_num_lotissement: "",
     txt_num_section: "",
@@ -74,6 +75,7 @@ const form = useForm({
     txt_nicad: "",  // Supprimez l'une des occurrences
 
     // Table ReferenceCadastrale
+    
     rd_immatriculation_terrain:"",
     slt_dependant_domaine: "",
     ussu_bornage: "",
@@ -184,33 +186,26 @@ onMounted(() => {
 
 const submitForm = () => {
     form.nbr_surface = parseFloat(form.nbr_surface).toFixed(2);
-    console.log({
+    console.log("Données envoyer: ", {
         slt_region: slt_region?.value,
         slt_departement: slt_departement?.value,
         slt_arrondissement: slt_arrondissement?.value,
         slt_commune: slt_commune?.value,
         nbr_surface: form.nbr_surface,
+        // txt_num_dossier: txt_num_dossier?.value,
+        slt_dependant_domaine: form.slt_dependant_domaine,
     });
 
     console.log("Soumettre formulaire: ", form);
-    console.log(
-        slt_region.value,
-        slt_departement.value,
-        slt_arrondissement.value,
-        slt_commune.value
-    );
+    
+    form.rd_immatriculation_terrain = activeTab.value || "";
+    form.slt_dependant_domaine = form.slt_dependant_domaine || null;
 
-    form.slt_region = slt_region.value;
-    form.slt_departement = slt_departement.value;
-    form.slt_arrondissement = slt_arrondissement.value;
-    form.slt_commune = slt_commune.value;
-    form.txt_num_dossier = txt_num_dossier.value;
 
     form.post(route("secretariat.store"), {
         onSuccess: (page) => {
             const flash = page.props.flash || {};
-            const message =
-                flash.error || flash.success || "Opération réussie !";
+            const message = flash.error || flash.success || "Opération réussie !";
 
             toast.success(message);
             console.log("✅ Succès Laravel :", page);
@@ -222,22 +217,22 @@ const submitForm = () => {
                         toast.error(errorMessage);
                     }
                 });
+            } else {
+                toast.error("Une erreur s'est produite.");
             }
             console.error("❌ Erreurs Laravel :", errors);
         },
         data: {
-            slt_region: slt_region?.value || "",
-            slt_departement: slt_departement?.value || "",
-            slt_arrondissement: slt_arrondissement?.value || "",
-            slt_commune: slt_commune?.value || "",
+            slt_region: form.slt_region || "",
+            slt_departement: form.slt_departement || "",
+            slt_arrondissement: form.slt_arrondissement || "",
+            slt_commune: form.slt_commune || "",
             rd_immatriculation_terrain: activeTab.value || "",
             slt_dependant_domaine: form.slt_dependant_domaine || "Non spécifié",
-            txt_num_dossier: form.txt_num_dossier || "",
-            
         },
     });
-
 };
+
 
 const mazTabs = [
     { label: "Terrain Non Immatriculé", disabled: false },
@@ -857,7 +852,7 @@ const mazTabs = [
                                 <br />
                                 <div>
                                     <!-- Exemple de tabs avec MazUi -->
-<!-- <<<<<<< HEAD -->
+
                                     <MazRadio
                                         v-model="activeTab"
                                         value="Terrain Non Immatriculé"
