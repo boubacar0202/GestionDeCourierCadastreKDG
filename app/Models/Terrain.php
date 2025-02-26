@@ -21,13 +21,15 @@ class Terrain extends Model
         'txt_num_deliberation',
         'dt_date_deliberation',
         'txt_nicad',
-        'region_id',
-        'departement_id',
-        'arrondissement_id',
-        'commune_id',
-        'dossier_id',
+        'slt_region',
+        'slt_departement',
+        'slt_arrondissement',
+        'slt_commune',
+        'txt_num_dossier',
         
     ];
+
+// 
 
     // Relations
     public function dossier() {

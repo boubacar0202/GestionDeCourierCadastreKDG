@@ -109,10 +109,7 @@ class GeometreController extends Controller
 
         ]);
 
-        DB::beginTransaction();
-        try {
-            //table Reference_usage
-            $referenceUsages = ReferenceUsage::create([
+            ReferenceUsage::create([
                 'slt_reference_usage' => $validatedData['slt_reference_usage'] ?? null,
                 'txt_occupan_habitaion_1' => $validatedData['txt_occupan_habitaion_1'] ?? null,
                 'txt_activite_principal_hbt_1' => $validatedData['txt_activite_principal_hbt_1'] ?? null,
@@ -134,7 +131,7 @@ class GeometreController extends Controller
             ]);
 
             // table evaluation_terrains
-            $evaluationTerrains = EvaluationTerrain::create([
+            EvaluationTerrain::create([
                 'txt_date_devaluation' => $validatedData['txt_date_devaluation'] ?? null,
                 'txt_superficie_totale' => $validatedData['txt_superficie_totale'] ?? null,
                 'txt_superficie_bati_sol' => $validatedData['txt_superficie_bati_sol'] ?? null,
@@ -145,7 +142,7 @@ class GeometreController extends Controller
 
 
             // table Evaluation_batis
-            $evaluationBatis = EvaluationBati::create([
+            EvaluationBati::create([
                 'slt_type_residence' => $validatedData['slt_type_residence'] ?? null,
                 'rd_type_maissons' => $validatedData['rd_type_maissons'] ?? null,
                 'chk_bati_principal' => filter_var($validatedData['chk_bati_principal'] ?? false, FILTER_VALIDATE_BOOLEAN),
@@ -163,7 +160,7 @@ class GeometreController extends Controller
 
 
             // table evaluation_cours_amenagees
-            $evaluationCoursAmenagees = EvaluationCoursAmenagee::create([
+            EvaluationCoursAmenagee::create([
                 'chk_cours_amenager_totale' => $validatedData['chk_cours_amenager_totale'] ?? null,
                 'nbr_surface_ca_total' => $validatedData['nbr_surface_ca_total'] ?? null,
                 'slt_categorie_ca_total' => $validatedData['slt_categorie_ca_total'],
@@ -174,7 +171,7 @@ class GeometreController extends Controller
             ]);
 
             //table Evaluation_cloture
-            $evaluationClotures = EvaluationCloture::create([
+            EvaluationCloture::create([
                 'chk_perimetre_cloture' => $validatedData['chk_perimetre_cloture'] ?? null,
                 'nbr_longueur_avant_clo' => $validatedData['nbr_longueur_avant_clo'] ?? null,
                 'slt_categorie_clo' => $validatedData['slt_categorie_clo'] ?? null,
@@ -185,7 +182,7 @@ class GeometreController extends Controller
             ]);
 
             // table Evalution_amenagement
-            $evaluationAmenagements = EvaluationAmenagement::create([
+            EvaluationAmenagement::create([
                 'txt_designation_am' => $validatedData['txt_designation_am'] ?? null,
                 'nbr_valeur_unitaire_am' => $validatedData['nbr_valeur_unitaire_am'] ?? null,
                 'nbr_quantile_am' => $validatedData['nbr_quantile_am'] ?? null,
@@ -193,31 +190,8 @@ class GeometreController extends Controller
                 'nbr_valeur_am' => $validatedData['nbr_valeur_am'] ?? null,
                 'nbr_valeur_totale_ap' => $validatedData['nbr_valeur_totale_ap'] ?? null,
             ]);
+            return redirect()->back()->with('success', 'Donnée enregistrée !');
+        
 
-
-            $evaluationTerrains->evaluationTerrains()->associate($evaluationTerrains);
-            $evaluationBatis->evaluationBatis()->associate($evaluationBatis);
-            $evaluationClotures->evaluationClotures()->associate($evaluationClotures);
-            $evaluationAmenagements->evaluationAmenagements()->associate($evaluationAmenagements);
-            $evaluationCoursAmenagees->evaluationCoursAmenagees()->associate($evaluationCoursAmenagees);
-            
-            $referenceUsages->save();
-            $evaluationBatis->save();
-            $evaluationTerrains->save();
-            $evaluationBatis->save();
-            $evaluationAmenagements->save();
-            $evaluationClotures->save();
-            $evaluationCoursAmenagees->save();
-
-
-            DB::commit();
-            return redirect()->route('secretariat.create')->with('success', 'Dossier enregistré avec succès.');
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->back()->withErrors(['error' => 'Erreur lors de l\'enregistrement.']);
-        }
     }
-    
-
-
 }

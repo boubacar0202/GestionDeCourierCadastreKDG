@@ -14,10 +14,9 @@ import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 defineOptions({ layout: DefaultLayout });
 
 const slt_region = ref();
-const slt_arrondissement = ref();
 const slt_departement = ref();
+const slt_arrondissement = ref();
 const slt_commune = ref();
-
 
 
 
@@ -128,7 +127,6 @@ watch(
         fetchCommunes();
     }
 );
-// Les modification pour tenter de auvegarder dasn la base de donnéé
 
 const fetchDepartements = async () => {
     if (!slt_region.value) {
@@ -186,20 +184,15 @@ onMounted(() => {
 
 const submitForm = () => {
     form.nbr_surface = parseFloat(form.nbr_surface).toFixed(2);
-    console.log("Données envoyer: ", {
-        slt_region: slt_region?.value,
-        slt_departement: slt_departement?.value,
-        slt_arrondissement: slt_arrondissement?.value,
-        slt_commune: slt_commune?.value,
-        nbr_surface: form.nbr_surface,
-        // txt_num_dossier: txt_num_dossier?.value,
-        slt_dependant_domaine: form.slt_dependant_domaine,
-    });
 
     console.log("Soumettre formulaire: ", form);
-    
+
     form.rd_immatriculation_terrain = activeTab.value || "";
     form.slt_dependant_domaine = form.slt_dependant_domaine || null;
+    form.slt_region = slt_region?.value || "";
+    form.slt_departement = slt_departement?.value || "";
+    form.slt_arrondissement = slt_arrondissement?.value || "";
+    form.slt_commune = slt_commune?.value || "";
 
 
     form.post(route("secretariat.store"), {
@@ -209,6 +202,12 @@ const submitForm = () => {
 
             toast.success(message);
             console.log("✅ Succès Laravel :", page);
+            console.log("Données envoyées :", {
+                slt_region: form.slt_region,
+                slt_departement: form.slt_departement,
+                slt_arrondissement: form.slt_arrondissement,
+                slt_commune: form.slt_commune,
+            });
         },
         onError: (errors) => {
             if (errors && typeof errors === "object") {
@@ -223,12 +222,12 @@ const submitForm = () => {
             console.error("❌ Erreurs Laravel :", errors);
         },
         data: {
-            slt_region: form.slt_region || "",
-            slt_departement: form.slt_departement || "",
-            slt_arrondissement: form.slt_arrondissement || "",
-            slt_commune: form.slt_commune || "",
+            slt_region: slt_region || "",
+            slt_departement: slt_departement || "",
+            slt_arrondissement: slt_arrondissement || "",
+            slt_commune: slt_commune || "",
             rd_immatriculation_terrain: activeTab.value || "",
-            slt_dependant_domaine: form.slt_dependant_domaine || "Non spécifié",
+            slt_dependant_domaine: slt_dependant_domaine || "Non spécifié",
         },
     });
 };

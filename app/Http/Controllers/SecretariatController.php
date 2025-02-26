@@ -57,56 +57,56 @@ class SecretariatController extends Controller
             //'titulaire_id'
             //'terrain_id'
 
-            //table Terrain
-            // // 'txt_num_dossier' => 'required|exists:dossiers,id',
-            // 'txt_lotissement' => 'nullable|string',
-            // 'txt_num_lotissement' => 'nullable|string',
-            // 'txt_num_section' => 'nullable|string',
-            // 'txt_num_parcelle' => 'nullable|string',
-            // 'txt_num_titre' => 'nullable|string',
-            // 'nbr_surface' => 'nullable|numeric|min:0|max:99999999.99',
-            // 'slt_document_admin' => 'nullable|string',
-            // 'txt_num_deliberation' => 'nullable|string',
-            // 'dt_date_deliberation' => 'nullable|date',
-            // 'txt_nicad' => 'nullable|string',
-            // 'region_id' => 'required|exists:regions,id',
-            // 'departement_id' => 'required|exists:departements,id',
-            // 'arrondissement_id' => 'required|exists:arrondissements,id',
-            // 'commune_id' => 'required|exists:communes,id',
+            // table Terrain
+            'txt_num_dossier' => 'required|exists:dossiers,id',
+            'txt_lotissement' => 'nullable|string',
+            'txt_num_lotissement' => 'nullable|string',
+            'txt_num_section' => 'nullable|string',
+            'txt_num_parcelle' => 'nullable|string',
+            'txt_num_titre' => 'nullable|string',
+            'nbr_surface' => 'nullable|numeric|min:0|max:99999999.99',
+            'slt_document_admin' => 'nullable|string',
+            'txt_num_deliberation' => 'nullable|string',
+            'dt_date_deliberation' => 'nullable|date',
+            'txt_nicad' => 'nullable|string',
+            'slt_region' => 'required|exists:regions,id',
+            'slt_departement' => 'required|exists:departements,id',
+            'slt_arrondissment' => 'required|exists:arrondissements,id',
+            'slt_commune' => 'required|exists:communes,id',
 
 
 
 
-            // table Reference_Cadastral
-            // 'activeTab' => 'required|string',
-            'rd_immatriculation_terrain' => 'required|string',
-            'slt_dependant_domaine' => 'nullable|string',
-            'ussu_bornage' => 'nullable|string',
-            'txt_titre_mere' => 'nullable|string',
-            'slt_lf' => 'nullable|string',
-            'txt_num_requisition' => 'nullable|string',
-            'txt_surface_bornage' => 'nullable|string',
-            'dt_date_bornage' => 'nullable|date',
-            'txt_nom_geometre' => 'nullable|string',
+            // // table Reference_Cadastral
+            // // 'activeTab' => 'required|string',
+            // 'rd_immatriculation_terrain' => 'required|string',
+            // 'slt_dependant_domaine' => 'nullable|string',
+            // 'ussu_bornage' => 'nullable|string',
+            // 'txt_titre_mere' => 'nullable|string',
+            // 'slt_lf' => 'nullable|string',
+            // 'txt_num_requisition' => 'nullable|string',
+            // 'txt_surface_bornage' => 'nullable|string',
+            // 'dt_date_bornage' => 'nullable|date',
+            // 'txt_nom_geometre' => 'nullable|string',
 
-            // table Titulaire
+            // // table Titulaire
 
-            'slt_titulaire' => 'nullable|string',
-            'txt_nationalite' => 'nullable|string',
-            'slt_civilite' => 'nullable|string',
-            'txt_prenom' => 'nullable|string',
-            'txt_nom' => 'nullable|string',
-            'slt_piece' => 'nullable|string',
-            'txt_numPiece' => 'nullable|string',
-            'dt_date_delivrance' => 'nullable|date',
-            'dt_date_naissance' => 'nullable|date',
-            'txt_lieu_naissance' => 'nullable|string',
-            'txt_adresse' => 'nullable|string',
-            'tel_telephone' => 'nullable|string',
-            'txt_ninea' => 'nullable|string',
-            'eml_email' => 'nullable|string',
-            'txt_representant' => 'nullable|string',
-            'tel_telRepresentant' => 'nullable|string',
+            // 'slt_titulaire' => 'nullable|string',
+            // 'txt_nationalite' => 'nullable|string',
+            // 'slt_civilite' => 'nullable|string',
+            // 'txt_prenom' => 'nullable|string',
+            // 'txt_nom' => 'nullable|string',
+            // 'slt_piece' => 'nullable|string',
+            // 'txt_numPiece' => 'nullable|string',
+            // 'dt_date_delivrance' => 'nullable|date',
+            // 'dt_date_naissance' => 'nullable|date',
+            // 'txt_lieu_naissance' => 'nullable|string',
+            // 'txt_adresse' => 'nullable|string',
+            // 'tel_telephone' => 'nullable|string',
+            // 'txt_ninea' => 'nullable|string',
+            // 'eml_email' => 'nullable|string',
+            // 'txt_representant' => 'nullable|string',
+            // 'tel_telRepresentant' => 'nullable|string',
 
             // table Localite
 
@@ -137,12 +137,12 @@ class SecretariatController extends Controller
         //     return back()->with('error', 'Une des relations est introuvable.');
         // }
     
-        // // Enregistrer le dossier
+        // Enregistrer le dossier
         // $dossier = Dossier::create([
         //     'txt_num_dossier' => $request->txt_num_dossier,
         // ]);
 
-            $dossier = Dossier::create([
+            Dossier::create([
                 'txt_num_dossier' => $validatedData['txt_num_dossier'],
                 'txt_num_dordre' => $validatedData['txt_num_dordre'],
                 'slt_service_rendu' => $validatedData['slt_service_rendu'],
@@ -151,60 +151,60 @@ class SecretariatController extends Controller
                 'dt_date_creation' => $validatedData['dt_date_creation'],
             ]);
         
-            // // table Terrain
-            // Terrain::create([
-            //     'dossier_id' => $dossier->id, // Correction ici
-            //     'txt_lotissement' => $validatedData['txt_lotissement'] ?? null,
-            //     'txt_num_lotissement' => $validatedData['txt_num_lotissement'] ?? null,
-            //     'txt_num_section' => $validatedData['txt_num_section'] ?? null,
-            //     'txt_num_parcelle' => $validatedData['txt_num_parcelle'] ?? null,
-            //     'txt_num_titre' => $validatedData['txt_num_titre'] ?? null,
-            //     'nbr_surface' => $validatedData['nbr_surface'] ?? null,
-            //     'slt_document_admin' => $validatedData['slt_document_admin'] ?? null,
-            //     'txt_num_deliberation' => $validatedData['txt_num_deliberation'] ?? null,
-            //     'dt_date_deliberation' => $validatedData['dt_date_deliberation'] ?? null,
-            //     'txt_nicad' => $validatedData['txt_nicad'] ?? null,
-            //     'region_id' => $region->id,
-            //     'departement_id' => $departement->id,
-            //     'arrondissement_id' => $arrondissement->id,
-            //     'commune_id' => $commune->id,
+            // table Terrain
+            Terrain::create([
+                'txt_num_dossier' => $validatedData['txt_num_dossier'], // Correction ici
+                'txt_lotissement' => $validatedData['txt_lotissement'] ?? null,
+                'txt_num_lotissement' => $validatedData['txt_num_lotissement'] ?? null,
+                'txt_num_section' => $validatedData['txt_num_section'] ?? null,
+                'txt_num_parcelle' => $validatedData['txt_num_parcelle'] ?? null,
+                'txt_num_titre' => $validatedData['txt_num_titre'] ?? null,
+                'nbr_surface' => $validatedData['nbr_surface'] ?? null,
+                'slt_document_admin' => $validatedData['slt_document_admin'] ?? null,
+                'txt_num_deliberation' => $validatedData['txt_num_deliberation'] ?? null,
+                'dt_date_deliberation' => $validatedData['dt_date_deliberation'] ?? null,
+                'txt_nicad' => $validatedData['txt_nicad'] ?? null,
+                'slt_region' => $validatedData['slt_region'],
+                'slt_departement' => $validatedData['slt_departement'],
+                'slt_arrondissement' => $validatedData['slt_arrondissement'],
+                'slt_commune' => $validatedData['slt_commune'],
                 
-            // ]);
+            ]);
 
                 // 'activeTab' => 'required|string',
 
-            ReferenceCadastrale::create([   
-                'rd_immatriculation_terrain' => $validatedData['rd_immatriculation_terrain'],
-                'slt_dependant_domaine' => $validatedData['slt_dependant_domaine'] ?? null,
-                'ussu_bornage' => $validatedData['ussu_bornage'] ?? null,
-                'txt_titre_mere' => $validatedData['txt_titre_mere'] ?? null,
-                'slt_lf' => $validatedData['slt_lf'] ?? null,
-                'txt_num_requisition' => $validatedData['txt_num_requisition'] ?? null,
-                'txt_surface_bornage' => $validatedData['txt_surface_bornage'] ?? null,
-                'dt_date_bornage' =>  $validatedData['dt_date_bornage'] ?? null,
-                'txt_nom_geometre' => $validatedData['txt_nom_geometre'] ?? null,
-            ]);
+            // ReferenceCadastrale::create([   
+            //     'rd_immatriculation_terrain' => $validatedData['rd_immatriculation_terrain'],
+            //     'slt_dependant_domaine' => $validatedData['slt_dependant_domaine'] ?? null,
+            //     'ussu_bornage' => $validatedData['ussu_bornage'] ?? null,
+            //     'txt_titre_mere' => $validatedData['txt_titre_mere'] ?? null,
+            //     'slt_lf' => $validatedData['slt_lf'] ?? null,
+            //     'txt_num_requisition' => $validatedData['txt_num_requisition'] ?? null,
+            //     'txt_surface_bornage' => $validatedData['txt_surface_bornage'] ?? null,
+            //     'dt_date_bornage' =>  $validatedData['dt_date_bornage'] ?? null,
+            //     'txt_nom_geometre' => $validatedData['txt_nom_geometre'] ?? null,
+            // ]);
     
-                // table Titulaire
+            // table Titulaire
     
-            Titulaire::create([
-                'slt_titulaire' => $validatedData['slt_titulaire'] ?? null,
-                'txt_nationalite' => $validatedData['txt_nationalite'] ?? null,
-                'slt_civilite' => $validatedData['slt_civilite'] ?? null,
-                'txt_prenom' => $validatedData['txt_prenom'] ?? null,
-                'txt_nom' => $validatedData['txt_nom'] ?? null,
-                'slt_piece' => $validatedData['slt_piece'] ?? null,
-                'txt_numPiece' => $validatedData['txt_numPiece'] ?? null,
-                'dt_date_delivrance' => $validatedData ['dt_date_delivrance'] ?? null,
-                'dt_date_naissance' => $validatedData ['dt_date_naissance'] ?? null,
-                'txt_lieu_naissance' => $validatedData['txt_lieu_naissance'] ?? null,
-                'txt_adresse' => $validatedData['txt_adresse'] ?? null,
-                'tel_telephone' => $validatedData['tel_telephone'] ?? null,
-                'txt_ninea' => $validatedData['txt_ninea'] ?? null,
-                'eml_email' => $validatedData['eml_email'] ?? null,
-                'txt_representant' => $validatedData['txt_representant'] ?? null,
-                'tel_telRepresentant' => $validatedData['tel_telRepresentant'] ?? null,
-            ]);
+            // Titulaire::create([
+            //     'slt_titulaire' => $validatedData['slt_titulaire'] ?? null,
+            //     'txt_nationalite' => $validatedData['txt_nationalite'] ?? null,
+            //     'slt_civilite' => $validatedData['slt_civilite'] ?? null,
+            //     'txt_prenom' => $validatedData['txt_prenom'] ?? null,
+            //     'txt_nom' => $validatedData['txt_nom'] ?? null,
+            //     'slt_piece' => $validatedData['slt_piece'] ?? null,
+            //     'txt_numPiece' => $validatedData['txt_numPiece'] ?? null,
+            //     'dt_date_delivrance' => $validatedData ['dt_date_delivrance'] ?? null,
+            //     'dt_date_naissance' => $validatedData ['dt_date_naissance'] ?? null,
+            //     'txt_lieu_naissance' => $validatedData['txt_lieu_naissance'] ?? null,
+            //     'txt_adresse' => $validatedData['txt_adresse'] ?? null,
+            //     'tel_telephone' => $validatedData['tel_telephone'] ?? null,
+            //     'txt_ninea' => $validatedData['txt_ninea'] ?? null,
+            //     'eml_email' => $validatedData['eml_email'] ?? null,
+            //     'txt_representant' => $validatedData['txt_representant'] ?? null,
+            //     'tel_telRepresentant' => $validatedData['tel_telRepresentant'] ?? null,
+            // ]);
            
             return redirect()->back()->with('success', 'Donnée enregistrée !');
         

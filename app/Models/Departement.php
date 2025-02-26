@@ -14,7 +14,7 @@ class Departement extends Model
         'region_id',
     ];
 
-    protected $with = ['arrondissements'];
+
 
     public function regions()
     {

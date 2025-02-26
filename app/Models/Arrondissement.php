@@ -13,7 +13,8 @@ class Arrondissement extends Model
         'slt_arrondissement',
     ];
 
-    protected $with = ['communes'];
+
+
 
     public function departement()
     {

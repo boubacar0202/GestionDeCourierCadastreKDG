@@ -13,20 +13,20 @@ return new class extends Migration
     {
         Schema::table('terrains', function (Blueprint $table) {
             // Ajout des colonnes pour les relations
-            $table->unsignedBigInteger('region_id')->nullable();
-            $table->unsignedBigInteger('departement_id')->nullable();
-            $table->unsignedBigInteger('arrondissement_id')->nullable();
-            $table->unsignedBigInteger(column: 'commune_id')->nullable();
-            $table->unsignedBigInteger(column: 'dossier_id')->nullable();
+            $table->unsignedBigInteger('slt_region')->nullable();
+            $table->unsignedBigInteger('slt_departement')->nullable();
+            $table->unsignedBigInteger('slt_arrondissement')->nullable();
+            $table->unsignedBigInteger(column: 'slt_commune')->nullable();
+            $table->unsignedBigInteger(column: 'txt_num_dossier')->nullable();
 
 
 
             // Ajout des clés étrangères pour les relations
-            $table->foreign('region_id')->references('id')->on('regions')->onDelete('cascade');
-            $table->foreign('departement_id')->references('id')->on('departements')->onDelete('cascade');
-            $table->foreign('arrondissement_id')->references('id')->on('arrondissements')->onDelete('cascade');
-            $table->foreign('commune_id')->references('id')->on('communes')->onDelete('cascade');
-            $table->foreign('dossier_id')->references('id')->on('dosssiers')->onDelete('cascade');
+            $table->foreign('slt_region')->references('id')->on('regions')->onDelete('cascade');
+            $table->foreign('slt_departement')->references('id')->on('departements')->onDelete('cascade');
+            $table->foreign('slt_arrondissement')->references('id')->on('arrondissements')->onDelete('cascade');
+            $table->foreign('slt_commune')->references('id')->on('communes')->onDelete('cascade');
+            $table->foreign('txt_num_dossier')->references('id')->on('dosssiers')->onDelete('cascade');
 
         });
     }
@@ -38,14 +38,14 @@ return new class extends Migration
         
         Schema::table('terrains', function (Blueprint $table) {
             // Suppression des clés étrangères
-            $table->dropForeign(['region_id']);
-            $table->dropForeign(['departement_id']);
-            $table->dropForeign(['arrondissement_id']);
-            $table->dropForeign(['commune_id']);
-            $table->dropForeign(['dossier_id']);
+            $table->dropForeign(['slt_region']);
+            $table->dropForeign(['slt_departement']);
+            $table->dropForeign(['slt_arrondissement']);
+            $table->dropForeign(['slt_commune']);
+            $table->dropForeign(['txt_num_dossier']);
 
             // Suppression des colonnes
-            $table->dropColumn(['region_id', 'departement_id', 'arrondissement_id', 'commune_id', 'dossier_id']);
+            $table->dropColumn(['slt_region', 'slt_departement', 'slt_arrondissement', 'slt_commune', 'txt_num_dossier']);
        
         });
     }

@@ -14,6 +14,8 @@ class Commune extends Model
         'slt_commune',
     ];
 
+  
+
     public function arrondissement()
     {
         return $this->belongsTo(Arrondissement::class);

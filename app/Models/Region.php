@@ -13,7 +13,7 @@ class Region extends Model
         'slt_region',
     ];
 
-    protected $with = ['departements'];
+
 
 
     public function departements()

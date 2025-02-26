@@ -25,11 +25,11 @@ return new class extends Migration {
             $table->string('txt_nicad')->nullable()->unique();
 
             // Clés étrangères (Relations)
-            $table->foreignId('region_id')->constrained('regions', 'id')->onDelete('cascade');
-            $table->foreignId('departement_id')->constrained('departements', 'id')->onDelete('cascade');
-            $table->foreignId('arrondissement_id')->constrained('arrondissements', 'id')->onDelete('cascade');
-            $table->foreignId('commune_id')->constrained('communes', 'id')->onDelete('cascade');
-            $table->foreignId('dossier_id')->constrained('dossiers', 'id')->onDelete('cascade');
+            $table->foreignId('slt_region')->constrained('regions')->onDelete('cascade');
+            $table->foreignId('slt_departement')->constrained('departements')->onDelete('cascade');
+            $table->foreignId('slt_arrondissement')->constrained('arrondissements')->onDelete('cascade');
+            $table->foreignId('slt_commune')->constrained('communes')->onDelete('cascade');
+            $table->foreignId('txt_num_dossier')->constrained('dossiers')->onDelete('cascade');
 
             $table->timestamps();
             
