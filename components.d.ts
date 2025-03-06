@@ -7,7 +7,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    MazAlert: typeof import('maz-ui/components/MazAlert')['default']
     MazBtn: typeof import('maz-ui/components/MazBtn')['default']
+    MazButton: typeof import('maz-ui/components/MazButton')['default']
     MazCheckbo: typeof import('maz-ui/components/MazCheckbo')['default']
     MazCheckbox: typeof import('maz-ui/components/MazCheckbox')['default']
     MazRadio: typeof import('maz-ui/components/MazRadio')['default']

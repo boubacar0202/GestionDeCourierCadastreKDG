@@ -11,6 +11,7 @@ class Terrain extends Model
     use HasFactory;
     protected $fillable = [
 
+        'txt_num_dossier',
         'txt_lotissement',
         'txt_num_lotissement',
         'txt_num_section',
@@ -25,32 +26,46 @@ class Terrain extends Model
         'slt_departement',
         'slt_arrondissement',
         'slt_commune',
-        'txt_num_dossier',
-        
+        'referencesCadastrale_id',
+        'titulaire_id',
+
     ];
 
-// 
 
     // Relations
     public function dossier() {
-        return $this->belongsTo(Dossier::class);
+        return $this->belongsTo(Dossier::class, 'txt_num_dossier', 'id');
     }
 
-    public function region() {
-        return $this->belongsTo(Region::class);
+    public function region()
+    {
+        return $this->belongsTo(Region::class, 'slt_region', 'id'); // Relation avec la table regions
     }
 
     public function departement() {
-        return $this->belongsTo(Departement::class);
+        return $this->belongsTo(Departement::class, 'slt_departement', 'id');
     }
 
     public function arrondissement() {
-        return $this->belongsTo(Arrondissement::class);
+        return $this->belongsTo(Arrondissement::class, 'slt_arrondissement', 'id');
     }
 
     public function commune() {
-        return $this->belongsTo(Commune::class);
+        return $this->belongsTo(Commune::class, 'slt_commune', 'id');
     }
+
     
+    public function titulaire()
+    {
+        return $this->belongsTo(Titulaire::class, 'titulaire_id');
+    }
+
+    public function references_cadastrales()
+    {
+        return $this->belongsTo(ReferenceCadastrale::class, 'referencesCadastrale_id');
+    }
+
+
+
 
 }

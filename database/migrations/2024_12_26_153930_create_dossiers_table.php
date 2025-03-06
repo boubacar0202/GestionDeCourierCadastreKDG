@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('dossiers', function (Blueprint $table) {
             $table->id();
             $table->string('txt_num_dossier')->unique();
-            $table->integer('txt_num_dordre');
+            $table->integer('txt_num_dordre')->unique();
             $table->string('slt_service_rendu');
             $table->string('txt_etat_cession');
             $table->string('txt_cession_definitive');

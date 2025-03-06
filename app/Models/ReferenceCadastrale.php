@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ReferenceCadastrale extends Model
 {
-
-    protected $table = 'reference_cadastrales';
+    use HasFactory;
+    protected $table = 'references_cadastrales'; 
     protected $fillable = [
         'rd_immatriculation_terrain',
         'slt_dependant_domaine',
@@ -20,4 +21,9 @@ class ReferenceCadastrale extends Model
         'dt_date_bornage',
         'txt_nom_geometre',
     ];
+
+    public function terrains()
+    {
+        return $this->hasMany(Terrain::class);
+    }
 }

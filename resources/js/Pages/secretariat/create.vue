@@ -1,16 +1,14 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, useForm } from "@inertiajs/vue3";
 import MazBtn from "maz-ui/components/MazBtn";
 import MazRadio from "maz-ui/components/MazRadio";
-import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
 import { onMounted, ref, watch } from "vue";
-import CompA from "./CompA.vue";
-import CompB from "./CompB.vue";
 import axios from "axios";
 import { useToast } from "maz-ui";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
+import { Inertia } from '@inertiajs/inertia';
+import { reactive, computed } from 'vue';
 defineOptions({ layout: DefaultLayout });
 
 const slt_region = ref();
@@ -18,11 +16,10 @@ const slt_departement = ref();
 const slt_arrondissement = ref();
 const slt_commune = ref();
 
-
-
 const departements = ref(null);
 const arrondissements = ref(null);
 const communes = ref(null);
+const slt_dependant_domaine = ref(null); // ou ref({}) selon l'utilisation
 
 
 const toast = useToast();
@@ -36,7 +33,7 @@ const props = defineProps({
 
 
 // const activeTab = ref(1);
-const activeTab = ref(''); // Valeur de la tab active
+const activeTab = ref(""); // Valeur de la tab active
 
 const handleTabClick = (event, tab) => {
     event.preventDefault();
@@ -47,20 +44,17 @@ const handleTabClick = (event, tab) => {
 const form = useForm({
     // Table Dossier
     txt_num_dossier: "",
-    txt_num_dordre: "",
+    txt_num_dordre: '',
     slt_service_rendu: "",
     txt_etat_cession: "",
     txt_cession_definitive: "",
     dt_date_creation: "",
 
     //Table Terrain
-    slt_region: '',
-    slt_departement: '',
-    slt_arrondissement: '',
-    slt_commune: '',
     slt_region: "",
     slt_departement: "",
     slt_arrondissement: "",
+    slt_commune: '',
     txt_lotissement: "",
     txt_num_lotissement: "",
     txt_num_section: "",
@@ -72,9 +66,9 @@ const form = useForm({
     txt_num_deliberation: "",
     dt_date_deliberation: "",
     txt_nicad: "",  // Supprimez l'une des occurrences
+    txt_confirmationNicad: "",
 
     // Table ReferenceCadastrale
-    
     rd_immatriculation_terrain:"",
     slt_dependant_domaine: "",
     ussu_bornage: "",
@@ -101,6 +95,7 @@ const form = useForm({
     eml_email: "",
     txt_representant: "",
     tel_telRepresentant: "",
+    
 });
 
 // Mettez à jour les watchers pour utiliser form.selectedRegion, etc.
@@ -182,55 +177,110 @@ onMounted(() => {
     // Vous pouvez ajouter une logique pour initialiser les données ici
 });
 
-const submitForm = () => {
-    form.nbr_surface = parseFloat(form.nbr_surface).toFixed(2);
+const nicadMismatch = computed(() => {
+    return form.txt_nicad !== form.txt_confirmationNicad;
+});
 
-    console.log("Soumettre formulaire: ", form);
+const checkNumDossier = async () => {
+    try {
+        const response = await axios.post('/api/check-num-dossier', {
+            txt_num_dossier: form.txt_num_dossier,
+        });
 
-    form.rd_immatriculation_terrain = activeTab.value || "";
-    form.slt_dependant_domaine = form.slt_dependant_domaine || null;
-    form.slt_region = slt_region?.value || "";
-    form.slt_departement = slt_departement?.value || "";
-    form.slt_arrondissement = slt_arrondissement?.value || "";
-    form.slt_commune = slt_commune?.value || "";
+        if (response.data.exists) {
+            errors.value.txt_num_dossier = 'Ce numéro de dossier est déjà utilisé.';
+        } else {
+            errors.value.txt_num_dossier = null;
+        }
+    } catch (error) {
+        console.error('Erreur lors de la vérification', error);
+    }
+};
 
+const submitForm = function () {  // Ajoutez `async` ici
+    console.log("📤 Envoi du formulaire :", form);
+    form.rd_immatriculation_terrain = activeTab.value || "";  // Mise à jour de la donnée
+    form.slt_region = slt_region?.value || ""; // Accès via this.slt_region
+    form.slt_departement = slt_departement?.value || ""; // Accès via this.slt_departement
+    form.slt_arrondissement = slt_arrondissement?.value || ""; // Accès via this.slt_arrondissement
+    form.slt_commune = slt_commune?.value || ""; // Accès via this.slt_commune
+    if (nicadMismatch.value) {
+        alert("Les valeurs de Nicad ne correspondent pas !");
+        return;
+    }
 
+    // Formulaire Laravel
     form.post(route("secretariat.store"), {
         onSuccess: (page) => {
-            const flash = page.props.flash || {};
-            const message = flash.error || flash.success || "Opération réussie !";
-
+            const message = page.props.flash?.success || "Opération réussie !";
             toast.success(message);
             console.log("✅ Succès Laravel :", page);
-            console.log("Données envoyées :", {
-                slt_region: form.slt_region,
-                slt_departement: form.slt_departement,
-                slt_arrondissement: form.slt_arrondissement,
-                slt_commune: form.slt_commune,
-            });
+            Inertia.reload();
         },
         onError: (errors) => {
-            if (errors && typeof errors === "object") {
-                Object.values(errors).forEach((errorMessage) => {
-                    if (errorMessage) {
-                        toast.error(errorMessage);
-                    }
-                });
-            } else {
-                toast.error("Une erreur s'est produite.");
-            }
             console.error("❌ Erreurs Laravel :", errors);
-        },
-        data: {
-            slt_region: slt_region || "",
-            slt_departement: slt_departement || "",
-            slt_arrondissement: slt_arrondissement || "",
-            slt_commune: slt_commune || "",
-            rd_immatriculation_terrain: activeTab.value || "",
-            slt_dependant_domaine: slt_dependant_domaine || "Non spécifié",
-        },
+            Object.values(errors).forEach((error) => {
+                toast.error(error);
+            });
+        }
     });
 };
+
+
+// const submitForm = function () {
+//     // Formattage de la surface avec deux décimales
+//     // form.nbr_surface = parseFloat(form.nbr_surface).toFixed(2);
+//     console.log("Soumettre formulaire: ", form);
+    
+//     // Mise à jour des champs du formulaire
+//     // form.rd_immatriculation_terrain = activeTab.value || "";
+//     // form.slt_dependant_domaine = form.slt_dependant_domaine || null; // Si la valeur est vide, on la met à null
+//     // form.slt_region = slt_region?.value || ""; // Accès via this.slt_region
+//     // form.slt_departement = slt_departement?.value || ""; // Accès via this.slt_departement
+//     // form.slt_arrondissement = slt_arrondissement?.value || ""; // Accès via this.slt_arrondissement
+//     // form.slt_commune = slt_commune?.value || ""; // Accès via this.slt_commune
+
+//     // Envoi du formulaire
+//     form.post(route("secretariat.store"), {
+//         onSuccess: (page) => {
+//             const flash = page.props.flash || {};
+//             const message = flash.error || flash.success || "Opération réussie !";
+
+//             toast.success(message);
+//             console.log("✅ Succès Laravel :", page);
+//             console.log("Données envoyées :", {
+//                 slt_region: form.slt_region,
+//                 slt_departement: form.slt_departement,
+//                 slt_arrondissement: form.slt_arrondissement,
+//                 slt_commune: form.slt_commune,
+//             });
+//             // 🔄 Rafraîchir les données après l'envoi du formulaire
+//             Inertia.reload();
+//         },
+//         onError: (errors) => {
+//             if (errors && typeof errors === "object") {
+//                 Object.values(errors).forEach((errorMessage) => {
+//                     if (errorMessage) {
+//                         toast.error(errorMessage);
+//                     }
+//                 });
+//             } else {
+//                 toast.error("Une erreur s'est produite.");
+//             }
+//             console.error("❌ Erreurs Laravel :", errors);
+//         },
+//         // data: {
+//         //     // Envoi des données avec des valeurs par défaut si elles sont vides
+//         //     slt_region: null, // Accès via this.slt_region
+//         //     slt_departement: null, // Accès via this.slt_departement
+//         //     slt_arrondissement: null, // Accès via this.slt_arrondissement
+//         //     slt_commune: null, // Accès via this.slt_commune
+//         //     rd_immatriculation_terrain: activeTab.value || "",
+//         //     slt_dependant_domaine: null, // Accès via this.slt_dependant_domaine
+//         // },
+//     });
+
+// };
 
 
 const mazTabs = [
@@ -273,7 +323,7 @@ const mazTabs = [
                                     <div
                                         class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
                                     >
-                                        <div class="sm:col-span-1">
+                                        <div class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_num_dossier"
@@ -285,43 +335,14 @@ const mazTabs = [
                                                     <input
                                                         type="text"
                                                         name="txt_num_dossier"
-                                                        v-model="
-                                                            form.txt_num_dossier
-                                                        "
-                                                        id="txt_num_dossier"
-                                                        autocomplete="address-level2"
-                                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                                    />
-                                                    <InputError
-                                                        class="mt-2"
-                                                        :message="
-                                                            form.errors.name
-                                                        "
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="sm:col-span-1">
-                                            <div class="sm:col-span-1">
-                                                <label
-                                                    for="txt_num_dordre"
-                                                    class="block text-sm/6 font-medium text-gray-900"
-                                                    >N° d'Ordre</label
-                                                >
-                                                <div class="mt-2">
-                                                    <input
-                                                        type="text"
-                                                        name="txt_num_dordre"
-                                                        v-model="
-                                                            form.txt_num_dordre
-                                                        "
-                                                        id="txt_num_dordre"
-                                                        autocomplete="address-level2"
+                                                        @blur="checkNumDossier"
+                                                        v-model="form.txt_num_dossier"
                                                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
+                                        
                                         <div class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label
@@ -340,7 +361,7 @@ const mazTabs = [
                                                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                     >
                                                         <option
-                                                            selected
+                                                            value=""
                                                             desabled
                                                         ></option>
                                                         <option
@@ -835,6 +856,24 @@ const mazTabs = [
                                                     name="txt_nicad"
                                                     v-model="form.txt_nicad"
                                                     id="Nicad"
+                                                    autocomplete="address-level2"
+                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div class="sm:col-span-2">
+                                            <label
+                                                for="txt_confirmationNicad"
+                                                class="block text-sm/6 font-medium text-gray-900"
+                                                >Confirmation Nicad</label
+                                            >
+                                            <div class="mt-2">
+                                                <input
+                                                    type="text"
+                                                    name="txt_confirmationNicad"
+                                                    v-model="form.txt_confirmationNicad"
+                                                    id="txt_confirmationNicad"
                                                     autocomplete="address-level2"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />
@@ -1339,8 +1378,17 @@ const mazTabs = [
                                 <!-- Bouton de soumission -->
 
                                 <div class="sm:col-span-6 flex justify-center">
-                                    <MazBtn type="submit">Enregistrer</MazBtn>
+                                    <MazBtn type="submit" no-shadow no-hover-effect
+                                        class="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 
+                                                hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 
+                                                dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
+                                                dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm 
+                                                px-5 py-2.5 text-center" >
+                                        Enregistrer
+                                    </MazBtn>
+
                                 </div>
+
                             </div>
                         </form>
                     </div>

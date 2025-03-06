@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Titulaire extends Model
 {
     //
+    use HasFactory;
     protected $fillable = [
         'slt_titulaire',
         'txt_nationalite',
@@ -28,6 +30,6 @@ class Titulaire extends Model
 
         public function terrains()
         {
-            return $this->belongsToMany(Terrain::class, 'titulaire_terrain');
+            return $this->hasMany(Terrain::class);
         }
 }

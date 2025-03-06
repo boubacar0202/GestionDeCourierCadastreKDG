@@ -1,6 +1,27 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { defineProps, onMounted } from 'vue';
+
+const props = defineProps({
+  terrains: Array,
+});
+
+onMounted(() => {
+  console.log(props.terrains); // Vérifie la structure des données
+});
+
+
+// Fonction pour formater la date
+const formatDate = (dateString) => {
+  if (!dateString) return 'Date inconnue';
+  return new Date(dateString).toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+};
+
 </script>
 
 <template>
@@ -13,8 +34,12 @@ import { Head } from '@inertiajs/vue3';
             >
                 Base de données
             </h2>
+            <!-- Vérification pour afficher un message si aucune donnée -->
+            <template v-if="!terrains || terrains.length === 0">
+                <p>Aucun terrain trouvé.</p>
+            </template>
            
-        </template>
+        </template v-else>
      
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-8 lg:px-12">
@@ -25,12 +50,12 @@ import { Head } from '@inertiajs/vue3';
                                 <div class="p-4 border-b bg-gray-100">
                                     <h1 class="text-lg font-semibold">Base de données</h1>
                                 </div>
+
                             </div>
                             <div class="card-body">
                                 <table class="table table-sm table-strictped table-bordered">
                                     <thead >
                                         <tr>
-
                                             <th scope="col" class="px-6 py-3">
                                                 N°
                                             </th>
@@ -42,6 +67,9 @@ import { Head } from '@inertiajs/vue3';
                                             </th>
                                             <th scope="col" class="px-6 py-3">
                                                 Departement
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                Arrondisssement
                                             </th>
                                             <th scope="col" class="px-6 py-3">
                                                 Commune
@@ -168,177 +196,6 @@ import { Head } from '@inertiajs/vue3';
                                             </th>
                                             <th scope="col" class="px-6 py-3">
                                                 txt_telRepresentant
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                slt_reference_usage
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_occupan_habitaion_1
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_activite_principal_hbt_1
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_ninea_occupan_hbt_1
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                tel_tel_occupant_hbt_1
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_montant_loyer_hbt_1
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_activite_commercial
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_occopan_commercial
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_activite_industriel
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_occopan_industriel
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_activite_agricole
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_occopan_agricole
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_activite_professionnelle
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_occopan_professionnelle
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_activite_culte
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_occopan_culte
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_Activite_administratif
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_occupan_administratif
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_date_devaluation
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_superficie_totale
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_superficie_bati_sol
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                slt_secteur
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_prix_metre_carré
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_valeur_terrain
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                slt_type_residence
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                rd_type_maissons
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                chk_bati_principal
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                slt_cat
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_prix_metre_carre
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_surface_bati_sol
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_niveau
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_surface_brute
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_surface_utile
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                slt_coeff
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_surface_corriger
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_valeur
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_valeur_terrain_bati
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                chk_cours_amenager_totale
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_surface_ca_total
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                slt_categorie_ca_total
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_prix_metre_carre_ca_total
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_coefficient_ca_total
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_valeur_ca_total
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_valeur_total_cours
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                chk_perimetre_cloture
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_longueur_avant_clo
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                slt_categorie_clo
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_prix_metre_carre_clo
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_coefficient_clo
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_valeur_clo
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_valeur_total_clotur
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_designation_am
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_valeur_unitaire_am
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_quantile_am
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                slt_coeficien_am
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_valeur_am
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_valeur_totale_ap
                                             </th>
                                             <th scope="col" class="px-6 py-3">
                                                 ACTIONS
@@ -346,319 +203,159 @@ import { Head } from '@inertiajs/vue3';
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <tr v-for="terrain in terrains" :key="terrain.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                           
                                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                N°
+                                                {{ terrain.dossier ? terrain.dossier.id : 'Dossier inconnu' }}
                                             </th>
                                             <td class="px-6 py-4">
-                                                txt_num_dossier
+                                                {{ terrain.dossier ? terrain.dossier.txt_num_dossier : 'Dossier inconnu' }}
                                             </td>
+                                            <!-- Affichage de la région, département et commune -->
                                             <td class="px-6 py-4">
-                                                Region
+                                                {{ terrain.region ? terrain.region.slt_region : 'Région inconnue' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Departement
+                                                {{ terrain.departement ? terrain.departement.slt_departement : 'Département inconnu' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Commune
+                                                {{ terrain.arrondissement ? terrain.arrondissement.slt_arrondissement : 'Arrondissement inconnue' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                txt_num_dordre
+                                                {{ terrain.commune ? terrain.commune.slt_commune : 'Commune inconnue' }}
                                             </td>
+                                            <!-- Autres champs -->
                                             <td class="px-6 py-4">
-                                                slt_service_dendu
+                                                {{ terrain.dossier.txt_num_dordre || 'Numéro de dossier inconnu' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                txt_etat_cession
+                                                {{ terrain.dossier.slt_service_rendu || 'Service inconnu' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                txt_cession_definitive
+                                                {{ terrain.dossier.txt_etat_cession || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                dt_date_creation
+                                                {{ terrain.dossier.txt_cession_definitive || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Numéro_Parcelle
+                                                {{ formatDate(terrain.dt_date_deliberation) || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                txt_lotissement
+                                                {{ terrain.txt_num_parcelle || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                txt_num_lotissement
+                                                {{ terrain.txt_lotissement || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                txt_num_section
+                                                {{ terrain.txt_num_lotissement || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                txt_num_parcelle
+                                                {{ terrain.txt_num_section || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                txt_num_titre
+                                                {{ terrain.txt_num_parcelle || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                nbr_surface
+                                                {{ terrain.txt_num_titre || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                slt_document_admin
+                                                {{ terrain.nbr_surface || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                txt_num_deliberation
+                                                {{ terrain.slt_document_admin || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                dt_date_deliberation
+                                                {{ terrain.txt_num_deliberation || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                txt_nicad  
+                                                {{ formatDate(terrain.dt_date_deliberation) || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                rd_immatricalation_terrain
+                                                {{ terrain.txt_nicad || 'Null'}}  
                                             </td>
-                                            <td class="px-6 py-4">
-                                                slt_dependant_domaine
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                ussu_bornage
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_titre_mere
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                slt_lf
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_num_requisition
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_surface_bornage
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                dt_date_bornage
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_nom_geometre
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                slt_titulaire
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_nationalite
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                slt_civilite
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_prenom
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_nom
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                slt_piece
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_numPiece
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                dt_date_delivrance
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                dt_date_naissance
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_lieu_naissance
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_adresse
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                tel_telephone
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_ninea
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                eml_email
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_representant
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_telRepresentant
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                slt_reference_usage
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_occupan_habitaion_1
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_activite_principal_hbt_1
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_ninea_occupan_hbt_1
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                tel_tel_occupant_hbt_1
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                nbr_montant_loyer_hbt_1
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_activite_commercial
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_occopan_commercial
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_activite_industriel
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_occopan_industriel
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_activite_agricole
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_occopan_agricole
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_activite_professionnelle
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_occopan_professionnelle
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_activite_culte
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_occopan_culte
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_Activite_administratif
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_occupan_administratif
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_date_devaluation
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_superficie_totale
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                txt_superficie_bati_sol
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                slt_secteur
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                nbr_prix_metre_carré
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                nbr_valeur_terrain
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                slt_type_residence
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                rd_type_maissons
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                chk_bati_principal
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                slt_cat
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                nbr_prix_metre_carre
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                nbr_surface_bati_sol
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                nbr_niveau
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                nbr_surface_brute
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                nbr_surface_utile
+                                            <!--  -->
+                                            <td scope="col" class="px-6 py-3">
+                                                {{ terrain.references_cadastrales?.rd_immatriculation_terrain || 'Null' }}   
                                             </td>
-                                            <td class="px-6 py-4">
-                                                slt_coeff
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_cadastrales?.slt_dependant_domaine || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_surface_corriger
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_cadastrales?.ussu_bornage || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_valeur
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_cadastrales?.txt_titre_mere || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                txt_valeur_terrain_bati
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_cadastrales?.slt_lf || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                chk_cours_amenager_totale
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_cadastrales?.txt_num_requisition || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_surface_ca_total
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_cadastrales?.txt_surface_bornage || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                slt_categorie_ca_total
+                                            <td scope="col" class="px-6 py-3">
+                                                {{formatDate(terrain.references_cadastrales?.dt_date_bornage) || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_prix_metre_carre_ca_total
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_cadastrales?.txt_nom_geometre || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_coefficient_ca_total
+                                            <!--  -->
+                                            <td scope="col" class="px-6 py-3">
+                                                {{ terrain.titulaire && terrain.titulaire.slt_titulaire ? terrain.titulaire.slt_titulaire : 'Nom definie' }}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_valeur_ca_total
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.txt_nationalite || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_valeur_total_cours
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.slt_civilite || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                chk_perimetre_cloture
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.txt_prenom || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_longueur_avant_clo
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.txt_nom || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                slt_categorie_clo
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.slt_piece || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_prix_metre_carre_clo
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.txt_numPiece || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_coefficient_clo
+                                            <td scope="col" class="px-6 py-3">
+                                                {{formatDate(terrain.titulaire.dt_date_delivrance) || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_valeur_clo
+                                            <td scope="col" class="px-6 py-3">
+                                                {{formatDate(terrain.titulaire.dt_date_naissance) || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_valeur_total_clotur
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.txt_lieu_naissance || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                txt_designation_am
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.txt_adresse || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_valeur_unitaire_am
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.tel_telephone || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_quantile_am
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.txt_ninea || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                slt_coeficien_am
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.eml_email || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_valeur_am
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.txt_representant || 'Null'}}
                                             </td>
-                                            <td class="px-6 py-4">
-                                                nbr_valeur_totale_ap
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.titulaire.tel_telRepresentant || 'Null'}}
                                             </td>
+
                                             <td class="flex items px-6 py-6">
                                                 <div class="mt-2">
-                                                    <MazBtn pastel size="sm">Modifier</MazBtn>
+                                                    <InertiaLink :href="`/secreatrit/create/${terrain.id}`">
+                                                        <MazBtn pastel size="sm">Modifier</MazBtn>
+                                                    </InertiaLink>                                                
                                                 </div>
                                                 <div class="container">
                                                     <p>.</p>
@@ -668,329 +365,7 @@ import { Head } from '@inertiajs/vue3';
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                
-                                            </th>
-                                            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                               <!--{{$item->region}}    -->
-                                               Debut
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               Fin_Debut
-                                            </td>
-                                            <td class="flex items px-6 py-6">
-                                                <div class="mt-2">
-                                                    <MazBtn pastel size="sm">Modifier</MazBtn>
-                                                </div>
-                                                <div class="container">
-                                                    <p>.</p>
-                                                </div>
-                                                <div class="mt-2">
-                                                    <MazBtn color="danger" pastel size="sm">Supprimer</MazBtn>
-                                                </div>
-                                            </td>
-                                        </tr>
+
                                     </tbody>
                                 </table>
                             </div>

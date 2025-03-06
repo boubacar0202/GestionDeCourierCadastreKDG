@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class EvaluationAmenagement extends Model
 {
     //
+    use HasFactory;
     protected $fillable = [
         'txt_designation_am',
         'nbr_valeur_unitaire_am',

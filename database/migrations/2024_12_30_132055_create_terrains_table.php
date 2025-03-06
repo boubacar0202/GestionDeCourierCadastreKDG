@@ -30,7 +30,11 @@ return new class extends Migration {
             $table->foreignId('slt_arrondissement')->constrained('arrondissements')->onDelete('cascade');
             $table->foreignId('slt_commune')->constrained('communes')->onDelete('cascade');
             $table->foreignId('txt_num_dossier')->constrained('dossiers')->onDelete('cascade');
+            // Correction des clés étrangères
 
+            $table->foreignId('referencesCadastrale_id')->constrained('references_cadastrales')->onDelete('cascade');
+            $table->foreignId('titulaire_id')->constrained('titulaires')->onDelete('cascade');
+            
             $table->timestamps();
             
         });

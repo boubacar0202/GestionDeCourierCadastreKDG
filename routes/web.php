@@ -6,6 +6,8 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MatriceCadastraleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SecretariatController;
+use App\Models\Terrain;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,14 +36,14 @@ Route::resource('geometre', GeometreController::class);
 Route::resource('donnee', DonneeController::class);
 Route::resource('matriceCadastrale', MatriceCadastraleController::class);
 Route::get('/secretariat/create', [SecretariatController::class, 'create'])->name('secretariat.create');
+Route::get('/donnee/create', [DonneeController::class, 'create'])->name('donnee.create');
+Route::post('/search-dossier', [GeometreController::class, 'search']);
 
-// Route::get('/secretariat/create', function () {
-//     return Inertia::render('Secretariat/Create');
-// })->name('secretariat.create');
+
+
 Route::post('/secretariat', [SecretariatController::class, 'store'])->name('secretariat.store');
 
-// Route::post('/secretariat', [SecretariatController::class, 'store'])->name('secretariat.store');
-// Route::get('/secretariat', [SecretariatController::class, 'crate']);
+
 
 
 Route::get('/departements/{regionId}', [LocationController::class, 'getDepartementsByRegion']);

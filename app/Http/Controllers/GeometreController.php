@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dossier;
 use App\Models\EvaluationAmenagement;
 use App\Models\EvaluationBati;
 use App\Models\EvaluationCloture;
@@ -31,7 +32,29 @@ class GeometreController extends Controller
         return view('geometre/create', compact('Niveau'));
     }
 
-
+    public function search(Request $request)
+    {
+        // Récupérer le numéro de dossier depuis la requête
+        $numero = $request->input('numero');
+    
+        // Chercher le dossier dans la base de données
+        $dossier = Dossier::where('txt_num_dossier', $numero)->first();
+    
+        // Si le dossier existe, retourner les informations du dossier
+        if ($dossier) {
+            return response()->json([
+                'dossier' => $dossier,
+                'message' => 'Dossier trouvé !',
+                'messageType' => 'success'  // Type de message pour l'alerte
+            ]);
+        } else {
+            // Sinon, retourner un message d'erreur
+            return response()->json([
+                'message' => "Numéro de dossier n'est pas enregistré.",
+                'messageType' => 'danger'  // Type de message pour l'alerte
+            ]);
+        }
+    }
      // PAGES GEOMETRE
     public function store(Request $request)
     {
@@ -190,6 +213,8 @@ class GeometreController extends Controller
                 'nbr_valeur_am' => $validatedData['nbr_valeur_am'] ?? null,
                 'nbr_valeur_totale_ap' => $validatedData['nbr_valeur_totale_ap'] ?? null,
             ]);
+
+            
             return redirect()->back()->with('success', 'Donnée enregistrée !');
         
 
