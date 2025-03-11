@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DonneeController;
+use App\Http\Controllers\DossierController;
 use App\Http\Controllers\GeometreController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MatriceCadastraleController;
@@ -42,7 +43,7 @@ Route::post('/search-dossier', [GeometreController::class, 'search']);
 
 
 Route::post('/secretariat', [SecretariatController::class, 'store'])->name('secretariat.store');
-
+// Route::get('/next-num-dossier', [SecretariatController::class, 'generateNextDossierNumber']);
 
 
 

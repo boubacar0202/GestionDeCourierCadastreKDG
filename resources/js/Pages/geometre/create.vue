@@ -2,8 +2,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import MazBtn from "maz-ui/components/MazBtn";
+import MazRadio from "maz-ui/components/MazRadio";
 import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref } from 'vue'
 import axios from 'axios';
 
 const numero = ref('')
@@ -11,10 +12,113 @@ const message = ref('')
 const messageType = ref('danger') // "danger" (rouge) par défaut
 const dossier = ref(null)
 
-let showUsage = ref(true);
+const currentCat = ref('') // Valeur par défaut
+
+// Fonction pour retourner les options dynamiquement
+const getOptions = () => {
+  return currentCat.value === 'Maison individuelle'
+    ? ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
+    : ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M']
+}
+
 const form = useForm({
     // Ajouter d'autres champs nécessaires
     slt_reference_usage:"",
+    numero:"",
+    txt_occupan_habitaion_1:"",
+    txt_activite_principal_hbt_1:"",
+    txt_ninea_occupan_hbt_1:"",
+    tel_tel_occupant_hbt_1:"",
+    nbr_montant_loyer_hbt_1:"",
+    txt_occupan_habitaion_1:"",
+    txt_activite_principal_hbt_1:"",
+    txt_ninea_occupan_hbt_1:"",
+    tel_tel_occupant_hbt_1:"",
+    nbr_montant_loyer_hbt_1:"",
+    txt_activite_commercial:"",
+    txt_occopan_commercial:"",
+    txt_activite_commercial_1:"",
+    txt_occopan_commercial_1:"",
+    txt_activite_industriel:"",
+    txt_occopan_industriel:"",
+    txt_activite_industriel_1:"",
+    txt_occopan_industriel_1:"",
+    txt_activite_agricole:"",
+    txt_occopan_agricole:"",
+    txt_activite_agricole_1:"",
+    txt_occopan_agricole_1:"",
+    txt_activite_professionnelle:"",
+    txt_occopan_professionnelle:"",
+    txt_activite_professionnelle_1:"",
+    txt_occopan_professionnelle_1:"",
+    txt_activite_culte:"",
+    txt_occopan_culte:"",
+    txt_activite_culte_1:"",
+    txt_occopan_culte_1:"",
+    txt_Activite_administratif:"",
+    txt_occupan_administratif:"",
+    txt_Activite_administratif_1:"",
+    txt_occupan_administratif_1:"",
+    txt_date_devaluation:"",
+    txt_superficie_totale:"",
+    txt_superficie_bati_sol:"",
+    slt_secteur:"",
+    nbr_prix_metre_carré:"",
+    nbr_valeur_terrain:"",
+    slt_type_residence:"",
+    currentCat:"",
+
+    chk_bati_principal:"",
+    nbr_prix_metre_carre:"",
+    nbr_surface_bati_sol:"",
+    nbr_niveau:"",
+    nbr_surface_utile:"",
+    slt_coeff:"",
+    nbr_surface_corriger:"",
+    nbr_valeur:"",
+    nbr_prix_metre_carre_1:"",
+    nbr_surface_bati_sol_1:"",
+    nbr_niveau_1:"",
+    nbr_surface_utile_1:"",
+    slt_coeff_1:"",
+    nbr_surface_corriger_1:"",
+    nbr_valeur_1:"",
+    txt_valeur_terrain_bati:"",
+    nbr_surface_ca_total:"",
+    slt_categorie_ca_total:"",
+    nbr_prix_metre_carre_ca_total:"",
+    nbr_coefficient_ca_total:"",
+    nbr_valeur_ca_total:"",
+    chk_cours_amenager_totale_1:"",
+    nbr_surface_ca_total_1:"",
+    slt_categorie_ca_total_1:"",
+    nbr_prix_metre_carre_ca_total_1:"",
+    nbr_coefficient_ca_total_1:"",
+    nbr_valeur_ca_total_1:"",
+    nbr_valeur_total_cours:"",
+    nbr_longueur_avant_clo:"",
+    slt_categorie_clo:"",
+    nbr_prix_metre_carre_clo:"",
+    nbr_coefficient_clo:"",
+    nbr_valeur_clo:"",
+    nbr_longueur_avant_clo_1:"",
+    slt_categorie_clo_1:"",
+    nbr_prix_metre_carre_clo_1:"",
+    nbr_coefficient_clo_1:"",
+    nbr_valeur_clo_1:"",
+    nbr_valeur_total_clotur:"",
+    txt_designation_am:"",
+    nbr_valeur_unitaire_am:"",
+    nbr_quantile_am:"",
+    slt_coeficien_am:"",
+    nbr_valeur_am:"",
+    txt_designation_am_1:"",
+    nbr_valeur_unitaire_am:"",
+    nbr_quantile_am:"",
+    slt_coeficien_am:"",
+    nbr_valeur_am_1:"",
+    nbr_valeur_totale_ap:"",
+
 });
 
 
@@ -50,9 +154,6 @@ let showCloture = ref(true);
         
 let showAmenagement = ref(true);
     showAmenagement.value = !showAmenagement;
-
-let habitant = ref(true);
-
 
 // Tab actif (par défaut : 'stats')
 const activeTab = ref('terrain');
@@ -132,6 +233,8 @@ const searchDossier = async () => {
         messageType.value = 'warning' // Jaune pour avertissement
     }
 }
+
+
 
 const submitForm = () => {
     console.log(form.value);
@@ -236,7 +339,7 @@ const submitForm = () => {
                                     <div class="border-b">
                                         <div class="flex justify-left text-sm font-medium text-gray-500 divide-x divide-gray-200 dark:divide-gray-700">
                                             <select 
-                                            v-model="form.slt_reference_usage"
+                                                v-model="form.slt_reference_usage"
                                                 name = "slt_reference_usage"
                                                 @change="setActiveTabRU($event.target.value)" 
                                                 class="w-1/3 text-center p-4 border border-gray-300 rounded text-gray-500 dark:text-gray-300"
@@ -576,7 +679,7 @@ const submitForm = () => {
                                                                     <label for="Activite_industriel_1" class="block text-sm/6 font-medium text-gray-900">Activité</label>
                                                                     <div>
                                                                         <input type="text" 
-                                                                        v-model="form.txt_occopan_industriel"
+                                                                        v-model="form.txt_activite_industriel_1"
                                                                         name="txt_activite_industriel_1" 
                                                                         id="Activite_industriel_1"  
                                                                         class="block w-full rounded-md bg-white 
@@ -589,7 +692,7 @@ const submitForm = () => {
                                                                     <label for="Occopan_industriel_1" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
                                                                     <div>
                                                                         <input type="text" 
-                                                                        v-model="form.txt_occopan_industriel"
+                                                                        v-model="form.txt_occopan_industriel_1"
                                                                         name="txt_occopan_industriel_1" 
                                                                         id="Occopan_industriel_1"  
                                                                         class="block w-full rounded-md bg-white 
@@ -1066,7 +1169,7 @@ const submitForm = () => {
                                                 <div class="flex justify-center">
                                                     <label for="Type_residence" class="block text-sm font-medium text-gray-900">Type de residence</label>
                                                     <select type="select" 
-                                                        v-model="form.nbr_valeur_terrain"  
+                                                        v-model="form.slt_type_residence"  
                                                         name="slt_type_residence" id="Type_residence" class="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 border-gray-300 
                                                         focus:ring-indigo-500 focus:border-indigo-500"
                                                     >
@@ -1076,37 +1179,23 @@ const submitForm = () => {
                                                     </select>
                                                 </div>
                                             </div>
-
                                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                                                <MazRadio
-                                                    v-model="currentCat"
-                                                    value="Terrain Non Immatriculé"
-                                                    label="Terrain Non Immatriculé  ."
-                                                />
-                                                <MazRadio
-                                                    v-model="currentCat"
-                                                    value="Terrain Immatriculé"
-                                                    label="Terrain Immatriculé"
-                                                />
+                                                <!-- Boutons radio -->
                                                 <div class="sm:col-span-2">
                                                     <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
-                                                        <input v-model="currentCat" id="Maison_indivielle" type="radio" value="catA" name="rd_type_maissons" class="w-4 h-4 
-                                                            text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 
-                                                            dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                                        <label for="Maison_indivielle" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 
-                                                                dark:text-gray-300">Maison individuelle</label>
+                                                        <MazRadio v-model="currentCat" 
+                                                        value="Maison individuelle" 
+                                                        label="Maison individuelle" />
                                                     </div>
                                                 </div>
                                                 <div class="sm:col-span-2">
                                                     <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
-                                                        <input v-model="currentCat" id="Immeuble_collectif" type="radio" value="catB" name="rd_type_maissons" 
-                                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 
-                                                                    dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700
-                                                                    dark:border-gray-600">
-                                                        <label for="Immeuble_collectif" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 
-                                                                    dark:text-gray-300">Immeuble collectif</label>
+                                                        <MazRadio v-model="currentCat" 
+                                                        value="Immeuble collectif" 
+                                                        label="Immeuble collectif" />
                                                     </div>
                                                 </div>
+                                                <br/>    
                                             </div>
 
                                             <!-- Batiment  Princil-->
@@ -1114,7 +1203,10 @@ const submitForm = () => {
                                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
                                                 <div class="flex items-start mb-6">
                                                     <div class="flex items-center h-5">
-                                                        <input id="remember" name="chk_bati_principal" type="checkbox" value="Bâtiment principal" class="w-4 h-4 border border-gray-300 
+                                                        <input id="remember" 
+                                                        v-model="chk_bati_principal"
+                                                        name="chk_bati_principal"
+                                                        type="checkbox" value="Bâtiment principal" class="w-4 h-4 border border-gray-300 
                                                             rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 
                                                             dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" />
                                                     </div>
@@ -1122,14 +1214,59 @@ const submitForm = () => {
                                                         dark:text-gray-300">Bâtiment principal</label>
                                                 </div>
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-2">
-                                                    <div class="grid gap-6 mb-6 md:grid-cols-2"> 
-                                                        <KeepAlive>
-                                                            <component :is="currentCat"></component>
-                                                        </KeepAlive>
+                                                    <div>
+                                                        <div v-if="currentCat === 'Maison individuelle'" class="block text-sm/6 font-medium text-gray-900">
+                                                            <!-- Vous avez sélectionné une catégorie de type Maison individuelle. -->
+                                                            <label for="Dependant_domaine" class="block text-sm/6 font-medium text-gray-900">CAT</label>
+                                                            <select name="slt_dependant_domaine" id="Dependant_domaine" class="col-start-1 row-start-1 w-full 
+                                                                    appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline 
+                                                                    outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 
+                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                <option selected desable></option>
+                                                                <option value="2">1</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                                <option value="4">4</option>
+                                                                <option value="5">5</option>
+                                                                <option value="6">6</option>
+                                                                <option value="7">7</option>
+                                                                <option value="8">8</option>
+                                                                <option value="9">9</option>
+                                                                <option value="10">10</option>
+                                                                <option value="11">11</option>
+                                                            </select>
+                                                        </div>
+                                                        <div v-else-if="currentCat === 'Immeuble collectif'" class="block text-sm/6 font-medium text-gray-900">
+                                                            <!-- Vous avez sélectionné une autre catégorie. -->
+                                                            <label for="Dependant_domaine" class="block text-sm/6 font-medium text-gray-900">CAT</label>
+                                                            <select name="slt_dependant_domaine" id="Dependant_domaine" class="col-start-1 row-start-1 w-full 
+                                                                    appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline 
+                                                                    outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 
+                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                <option selected desable></option>
+                                                                <option value="A">A</option>
+                                                                <option value="B">B</option>
+                                                                <option value="C">C</option>
+                                                                <option value="D">D</option>
+                                                                <option value="E">E</option>
+                                                                <option value="F">F</option>
+                                                                <option value="G">G</option>
+                                                                <option value="H">H</option>
+                                                                <option value="I">I</option>
+                                                                <option value="J">J</option>
+                                                                <option value="K">K</option>
+                                                                <option value="L">L</option>
+                                                                <option value="M">M</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
+
                                                     <div > 
                                                         <label for="Prix_mettre_carre" class="block text-sm/6 font-medium text-gray-900">Prix m²</label>
-                                                        <input type="number" name="nbr_prix_metre_carre" id="Prix_mettre_carre"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_prix_metre_carre"
+                                                        name="nbr_prix_metre_carre" id="Prix_mettre_carre"  
+                                                        class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1138,14 +1275,18 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-2">
                                                     <div> 
                                                         <label for="Surface_bati_sol" class="block text-sm/6 font-medium text-gray-900">Surf B S</label>
-                                                        <input type="number" name="nbr_surface_bati_sol" id="Surface_bati_sol" oninput="calculeSurfaceBrute()"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_surface_bati_sol"
+                                                        name="nbr_surface_bati_sol" id="Surface_bati_sol" oninput="calculeSurfaceBrute()"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                                     </div>
                                                     <div> 
                                                         <label for="Niveau" class="block text-sm/6 font-medium text-gray-900">Niveau</label>
-                                                        <input type="number" name="nbr_niveau" id="Niveau" oninput="calculeSurfaceBrute()"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_niveau"
+                                                        name="nbr_niveau" id="Niveau" oninput="calculeSurfaceBrute()"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1154,14 +1295,18 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-2">
                                                     <div> 
                                                         <label for="Surface_utile" class="block text-sm/6 font-medium text-gray-900">Surf Utile</label>
-                                                        <input type="number" name="nbr_surface_utile" id="Surface_utile" oninput="calculeSurfaceUtile()"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_surface_utile"
+                                                        name="nbr_surface_utile" id="Surface_utile" oninput="calculeSurfaceUtile()"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                                     </div>
                                                     <div> 
                                                         <label for="Coeff" class="block text-sm/6 font-medium text-gray-900">Coeff</label>
-                                                        <select type="select" name="slt_coeff" id="Coeff"  class="block w-full rounded-md bg-white 
+                                                        <select type="select" 
+                                                        v-model="slt_coeff"
+                                                        name="slt_coeff" id="Coeff"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1180,14 +1325,18 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-2">
                                                     <div> 
                                                         <label for="Surface_corriger" class="block text-sm/6 font-medium text-gray-900">S.Corrigee</label>
-                                                        <input type="number" name="nbr_surface_corriger" id="Surface_corriger" oninput="calculesurfaceCorriger()"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_surface_corriger"
+                                                        name="nbr_surface_corriger" id="Surface_corriger" oninput="calculesurfaceCorriger()"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                                     </div>
                                                     <div> 
                                                         <label for="Valeur" class="block text-sm/6 font-medium text-gray-900">Valeur</label>
-                                                        <input type="number" name="nbr_valeur" id="Valeur"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_valeur"
+                                                        name="nbr_valeur" id="Valeur"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1216,18 +1365,20 @@ const submitForm = () => {
                                                                         rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 
                                                                         dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" />
                                                                 </div>
-                                                                <label for="remember_1" class="ms-2 text-sm font-medium text-gray-900 
+                                                                <label for="remember_1" 
+                                                                
+                                                                class="ms-2 text-sm font-medium text-gray-900 
                                                                     dark:text-gray-300">Bâtiment principal</label>
                                                             </div>
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-2">
                                                                 <div class="grid gap-6 mb-6 md:grid-cols-2"> 
-                                                                    <KeepAlive>
-                                                                        <component :is="currentCat"></component>
-                                                                    </KeepAlive>
+                                                                
                                                                 </div>
                                                                 <div > 
                                                                     <label for="Prix_mettre_carre_1" class="block text-sm/6 font-medium text-gray-900">Prix m²</label>
-                                                                    <input type="number_1" name="nbr_prix_metre_carre_1" id="Prix_mettre_carre_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number_1" 
+                                                                    v-model="nbr_prix_metre_carre_1"
+                                                                    name="nbr_prix_metre_carre_1" id="Prix_mettre_carre_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1236,14 +1387,18 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-2">
                                                                 <div> 
                                                                     <label for="Surface_bati_sol_1" class="block text-sm/6 font-medium text-gray-900">Surf B S</label>
-                                                                    <input type="number" name="nbr_surface_bati_sol_1" id="Surface_bati_sol_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number" 
+                                                                    v-model="nbr_surface_bati_sol_1"
+                                                                    name="nbr_surface_bati_sol_1" id="Surface_bati_sol_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                                                 </div>
                                                                 <div> 
                                                                     <label for="Niveau_1" class="block text-sm/6 font-medium text-gray-900">Niveau</label>
-                                                                    <input type="number" name="nbr_niveau_1" id="Niveau_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number" 
+                                                                    v-model="nbr_niveau_1"
+                                                                    name="nbr_niveau_1" id="Niveau_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1252,14 +1407,18 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-2">
                                                                 <div> 
                                                                     <label for="Surface_utile_1" class="block text-sm/6 font-medium text-gray-900">Surf Utile</label>
-                                                                    <input type="number" name="nbr_surface_utile_1" id="Surface_utile_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number" 
+                                                                    v-model="nbr_surface_utile_1"
+                                                                    name="nbr_surface_utile_1" id="Surface_utile_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                                                 </div>
                                                                 <div> 
                                                                     <label for="Coeff_1" class="block text-sm/6 font-medium text-gray-900">Coeff</label>
-                                                                    <select type="select" name="slt_coeff_1" id="Coeff_1"  class="block w-full rounded-md bg-white 
+                                                                    <select type="select" 
+                                                                    v-model="slt_coeff_1"
+                                                                    name="slt_coeff_1" id="Coeff_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1278,14 +1437,18 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-2">
                                                                 <div> 
                                                                     <label for="Surface_corriger_1" class="block text-sm/6 font-medium text-gray-900">S.Corrigee</label>
-                                                                    <input type="number" name="nbr_surface_corriger_1" id="Surface_corriger_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number" 
+                                                                    v-model="nbr_surface_corriger_1" 
+                                                                    name="nbr_surface_corriger_1" id="Surface_corriger_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                                                 </div>
                                                                 <div> 
                                                                     <label for="Valeur_1" class="block text-sm/6 font-medium text-gray-900">Valeur</label>
-                                                                    <input type="number" name="nbr_valeur_1" id="Valeur_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number" 
+                                                                    v-model="nbr_valeur_1" 
+                                                                    name="nbr_valeur_1" id="Valeur_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1300,7 +1463,9 @@ const submitForm = () => {
                                                     
                                                     <div> 
                                                         <label for="Valeur_terrain_bati">Valeur bâtiment (s)</label>
-                                                        <input type="text" name="txt_valeur_terrain_bati" id="Valeur_terrain_bati"  class="block w-full rounded-md bg-white 
+                                                        <input type="text" 
+                                                        v-model="txt_valeur_terrain_bati" 
+                                                        name="txt_valeur_terrain_bati" id="Valeur_terrain_bati"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1326,7 +1491,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 
                                                         <label for="SurfaceCATotal" class="block text-sm/6 font-medium text-gray-900">Surface</label>
-                                                        <input type="number" name="nbr_surface_ca_total" id="Surface_ca_total"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_surface_ca_total" 
+                                                        name="nbr_surface_ca_total" id="Surface_ca_total"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">                         
@@ -1335,7 +1502,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 
                                                         <label for="Categorie_ca_total" class="block text-sm/6 font-medium text-gray-900">Catégorie</label>
-                                                        <select type="select" name="slt_categorie_ca_total" id="Categorie_ca_total"  class="block w-full rounded-md bg-white 
+                                                        <select type="select" 
+                                                        v-model="slt_categorie_ca_total" 
+                                                        name="slt_categorie_ca_total" id="Categorie_ca_total"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1350,7 +1519,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 
                                                         <label for="Prix_metre_carre_ca_total" class="block text-sm/6 font-medium text-gray-900">P/m²</label>
-                                                        <input type="number" name="nbr_prix_metre_carre_ca_total" id="Prix_metre_carre_ca_total"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_prix_metre_carre_ca_total" 
+                                                        name="nbr_prix_metre_carre_ca_total" id="Prix_metre_carre_ca_total"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1359,7 +1530,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 
                                                         <label for="Coefficient_ca_total" class="block text-sm/6 font-medium text-gray-900">Coefficient</label>
-                                                        <select type="select" name="nbr_coefficient_ca_total" id="Coefficient_ca_total"  class="block w-full rounded-md bg-white 
+                                                        <select type="select" 
+                                                        v-model="nbr_coefficient_ca_total" 
+                                                        name="nbr_coefficient_ca_total" id="Coefficient_ca_total"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1378,7 +1551,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 
                                                         <label for="Valeur_ca_total" class="block text-sm/6 font-medium text-gray-900">Valeur</label>
-                                                        <input type="number" name="nbr_valeur_ca_total" id="Valeur_ca_total"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_valeur_ca_total" 
+                                                        name="nbr_valeur_ca_total" id="Valeur_ca_total"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1391,7 +1566,9 @@ const submitForm = () => {
                                                         <div  class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"> 
                                                             <div class="flex items-start mb-6">
                                                                 <div class="flex items-center h-5">
-                                                                    <input id="CoursAmenagerTotale_1" name="chk_cours_amenager_totale_1" type="checkbox" value="Cours Aménagées Totale" class="w-4 h-4 border border-gray-300 
+                                                                    <input id="CoursAmenagerTotale_1" 
+                                                                    v-model="chk_cours_amenager_totale_1" 
+                                                                    name="chk_cours_amenager_totale_1" type="checkbox" value="Cours Aménagées Totale" class="w-4 h-4 border border-gray-300 
                                                                         rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 
                                                                         dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" />
                                                                 </div>
@@ -1401,7 +1578,9 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                                 <div> 
                                                                     <label for="SurfaceCATotal_1" class="block text-sm/6 font-medium text-gray-900">Surface</label>
-                                                                    <input type="number" name="nbr_surface_ca_total_1" id="Surface_ca_total_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number" 
+                                                                    v-model="nbr_surface_ca_total_1" 
+                                                                    name="nbr_surface_ca_total_1" id="Surface_ca_total_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">                         
@@ -1410,7 +1589,9 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                                 <div> 
                                                                     <label for="Categorie_ca_total_1" class="block text-sm/6 font-medium text-gray-900">Catégorie</label>
-                                                                    <select type="select" name="slt_categorie_ca_total_1" id="Categorie_ca_total_1"  class="block w-full rounded-md bg-white 
+                                                                    <select type="select" 
+                                                                    v-model="slt_categorie_ca_total_1" 
+                                                                    name="slt_categorie_ca_total_1" id="Categorie_ca_total_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1425,7 +1606,9 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                                 <div> 
                                                                     <label for="Prix_metre_carre_ca_total_1" class="block text-sm/6 font-medium text-gray-900">P/m²</label>
-                                                                    <input type="number" name="nbr_prix_metre_carre_ca_total_1" id="Prix_metre_carre_ca_total_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number" 
+                                                                    v-model="nbr_prix_metre_carre_ca_total_1" 
+                                                                    name="nbr_prix_metre_carre_ca_total_1" id="Prix_metre_carre_ca_total_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1434,7 +1617,9 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                                 <div> 
                                                                     <label for="Coefficient_ca_total_1" class="block text-sm/6 font-medium text-gray-900">Coefficient</label>
-                                                                    <select type="select" name="nbr_coefficient_ca_total_1" id="Coefficient_ca_total_1"  class="block w-full rounded-md bg-white 
+                                                                    <select type="select" 
+                                                                    v-model="nbr_coefficient_ca_total_1" 
+                                                                    name="nbr_coefficient_ca_total_1" id="Coefficient_ca_total_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1453,7 +1638,9 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                                 <div> 
                                                                     <label for="Valeur_ca_total_1" class="block text-sm/6 font-medium text-gray-900">Valeur</label>
-                                                                    <input type="number" name="nbr_valeur_ca_total_1" id="Valeur_ca_total_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number" 
+                                                                    v-model="nbr_valeur_ca_total_1" 
+                                                                    name="nbr_valeur_ca_total_1" id="Valeur_ca_total_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1479,7 +1666,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-4">
                                                     <div> 
                                                         <label for="Valeur_total_cours" class="block text-sm/6 font-medium text-gray-900">Valeur Total des Cours</label>
-                                                        <input type="number" name="nbr_valeur_total_cours" id="Valeur_total_cours"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_valeur_total_cours" 
+                                                        name="nbr_valeur_total_cours" id="Valeur_total_cours"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1504,7 +1693,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 
                                                         <label for="Longueur_avant_clo" class="block text-sm/6 font-medium text-gray-900">Linéaire</label>
-                                                        <input type="number" name="nbr_longueur_avant_clo" id="Longueur_avant_clo"  class="block w-full rounded-md bg-white 
+                                                        <input type="number"  
+                                                        v-model="nbr_longueur_avant_clo" 
+                                                        name="nbr_longueur_avant_clo" id="Longueur_avant_clo"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">                         
@@ -1513,7 +1704,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 
                                                         <label for="Categorie_clo" class="block text-sm/6 font-medium text-gray-900">Catégorie</label>
-                                                        <select type="select" name="slt_categorie_clo" id="Categorie_clo"  class="block w-full rounded-md bg-white 
+                                                        <select type="select" 
+                                                        v-model="slt_categorie_clo" 
+                                                        name="slt_categorie_clo" id="Categorie_clo"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1528,7 +1721,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 
                                                         <label for="Prix_metre_carre_clo" class="block text-sm/6 font-medium text-gray-900">P/mL</label>
-                                                        <input type="number" name="nbr_prix_metre_carre_clo" id="Prix_metre_carre_clo"  class="block w-full rounded-md bg-white 
+                                                        <input type="number" 
+                                                        v-model="nbr_prix_metre_carre_clo" 
+                                                        name="nbr_prix_metre_carre_clo" id="Prix_metre_carre_clo"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1537,7 +1732,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 
                                                         <label for="Coefficient_clo" class="block text-sm/6 font-medium text-gray-900">Coefficient</label>
-                                                        <select type="select" name="nbr_coefficient_clo" id="Coefficient_clo"  class="block w-full rounded-md bg-white 
+                                                        <select type="select"  
+                                                        v-model="nbr_coefficient_clo" 
+                                                        name="nbr_coefficient_clo" id="Coefficient_clo"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1556,7 +1753,9 @@ const submitForm = () => {
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 
                                                         <label for="Valeur_clo" class="block text-sm/6 font-medium text-gray-900">Valeur</label>
-                                                        <input type="number" name="nbr_valeur_clo" id="Valeur_clo"  class="block w-full rounded-md bg-white 
+                                                        <input type="number"   
+                                                        v-model="nbr_valeur_clo" 
+                                                        name="nbr_valeur_clo" id="Valeur_clo"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1579,7 +1778,9 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                                 <div> 
                                                                     <label for="Longueur_avant_clo_1" class="block text-sm/6 font-medium text-gray-900">Linéaire</label>
-                                                                    <input type="number" name="nbr_longueur_avant_clo_1" id="Longueur_avant_clo_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number"    
+                                                                        v-model="nbr_longueur_avant_clo_1" 
+                                                                        name="nbr_longueur_avant_clo_1" id="Longueur_avant_clo_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">                         
@@ -1588,7 +1789,9 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                                 <div> 
                                                                     <label for="Categorie_clo_1" class="block text-sm/6 font-medium text-gray-900">Catégorie</label>
-                                                                    <select type="select" name="slt_categorie_clo_1" id="Categorie_clo_1"  class="block w-full rounded-md bg-white 
+                                                                    <select type="select"     
+                                                                        v-model="slt_categorie_clo_1" 
+                                                                        name="slt_categorie_clo_1" id="Categorie_clo_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1603,7 +1806,9 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                                 <div> 
                                                                     <label for="Prix_metre_carre_clo_1" class="block text-sm/6 font-medium text-gray-900">P/mL</label>
-                                                                    <input type="number" name="nbr_prix_metre_carre_clo_1" id="Prix_metre_carre_clo_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number"      
+                                                                        v-model="nbr_prix_metre_carre_clo_1" 
+                                                                        name="nbr_prix_metre_carre_clo_1" id="Prix_metre_carre_clo_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1612,7 +1817,9 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                                 <div> 
                                                                     <label for="Coefficient_clo_1" class="block text-sm/6 font-medium text-gray-900">Coefficient</label>
-                                                                    <select type="select" name="nbr_coefficient_clo_1" id="Coefficient_clo_1"  class="block w-full rounded-md bg-white 
+                                                                    <select type="select"       
+                                                                        v-model="nbr_coefficient_clo_1" 
+                                                                        name="nbr_coefficient_clo_1" id="Coefficient_clo_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1631,7 +1838,9 @@ const submitForm = () => {
                                                             <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                                 <div> 
                                                                     <label for="Valeur_clo_1" class="block text-sm/6 font-medium text-gray-900">Valeur</label>
-                                                                    <input type="number" name="nbr_valeur_clo_1" id="Valeur_clo_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number"        
+                                                                        v-model="nbr_valeur_clo_1" 
+                                                                        name="nbr_valeur_clo_1" id="Valeur_clo_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1654,7 +1863,9 @@ const submitForm = () => {
                                             <div  class="grid gap-6 mb-6 md:grid-cols-4">
                                                 <div> 
                                                     <label for="Valeur_total_clotur">Valeurs Totale des Clôtures</label>
-                                                    <input type="number" name="nbr_valeur_total_clotur" id="Valeur_total_clotur"  class="block w-full rounded-md bg-white 
+                                                    <input type="number"         
+                                                        v-model="nbr_valeur_total_clotur" 
+                                                        name="nbr_valeur_total_clotur" id="Valeur_total_clotur"  class="block w-full rounded-md bg-white 
                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1671,7 +1882,9 @@ const submitForm = () => {
                                                     <div>
                                                         <label for="Designation_1" class="ms-2 text-sm font-medium text-gray-900 
                                                             dark:text-gray-300">Designeation</label>
-                                                        <input id="Designation_1" name="txt_designation_am" type="text" class="block w-full rounded-md bg-white 
+                                                        <input id="Designation_1"          
+                                                        v-model="txt_designation_am" 
+                                                        name="txt_designation_am" type="text" class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
@@ -1681,7 +1894,9 @@ const submitForm = () => {
                                                     <div>
                                                         <label for="Valeur_unitaire_1" class="ms-2 text-sm font-medium text-gray-900 
                                                             dark:text-gray-300">Valeur Unitaire</label>
-                                                        <input type="number" name="nbr_valeur_unitaire_am" id="Valeur_unitaire_1"  class="block w-full rounded-md bg-white 
+                                                        <input type="number"           
+                                                        v-model="nbr_valeur_unitaire_am" 
+                                                        name="nbr_valeur_unitaire_am" id="Valeur_unitaire_1"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">                         
@@ -1691,7 +1906,9 @@ const submitForm = () => {
                                                     <div> 
                                                         <label for="Quantile_1" class="ms-2 text-sm font-medium text-gray-900 
                                                         dark:text-gray-300">Quantité</label>
-                                                        <input type="number" name="nbr_quantile_am" id="Quantile_1"  class="block w-full rounded-md bg-white 
+                                                        <input type="number"            
+                                                        v-model="nbr_quantile_am" 
+                                                        name="nbr_quantile_am" id="Quantile_1"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1701,7 +1918,9 @@ const submitForm = () => {
                                                     <div> 
                                                         <label for="Coeficien_1" class="ms-2 text-sm font-medium text-gray-900 
                                                             dark:text-gray-300">Coeficien</label>
-                                                        <select type="select" name="slt_coeficien_am" id="Coeficien_1"  class="block w-full rounded-md bg-white 
+                                                        <select type="select"             
+                                                        v-model="slt_coeficien_am" 
+                                                        name="slt_coeficien_am" id="Coeficien_1"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1723,7 +1942,9 @@ const submitForm = () => {
                                                     <div> 
                                                         <label for="Valeur" class="ms-2 text-sm font-medium text-gray-900 
                                                         dark:text-gray-300">Valeur</label>
-                                                        <input type="number" name="nbr_valeur_am" id="Valeur"  class="block w-full rounded-md bg-white 
+                                                        <input type="number"              
+                                                        v-model="nbr_valeur_am" 
+                                                        name="nbr_valeur_am" id="Valeur"  class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1750,7 +1971,9 @@ const submitForm = () => {
                                                                 <div>
                                                                     <label for="Designation_1" class="ms-2 text-sm font-medium text-gray-900 
                                                                         dark:text-gray-300">Designeation</label>
-                                                                    <input id="Designation_1" name="txt_designation_am_1" type="text" class="block w-full rounded-md bg-white 
+                                                                    <input id="Designation_1"               
+                                                                        v-model="txt_designation_am_1" 
+                                                                        name="txt_designation_am_1" type="text" class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
@@ -1760,7 +1983,9 @@ const submitForm = () => {
                                                                 <div>
                                                                     <label for="Valeur_unitaire_1" class="ms-2 text-sm font-medium text-gray-900 
                                                                         dark:text-gray-300">Valeur Unitaire</label>
-                                                                    <input type="number" name="nbr_valeur_unitaire_am" id="Valeur_unitaire_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number"                
+                                                                        v-model="nbr_valeur_unitaire_am" 
+                                                                        name="nbr_valeur_unitaire_am" id="Valeur_unitaire_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">                         
@@ -1770,7 +1995,9 @@ const submitForm = () => {
                                                                 <div> 
                                                                     <label for="Quantile_1" class="ms-2 text-sm font-medium text-gray-900 
                                                                     dark:text-gray-300">Quantité</label>
-                                                                    <input type="number" name="nbr_quantile_am" id="Quantile_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number"                 
+                                                                        v-model="nbr_quantile_am" 
+                                                                        name="nbr_quantile_am" id="Quantile_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1780,7 +2007,9 @@ const submitForm = () => {
                                                                 <div> 
                                                                     <label for="Coeficien_1" class="ms-2 text-sm font-medium text-gray-900 
                                                                         dark:text-gray-300">Coeficien</label>
-                                                                    <select type="select" name="slt_coeficien_am" id="Coeficien_1"  class="block w-full rounded-md bg-white 
+                                                                    <select type="select"                  
+                                                                        v-model="slt_coeficien_am" 
+                                                                        name="slt_coeficien_am" id="Coeficien_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1802,7 +2031,9 @@ const submitForm = () => {
                                                                 <div> 
                                                                     <label for="Valeur_1" class="ms-2 text-sm font-medium text-gray-900 
                                                                     dark:text-gray-300">Valeur</label>
-                                                                    <input type="number" name="nbr_valeur_am_1" id="Valeur_1"  class="block w-full rounded-md bg-white 
+                                                                    <input type="number"                   
+                                                                        v-model="nbr_valeur_am_1" 
+                                                                        name="nbr_valeur_am_1" id="Valeur_1"  class="block w-full rounded-md bg-white 
                                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1816,7 +2047,9 @@ const submitForm = () => {
                                             <div  class="grid gap-6 mb-6 md:grid-cols-4">
                                                 <div> 
                                                     <label for="valeur_totale_ap">Valeur Totale des A.P</label>
-                                                    <input type="number" name="nbr_valeur_totale_ap" id="valeur_totale_ap"  class="block w-full rounded-md bg-white 
+                                                    <input type="number"                    
+                                                        v-model="nbr_valeur_totale_ap" 
+                                                        name="nbr_valeur_totale_ap" id="valeur_totale_ap"  class="block w-full rounded-md bg-white 
                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">

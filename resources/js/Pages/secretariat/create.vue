@@ -3,12 +3,11 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import MazBtn from "maz-ui/components/MazBtn";
 import MazRadio from "maz-ui/components/MazRadio";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed  } from "vue";
 import axios from "axios";
 import { useToast } from "maz-ui";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import { Inertia } from '@inertiajs/inertia';
-import { reactive, computed } from 'vue';
 defineOptions({ layout: DefaultLayout });
 
 const slt_region = ref();
@@ -21,6 +20,16 @@ const arrondissements = ref(null);
 const communes = ref(null);
 const slt_dependant_domaine = ref(null); // ou ref({}) selon l'utilisation
 
+// const code_commune = ref("");
+// const txt_num_section = ref("");
+// const txt_num_parcelle = ref("");
+// const txt_appartement = ref("");
+
+// // Générer la concaténation automatiquement : ${code_commune.value}
+// const txt_nicad = computed(() => {
+//     return ` ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`; // Concatène avec un espace
+// });
+
 
 const toast = useToast();
 
@@ -29,16 +38,19 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    nextSlug: {
+        type: String,
+        default: "false",
+    },
 });
-
 
 // const activeTab = ref(1);
 const activeTab = ref(""); // Valeur de la tab active
 
-const handleTabClick = (event, tab) => {
-    event.preventDefault();
-    activeTab.value = tab;
-};
+// const handleTabClick = (event, tab) => {
+//     event.preventDefault();
+//     activeTab.value = tab;
+// };
 
 
 const form = useForm({
@@ -66,7 +78,6 @@ const form = useForm({
     txt_num_deliberation: "",
     dt_date_deliberation: "",
     txt_nicad: "",  // Supprimez l'une des occurrences
-    txt_confirmationNicad: "",
 
     // Table ReferenceCadastrale
     rd_immatriculation_terrain:"",
@@ -76,6 +87,7 @@ const form = useForm({
     txt_num_requisition: "",
     txt_surface_bornage: "",
     dt_date_bornage: "",
+    txt_appartement:"",
     txt_nom_geometre: "",
 
     // Table Titulaire
@@ -177,10 +189,6 @@ onMounted(() => {
     // Vous pouvez ajouter une logique pour initialiser les données ici
 });
 
-const nicadMismatch = computed(() => {
-    return form.txt_nicad !== form.txt_confirmationNicad;
-});
-
 const checkNumDossier = async () => {
     try {
         const response = await axios.post('/api/check-num-dossier', {
@@ -197,6 +205,12 @@ const checkNumDossier = async () => {
     }
 };
 
+// Nicad = N° Section + "-" + N° Parcelle
+// Propriété calculée pour Nicad
+const txt_nicad = computed(() => {
+    return `${form.value.txt_num_section}-${form.value.txt_num_parcelle}`;
+});
+
 const submitForm = function () {  // Ajoutez `async` ici
     console.log("📤 Envoi du formulaire :", form);
     form.rd_immatriculation_terrain = activeTab.value || "";  // Mise à jour de la donnée
@@ -204,10 +218,7 @@ const submitForm = function () {  // Ajoutez `async` ici
     form.slt_departement = slt_departement?.value || ""; // Accès via this.slt_departement
     form.slt_arrondissement = slt_arrondissement?.value || ""; // Accès via this.slt_arrondissement
     form.slt_commune = slt_commune?.value || ""; // Accès via this.slt_commune
-    if (nicadMismatch.value) {
-        alert("Les valeurs de Nicad ne correspondent pas !");
-        return;
-    }
+  
 
     // Formulaire Laravel
     form.post(route("secretariat.store"), {
@@ -298,7 +309,8 @@ const mazTabs = [
     <AuthenticatedLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Secretariat Page Create
+                Secretariat
+                
             </h2>
         </template>
 
@@ -307,8 +319,9 @@ const mazTabs = [
                 <div class="w-full max-w-6xl">
                     <div class="bg-white shadow-md rounded-lg">
                         <!-- En-tête du formulaire -->
-                        <div class="p-4 border-b bg-gray-100">
+                        <div   class="p-4 border-b bg-gray-100">
                             <h1 class="text-lg font-semibold">Formulaire</h1>
+                           
                         </div>
 
                         <!-- Corps du formulaire -->
@@ -323,21 +336,23 @@ const mazTabs = [
                                     <div
                                         class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
                                     >
+                                    
                                         <div class="sm:col-span-2">
                                             <div class="sm:col-span-1">
-                                                <label
-                                                    for="txt_num_dossier"
-                                                    class="block text-sm/6 font-medium text-gray-900"
-                                                >
+                                                <label class="block text-sm/6 font-medium text-gray-900">
                                                     N° Dossier
                                                 </label>
-                                                <div class="mt-2">
+                                                <div class="mt-1">
                                                     <input
                                                         type="text"
                                                         name="txt_num_dossier"
-                                                        @blur="checkNumDossier"
-                                                        v-model="form.txt_num_dossier"
-                                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        v-model="
+                                                            form.txt_num_dossier
+                                                        "
+                                                        id="txt_num_dossier"
+                                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline 
+                                                        focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                     />
                                                 </div>
                                             </div>
@@ -655,43 +670,7 @@ const mazTabs = [
                                                 />
                                             </div>
                                         </div>
-                                        <div class="sm:col-span-1">
-                                            <label
-                                                for="Num_section"
-                                                class="block text-sm font-medium"
-                                                >N° Section</label
-                                            >
-                                            <div class="mt-2">
-                                                <input
-                                                    type="text"
-                                                    name="txt_num_section"
-                                                    v-model="
-                                                        form.txt_num_section
-                                                    "
-                                                    id="Num_section"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div class="sm:col-span-1">
-                                            <label
-                                                for="Num_parcelle"
-                                                class="block text-sm/6 font-medium text-gray-900"
-                                                >N° Parcelle</label
-                                            >
-                                            <div class="mt-2">
-                                                <input
-                                                    type="text"
-                                                    name="txt_num_parcelle"
-                                                    v-model="
-                                                        form.txt_num_parcelle
-                                                    "
-                                                    id="Num_parcelle"
-                                                    autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                                />
-                                            </div>
-                                        </div>
+                                       
                                         <div class="sm:col-span-1">
                                             <label
                                                 for="numTitre"
@@ -709,7 +688,7 @@ const mazTabs = [
                                                 />
                                             </div>
                                         </div>
-                                        <div class="sm:col-span-1">
+                                        <!-- <div class="sm:col-span-1">
                                             <label
                                                 for="titreMere"
                                                 class="block text-sm/6 font-medium text-gray-900"
@@ -727,7 +706,7 @@ const mazTabs = [
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />
                                             </div>
-                                        </div>
+                                        </div> -->
                                         <div class="sm:col-span-1">
                                             <label
                                                 for="surface"
@@ -843,39 +822,64 @@ const mazTabs = [
                                                 />
                                             </div>
                                         </div>
-
-                                        <div class="sm:col-span-2">
+                                        <div class="sm:col-span-1">
                                             <label
-                                                for="Nicad"
-                                                class="block text-sm/6 font-medium text-gray-900"
-                                                >Nicad</label
+                                                for="Num_section"
+                                                class="block text-sm font-medium"
+                                                >N° Section</label
                                             >
                                             <div class="mt-2">
                                                 <input
                                                     type="text"
-                                                    name="txt_nicad"
-                                                    v-model="form.txt_nicad"
-                                                    id="Nicad"
-                                                    autocomplete="address-level2"
+                                                    name="txt_num_section"
+                                                    v-model="
+                                                        form.txt_num_section
+                                                    "
+                                                    id="Num_section"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
-
-                                        <div class="sm:col-span-2">
+                                     
+                                        <div class="sm:col-span-1">
                                             <label
-                                                for="txt_confirmationNicad"
+                                                for="Num_parcelle"
                                                 class="block text-sm/6 font-medium text-gray-900"
-                                                >Confirmation Nicad</label
+                                                >N° Parcelle</label
                                             >
                                             <div class="mt-2">
                                                 <input
                                                     type="text"
-                                                    name="txt_confirmationNicad"
-                                                    v-model="form.txt_confirmationNicad"
-                                                    id="txt_confirmationNicad"
-                                                    autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    name="txt_num_parcelle"
+                                                    v-model="
+                                                        form.txt_num_parcelle
+                                                    "
+                                                    id="Num_parcelle"
+                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                    outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline 
+                                                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <label 
+                                                for="txt_nicad" 
+                                                class="block text-sm/6 font-medium text-gray-900"
+                                                >
+                                                Nicad</label>
+                                            <div class="mt-2">
+                                                <input
+                                                    type="text"
+                                                    name="txt_num_parcelle"
+                                                    v-model="
+                                                        form.txt_num_parcelle
+                                                    "
+                                                    value="txt_nicad"
+                                                    id="Num_parcelle"
+                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                    outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline 
+                                                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    readonly
                                                 />
                                             </div>
                                         </div>
@@ -949,6 +953,7 @@ const mazTabs = [
                                                             id="Bornage"
                                                             class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                         >
+                                                            <option selected disabled>choisir ici</option>
                                                             <option value="Immatriculation">Immatriculation</option>
                                                             <option value="Morcellement">Morcellement</option>
                                                             <option value="Rectificatif de Limite">Rectificatif de Limite</option>
@@ -1022,6 +1027,23 @@ const mazTabs = [
                                                             type="date"
                                                             name="dt_date_bornage"
                                                             id="Date_bornage"
+                                                            autocomplete="address-level2"
+                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="sm:col-span-1">
+                                                    <label
+                                                        for="txt_confirmationNicad"
+                                                        class="block text-sm/6 font-medium text-gray-900"
+                                                        >Appartement</label
+                                                    >
+                                                    <div class="mt-2">
+                                                        <input
+                                                            type="number"
+                                                            name="txt_appartement"
+                                                            v-model="form.txt_appartement"
+                                                            id="txt_appartement"
                                                             autocomplete="address-level2"
                                                             class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                         />

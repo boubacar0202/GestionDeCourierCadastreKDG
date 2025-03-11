@@ -12,7 +12,6 @@ use App\Models\ReferenceCadastrale;
 use App\Models\Terrain;
 use App\Models\Titulaire;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 
@@ -28,10 +27,9 @@ class SecretariatController extends Controller
 
         // return Inertia::render("secretariat/index",  ["donnees" => $donnee]);
         $terrains = Terrain::with(['region', 'departement', 'arrondissement', 'commune', 'dossier'])->get();
-
-
+        
         return Inertia::render("secretariat/index",  [
-            "terrains" => $terrains
+            "terrains" => $terrains,
         ]);
 
     }
@@ -39,14 +37,30 @@ class SecretariatController extends Controller
     public function create()
     {
         $regions = Region::all();
-        // $terrain = Terrain::findOrFail($id);
+        // $nextSlug = $this->generateNextSlug();
 
         return Inertia::render("secretariat/create",  [
             "regions" => $regions,
             "departements" => [],
+            // "nextSlug" => $nextSlug,
             // 'terrain' => $terrain,
         ]);
     }
+
+    // private function generateNextSlug()
+    // {
+
+    //     // Récupérer le dernier dossier de l'année en cours
+    //     $lastDossier = Dossier::whereYear('created_at', date('Y'))
+    //                 ->orderBy('id', 'desc')
+    //                 ->first();
+    //     $number = $lastDossier ?
+    //     (int)substr($lastDossier->txt_num_dossier, 0, 6) +1 : 1;
+
+    //     // Calculer le prochain numéro
+    //     return sprintf('%06d/%s', $number, date('Y'));
+        
+    // }
 
     public function store(Request $request)
     {
@@ -63,8 +77,6 @@ class SecretariatController extends Controller
             // table Titulaire_terrain (table association entre Titulaire <=> Terrain)
             // 'titulaire_id'
             // 'terrain_id'
-
-
             // table Reference_Cadastral
             // 'activeTab' => 'required|string',
             'rd_immatriculation_terrain' => 'nullable|string',
@@ -96,7 +108,6 @@ class SecretariatController extends Controller
             'tel_telRepresentant' => 'nullable|string',
 
             // table Localite
-
             
             // table Terrain
             // 'txt_num_dossier' => 'required|exists:dossiers,id',
@@ -118,8 +129,9 @@ class SecretariatController extends Controller
 
         ], [
          
-            'txt_num_dossier.required' => 'Dossier requis.',
-            'txt_num_dossier.unique' => 'Dossier existe déjà.',
+
+            // 'txt_num_dossier.required' => 'Dossier requis.',
+            // 'txt_num_dossier.unique' => 'Dossier existe déjà.',
 
             'txt_num_dordre.required' => "Numéro ordre requis.",
             'txt_num_dordre.integer' => "Numéro ordre en chiffre.",
@@ -150,18 +162,23 @@ class SecretariatController extends Controller
                 return back()->with('danger', 'Une des relations est introuvable.');
             }
         
+            // $currentYear = date('Y');  // Année actuelle
+            // // Récupérer le dernier numéro de dossier pour l'année en cours
+            // $lastDossier = Dossier::whereYear('created_at', $currentYear)
+            // ->orderBy('created_at', 'desc')
+            // ->first();
+            
             // Enregistrer le dossier
             // $dossier = Dossier::create([
             //     'txt_num_dossier' => $request->txt_num_dossier,
             // ]);
 
-            // $dossier = Dossier::create($request->all());
-            $dernierNumero = Dossier::max('txt_num_dordre') ?? 0; 
-            $nouveauNumero = $dernierNumero + 1;
+            // // Logique pour générer le numéro
+            // $nextSlug = $this->generateNextSlug(); // Utilise ta logique ici
 
             $dossier = Dossier::create([
-                'txt_num_dossier' => $validatedData['txt_num_dossier'],
-                'txt_num_dordre' => $nouveauNumero,
+                'txt_num_dossier' =>  $validatedData['txt_num_dossier'], 
+                'txt_num_dordre' => $validatedData['txt_num_dordre'],
                 'slt_service_rendu' => $validatedData['slt_service_rendu'],
                 'txt_etat_cession' => $validatedData['txt_etat_cession'],
                 'txt_cession_definitive' => $validatedData['txt_cession_definitive'],
@@ -226,6 +243,8 @@ class SecretariatController extends Controller
             return redirect()->back()->with('success', 'Donnée enregistrée !');
         
     }
+
+  
 
 
 }
