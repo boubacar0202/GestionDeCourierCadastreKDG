@@ -10,8 +10,6 @@ class Dossier extends Model
 
     use HasFactory;
 
-
-
     protected $fillable = [
         // 'nextslug',
         "txt_num_dossier",

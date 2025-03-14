@@ -19,16 +19,53 @@ const departements = ref(null);
 const arrondissements = ref(null);
 const communes = ref(null);
 const slt_dependant_domaine = ref(null); // ou ref({}) selon l'utilisation
+const txt_num_section = ref('');
+const txt_num_parcelle = ref('');
+const txt_appartement = ref('');
 
-// const code_commune = ref("");
-// const txt_num_section = ref("");
-// const txt_num_parcelle = ref("");
-// const txt_appartement = ref("");
-
-// // Générer la concaténation automatiquement : ${code_commune.value}
-// const txt_nicad = computed(() => {
-//     return ` ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`; // Concatène avec un espace
-// });
+const txt_nicad = computed(() => {
+    if (slt_commune.value === 1) {
+        return `13110100 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    } else if (slt_commune.value === 2) {
+        return `13120101 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    } else if (slt_commune.value === 3) {
+        return `13120102 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 4) {
+        return `14120103 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 5) {
+        return `13120104 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 6) {
+        return `13120201 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 7) {
+        return `13120202 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    } else if (slt_commune.value === 8) {
+        return `13210100 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    } else if (slt_commune.value === 9) {
+        return `13220101 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 10) {
+        return `13220102 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 11) {
+        return `13220201 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 12) {
+        return `13220202 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 13) {
+        return `13220103 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    } else if (slt_commune.value === 14) {
+        return `13310100 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    } else if (slt_commune.value === 15) {
+        return `13320101 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 16) {
+        return `13320102 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 17) {
+        return `13320201 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 18) {
+        return `13310202 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else if (slt_commune.value === 19) {
+        return `13220203 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
+    }else {
+        return `${txt_num_section.value} ${txt_num_parcelle.value}`;
+    }
+});
 
 
 const toast = useToast();
@@ -38,25 +75,16 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    nextSlug: {
-        type: String,
-        default: "false",
-    },
 });
 
 // const activeTab = ref(1);
 const activeTab = ref(""); // Valeur de la tab active
 
-// const handleTabClick = (event, tab) => {
-//     event.preventDefault();
-//     activeTab.value = tab;
-// };
-
 
 const form = useForm({
     // Table Dossier
     txt_num_dossier: "",
-    txt_num_dordre: '',
+    txt_num_dordre: "",
     slt_service_rendu: "",
     txt_etat_cession: "",
     txt_cession_definitive: "",
@@ -66,18 +94,23 @@ const form = useForm({
     slt_region: "",
     slt_departement: "",
     slt_arrondissement: "",
-    slt_commune: '',
+    slt_commune: "",
     txt_lotissement: "",
     txt_num_lotissement: "",
+    // txt_num_section: "",
     txt_num_section: "",
     txt_num_parcelle: "",
+    txt_appartement:"",
+    txt_nicad: "",
+
+    // txt_num_parcelle: "",
     txt_num_titre: "",
     txt_titre_mere: "", // Supprimez l'une des occurrences
     nbr_surface: "",
     slt_document_admin: "",
     txt_num_deliberation: "",
     dt_date_deliberation: "",
-    txt_nicad: "",  // Supprimez l'une des occurrences
+    // txt_nicad: "",  // Supprimez l'une des occurrences
 
     // Table ReferenceCadastrale
     rd_immatriculation_terrain:"",
@@ -109,6 +142,22 @@ const form = useForm({
     tel_telRepresentant: "",
     
 });
+
+// Récupérer le prochain numéro de dossier
+const fetchNextDossier = async () => {
+    try {
+        const response = await axios.get("/dossier/next");
+
+        console.log("Numéro de dossier suivant :", response.data.num_dossier);
+        form.txt_num_dossier = response.data.num_dossier || "";
+    
+    } catch (error) {
+        console.error("Erreur lors de la récupération du numéro de dossier :", error);
+    }
+};
+
+// Charger le numéro de dossier au chargement du composant
+onMounted(fetchNextDossier);
 
 // Mettez à jour les watchers pour utiliser form.selectedRegion, etc.
 watch(
@@ -189,27 +238,6 @@ onMounted(() => {
     // Vous pouvez ajouter une logique pour initialiser les données ici
 });
 
-const checkNumDossier = async () => {
-    try {
-        const response = await axios.post('/api/check-num-dossier', {
-            txt_num_dossier: form.txt_num_dossier,
-        });
-
-        if (response.data.exists) {
-            errors.value.txt_num_dossier = 'Ce numéro de dossier est déjà utilisé.';
-        } else {
-            errors.value.txt_num_dossier = null;
-        }
-    } catch (error) {
-        console.error('Erreur lors de la vérification', error);
-    }
-};
-
-// Nicad = N° Section + "-" + N° Parcelle
-// Propriété calculée pour Nicad
-const txt_nicad = computed(() => {
-    return `${form.value.txt_num_section}-${form.value.txt_num_parcelle}`;
-});
 
 const submitForm = function () {  // Ajoutez `async` ici
     console.log("📤 Envoi du formulaire :", form);
@@ -218,7 +246,10 @@ const submitForm = function () {  // Ajoutez `async` ici
     form.slt_departement = slt_departement?.value || ""; // Accès via this.slt_departement
     form.slt_arrondissement = slt_arrondissement?.value || ""; // Accès via this.slt_arrondissement
     form.slt_commune = slt_commune?.value || ""; // Accès via this.slt_commune
-  
+    form.txt_nicad = txt_nicad?.value || ""; // Accès via this.slt_commune
+    form.txt_num_section = txt_num_section?.value || ""; // Accès via this.slt_commune
+    form.txt_num_parcelle = txt_num_parcelle?.value || ""; // Accès via this.slt_commune
+    form.txt_appartement = txt_appartement?.value || ""; // Accès via this.slt_commune
 
     // Formulaire Laravel
     form.post(route("secretariat.store"), {
@@ -236,63 +267,6 @@ const submitForm = function () {  // Ajoutez `async` ici
         }
     });
 };
-
-
-// const submitForm = function () {
-//     // Formattage de la surface avec deux décimales
-//     // form.nbr_surface = parseFloat(form.nbr_surface).toFixed(2);
-//     console.log("Soumettre formulaire: ", form);
-    
-//     // Mise à jour des champs du formulaire
-//     // form.rd_immatriculation_terrain = activeTab.value || "";
-//     // form.slt_dependant_domaine = form.slt_dependant_domaine || null; // Si la valeur est vide, on la met à null
-//     // form.slt_region = slt_region?.value || ""; // Accès via this.slt_region
-//     // form.slt_departement = slt_departement?.value || ""; // Accès via this.slt_departement
-//     // form.slt_arrondissement = slt_arrondissement?.value || ""; // Accès via this.slt_arrondissement
-//     // form.slt_commune = slt_commune?.value || ""; // Accès via this.slt_commune
-
-//     // Envoi du formulaire
-//     form.post(route("secretariat.store"), {
-//         onSuccess: (page) => {
-//             const flash = page.props.flash || {};
-//             const message = flash.error || flash.success || "Opération réussie !";
-
-//             toast.success(message);
-//             console.log("✅ Succès Laravel :", page);
-//             console.log("Données envoyées :", {
-//                 slt_region: form.slt_region,
-//                 slt_departement: form.slt_departement,
-//                 slt_arrondissement: form.slt_arrondissement,
-//                 slt_commune: form.slt_commune,
-//             });
-//             // 🔄 Rafraîchir les données après l'envoi du formulaire
-//             Inertia.reload();
-//         },
-//         onError: (errors) => {
-//             if (errors && typeof errors === "object") {
-//                 Object.values(errors).forEach((errorMessage) => {
-//                     if (errorMessage) {
-//                         toast.error(errorMessage);
-//                     }
-//                 });
-//             } else {
-//                 toast.error("Une erreur s'est produite.");
-//             }
-//             console.error("❌ Erreurs Laravel :", errors);
-//         },
-//         // data: {
-//         //     // Envoi des données avec des valeurs par défaut si elles sont vides
-//         //     slt_region: null, // Accès via this.slt_region
-//         //     slt_departement: null, // Accès via this.slt_departement
-//         //     slt_arrondissement: null, // Accès via this.slt_arrondissement
-//         //     slt_commune: null, // Accès via this.slt_commune
-//         //     rd_immatriculation_terrain: activeTab.value || "",
-//         //     slt_dependant_domaine: null, // Accès via this.slt_dependant_domaine
-//         // },
-//     });
-
-// };
-
 
 const mazTabs = [
     { label: "Terrain Non Immatriculé", disabled: false },
@@ -336,7 +310,6 @@ const mazTabs = [
                                     <div
                                         class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
                                     >
-                                    
                                         <div class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label class="block text-sm/6 font-medium text-gray-900">
@@ -346,18 +319,17 @@ const mazTabs = [
                                                     <input
                                                         type="text"
                                                         name="txt_num_dossier"
-                                                        v-model="
-                                                            form.txt_num_dossier
-                                                        "
+                                                        v-model="form.txt_num_dossier"
                                                         id="txt_num_dossier"
                                                         class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                         outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline 
                                                         focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        readonly
                                                     />
                                                 </div>
                                             </div>
                                         </div>
-                                        
+                                                                                
                                         <div class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label
@@ -688,25 +660,7 @@ const mazTabs = [
                                                 />
                                             </div>
                                         </div>
-                                        <!-- <div class="sm:col-span-1">
-                                            <label
-                                                for="titreMere"
-                                                class="block text-sm/6 font-medium text-gray-900"
-                                                >Titre mère N°</label
-                                            >
-                                            <div class="mt-2">
-                                                <input
-                                                    type="text"
-                                                    name="txt_titre_mere"
-                                                    v-model="
-                                                        form.txt_titre_mere
-                                                    "
-                                                    id="titreMere"
-                                                    autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                                />
-                                            </div>
-                                        </div> -->
+                                       
                                         <div class="sm:col-span-1">
                                             <label
                                                 for="surface"
@@ -825,7 +779,7 @@ const mazTabs = [
                                         <div class="sm:col-span-1">
                                             <label
                                                 for="Num_section"
-                                                class="block text-sm font-medium"
+                                                class="block text-sm/6 font-medium"
                                                 >N° Section</label
                                             >
                                             <div class="mt-2">
@@ -833,7 +787,7 @@ const mazTabs = [
                                                     type="text"
                                                     name="txt_num_section"
                                                     v-model="
-                                                        form.txt_num_section
+                                                        txt_num_section
                                                     "
                                                     id="Num_section"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -852,7 +806,7 @@ const mazTabs = [
                                                     type="text"
                                                     name="txt_num_parcelle"
                                                     v-model="
-                                                        form.txt_num_parcelle
+                                                        txt_num_parcelle
                                                     "
                                                     id="Num_parcelle"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -870,12 +824,11 @@ const mazTabs = [
                                             <div class="mt-2">
                                                 <input
                                                     type="text"
-                                                    name="txt_num_parcelle"
+                                                    name="txt_nicad"
                                                     v-model="
-                                                        form.txt_num_parcelle
+                                                        txt_nicad
                                                     "
-                                                    value="txt_nicad"
-                                                    id="Num_parcelle"
+                                                    id="txt_nicad"
                                                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                     outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline 
                                                     focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -1042,7 +995,7 @@ const mazTabs = [
                                                         <input
                                                             type="number"
                                                             name="txt_appartement"
-                                                            v-model="form.txt_appartement"
+                                                            v-model="txt_appartement"
                                                             id="txt_appartement"
                                                             autocomplete="address-level2"
                                                             class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"

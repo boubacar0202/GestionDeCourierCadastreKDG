@@ -7,6 +7,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MatriceCadastraleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SecretariatController;
+use App\Models\Dossier;
 use App\Models\Terrain;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Foundation\Application;
@@ -43,9 +44,14 @@ Route::post('/search-dossier', [GeometreController::class, 'search']);
 
 
 Route::post('/secretariat', [SecretariatController::class, 'store'])->name('secretariat.store');
-// Route::get('/next-num-dossier', [SecretariatController::class, 'generateNextDossierNumber']);
+Route::get('/dossier/last', function () {
+    $lastDossier = Dossier::latest('id')->first();
 
-
+    return response()->json([
+        'num_dossier' => $lastDossier ? $lastDossier->txt_num_dossier : ''
+    ]);
+});
+Route::get('/dossier/next', [DossierController::class, 'getNextDossier']);
 
 Route::get('/departements/{regionId}', [LocationController::class, 'getDepartementsByRegion']);
 Route::get('/arrondissements/{departementId}', [LocationController::class, 'getArrondissementByDepartement']);
