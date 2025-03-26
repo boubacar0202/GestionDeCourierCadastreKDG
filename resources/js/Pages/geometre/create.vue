@@ -25,16 +25,17 @@ const form = useForm({
     // Ajouter d'autres champs nécessaires
     slt_reference_usage:"",
     numero:"",
+    txt_occupan_habitaion:"",
+    txt_activite_principal_hbt:"",
+    txt_ninea_occupan_hbt:"",
+    tel_tel_occupant_hbt:"",
+    nbr_montant_loyer_hbt:"",
     txt_occupan_habitaion_1:"",
     txt_activite_principal_hbt_1:"",
     txt_ninea_occupan_hbt_1:"",
     tel_tel_occupant_hbt_1:"",
     nbr_montant_loyer_hbt_1:"",
-    txt_occupan_habitaion_1:"",
-    txt_activite_principal_hbt_1:"",
-    txt_ninea_occupan_hbt_1:"",
-    tel_tel_occupant_hbt_1:"",
-    nbr_montant_loyer_hbt_1:"",
+
     txt_activite_commercial:"",
     txt_occopan_commercial:"",
     txt_activite_commercial_1:"",
@@ -234,14 +235,11 @@ const searchDossier = async () => {
     }
 }
 
-
-
 const submitForm = () => {
     console.log(form.value);
-    // Ajoutez la logique d'envoi ici (par exemple, un appel Inertia.post())
 
     // Formulaire Laravel
-    form.post(route("secretariat.store"), {
+    form.post(route("geometre.store"), {
         onSuccess: (page) => {
             const message = page.props.flash?.success || "Opération réussie !";
             toast.success(message);
@@ -257,11 +255,12 @@ const submitForm = () => {
     });
 };
 
-
 </script>
 
 <template>
-    <Head title="Geometre"/>
+    <Head title="Geometre">
+        <link rel="icon" sizes="512x512" href="/logo-01.png">
+    </Head>
 
     <AuthenticatedLayout>
         <template #header>
@@ -280,56 +279,41 @@ const submitForm = () => {
                         </div>
 
                         <!-- Corps du formulaire -->
+                            
                         <form @submit.prevent="submitForm">
                             <div class="p-6">
                                 <div class="mb-6">  
-                                    <form @submit.prevent="searchDossier"  class="max-w-md mx-auto"> 
+                                    <form @submit.prevent="searchDossier" class="max-w-md mx-auto">
                                         <div class="sm:col-span-2">
-                                            <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
-                                            Recherche
-                                            </label>
-
-                                            <!-- Input et Bouton en ligne -->
                                             <div class="flex items-center space-x-2">
                                                 <div class="relative flex-grow">
-                                                    <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                                                    </svg>
-                                                    </div>
                                                     <input 
-                                                    v-model="numero"
-                                                    type="search"
-                                                    id="default-search"
-                                                    class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 
-                                                            focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 
-                                                            dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                    placeholder="Entrez le numéro du dossier"
-                                                    required
+                                                        v-model.trim="numero"
+                                                        type="search"
+                                                        id="default-search"
+                                                        aria-label="Rechercher"
+                                                        class="h-10 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                        placeholder="Entrez le numéro du dossier"
+                                                        required
                                                     />
                                                 </div>
-
-                                                <!-- Bouton Recherche -->
                                                 <MazBtn 
                                                     type="submit" 
                                                     no-shadow 
                                                     no-hover-effect
-                                                    class="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 
-                                                        hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 
-                                                        dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
-                                                        dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm 
-                                                        px-5 py-2.5 text-center"
-                                                    @click="searchDossier"
+                                                    title="Rechercher"
+                                                    class="h-10 bg-gradient-to-r from-primary via-primary-light to-primary-dark 
+                                                            hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-primary 
+                                                            dark:focus:ring-primary-dark shadow-lg shadow-primary/50 
+                                                            dark:shadow-lg dark:shadow-primary-dark font-medium rounded-lg text-sm 
+                                                            px-5 py-2.5 text-center"
                                                 >
                                                     Recherche
                                                 </MazBtn>
                                             </div>
-                                            <!-- <MazAlert v-if="message" :color="messageType" class="mt-4">
-                                                    {{ message }}
-                                                </MazAlert> 
-                                            -->
                                         </div>
-
                                     </form>
                                 </div>
 
@@ -342,7 +326,7 @@ const submitForm = () => {
                                                 v-model="form.slt_reference_usage"
                                                 name = "slt_reference_usage"
                                                 @change="setActiveTabRU($event.target.value)" 
-                                                class="w-1/3 text-center p-4 border border-gray-300 rounded text-gray-500 dark:text-gray-300"
+                                                class="w-1/3 text-center p-4 border border-primary rounded text-primary dark:text-gray-300"
                                                 :class="{
                                                     'text-indigo-600': activeTabRU === 'habitation' || activeTabRU === 'commercial' 
                                                     || activeTabRU === 'industriel' || activeTabRU === 'agricol' || activeTabRU === 'professionnelle'
@@ -403,77 +387,72 @@ const submitForm = () => {
                                                 <div  class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
                                                     <div class="sm:col-span-1">
                                                         <dic class="mt-6">
-                                                            <label for="Occupan_habitaion_1" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
+                                                            <label for="Occupan_habitaion" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
                                                             <input
                                                             type="text" 
-                                                            v-model="form.txt_occupan_habitaion_1"
-                                                            name="txt_occupan_habitaion_1" 
-                                                            id="Occupan_habitaion_1"  
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            v-model="form.txt_occupan_habitaion"
+                                                            name="txt_occupan_habitaion" 
+                                                            id="Occupan_habitaion"  
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </dic>
                                                     </div>
                                                     <div class="sm:col-span-1">
-                                                        <label for="Activite_principal_hbt_1" class="block text-sm/6 font-medium text-gray-900">Activite Princpal</label>
+                                                        <label for="Activite_principal_hbt" class="block text-sm/6 font-medium text-gray-900">Activite Princpal</label>
                                                         <div>
                                                             <input type="text" 
-                                                            v-model="form.txt_activite_principal_hbt_1"
-                                                            name="txt_activite_principal_hbt_1" 
-                                                            id="Activite_principal_hbt_1"  
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            v-model="form.txt_activite_principal_hbt"
+                                                            name="txt_activite_principal_hbt" 
+                                                            id="Activite_principal_hbt"  
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </div>
                                                     </div>
                                                     <div class="sm:col-span-1">
-                                                        <label for="Ninea_occupan_hbt_1" class="block text-sm/6 font-medium text-gray-900">Ninea Occupant</label>
+                                                        <label for="Ninea_occupan_hbt" class="block text-sm/6 font-medium text-gray-900">Ninea Occupant</label>
                                                         <div>
                                                             <input type="text" 
-                                                            v-model="form.txt_ninea_occupan_hbt_1"
-                                                            name="txt_ninea_occupan_hbt_1" 
-                                                            id="Ninea_occupan_hbt_1"  
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            v-model="form.txt_ninea_occupan_hbt"
+                                                            name="txt_ninea_occupan_hbt" 
+                                                            id="Ninea_occupan_hbt"  
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </div>
                                                     </div>
                                                     <div class="sm:col-span-1">
                                                         <label for="tel_occupant_hbt_1" class="block text-sm/6 font-medium text-gray-900">Tel Occupant</label>
                                                         <div>
                                                             <input type="tel" 
-                                                            v-model="form.tel_tel_occupant_hbt_1"
-                                                            name="tel_tel_occupant_hbt_1" 
-                                                            id="tel_occupant_hbt_1"  
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            v-model="form.tel_tel_occupant_hbt"
+                                                            name="tel_tel_occupant_hbt" 
+                                                            id="tel_occupant_hbt"  
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </div>
                                                     </div>
                                                     <div class="sm:col-span-1">
                                                         <label for="Montant_loyer_hbt_1" class="block text-sm/6 font-medium text-gray-900">Montant Loyer</label>
                                                         <div>
                                                             <input type="number" 
-                                                            v-model="form.nbr_montant_loyer_hbt_1"
-                                                            name="nbr_montant_loyer_hbt_1" 
-                                                            id="Montant_loyer_hbt_1"  
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            v-model="form.nbr_montant_loyer_hbt"
+                                                            name="nbr_montant_loyer_hbt" 
+                                                            id="Montant_loyer_hbt"  
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </div>
                                                     </div>
                                                     <div class="sm:col-span-1">
                                                         <br><button  @click="show = !show"
-                                                            type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 
-                                                            to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                                            type="button" class="text-white bg-gradient-to-r from-primary via-primary-dark 
+                                                            to-primary hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
                                                             focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
                                                             dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 
-                                                            py-2.5 text-center me-2 mb-2 ">+ Ajouter</button>
+                                                            py-2.5 text-center me-2 mb-2">+ Ajouter</button>
                                                     </div>
                                                 </div>
                                                 <div  class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"> 
@@ -487,10 +466,9 @@ const submitForm = () => {
                                                                         v-model="form.txt_occupan_habitaion_1"
                                                                         name="txt_occupan_habitaion_1" 
                                                                         id="Occupan_habitaion_1"  
-                                                                        class="block w-full rounded-md bg-white 
-                                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     </dic>
                                                                 </div>
                                                                 <div class="sm:col-span-1">
@@ -500,10 +478,9 @@ const submitForm = () => {
                                                                         v-model="form.txt_activite_principal_hbt_1"
                                                                         name="txt_activite_principal_hbt_1" 
                                                                         id="Activite_principal_hbt_1"  
-                                                                        class="block w-full rounded-md bg-white 
-                                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     </div>
                                                                 </div>
                                                                 <div class="sm:col-span-1">
@@ -513,10 +490,9 @@ const submitForm = () => {
                                                                         v-model="form.txt_ninea_occupan_hbt_1"
                                                                         name="txt_ninea_occupan_hbt_1" 
                                                                         id="Ninea_occupan_hbt_1"  
-                                                                        class="block w-full rounded-md bg-white 
-                                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     </div>
                                                                 </div>
                                                                 <div class="sm:col-span-1">
@@ -526,10 +502,9 @@ const submitForm = () => {
                                                                         v-model="form.tel_tel_occupant_hbt_1"
                                                                         name="tel_tel_occupant_hbt_1" 
                                                                         id="tel_occupant_hbt_1"  
-                                                                        class="block w-full rounded-md bg-white 
-                                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     </div>
                                                                 </div>
                                                                 <div class="sm:col-span-1">
@@ -539,10 +514,9 @@ const submitForm = () => {
                                                                         v-model="form.nbr_montant_loyer_hbt_1"
                                                                         name="nbr_montant_loyer_hbt_1" 
                                                                         id="Montant_loyer_hbt_1"  
-                                                                        class="block w-full rounded-md bg-white 
-                                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     </div>
                                                                 </div>
                                                             </div>   
@@ -563,10 +537,9 @@ const submitForm = () => {
                                                             v-model="form.txt_activite_commercial"
                                                             name="txt_activite_commercial" 
                                                             id="Activite_commercial"  
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </div>
                                                     </div>
                                                     <div class="sm:col-span-2">
@@ -576,20 +549,19 @@ const submitForm = () => {
                                                             v-model="form.txt_occopan_commercial"
                                                             name="txt_occopan_commercial" 
                                                             id="Occopan_commercial"  
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </div>
                                                     </div>
                                                     <div class="sm:col-span-1">
                                                         <div>
                                                             <button  @click="showC = !showC"
-                                                            type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 
-                                                            to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                                            type="button" class="text-white bg-gradient-to-r from-primary via-primary-dark 
+                                                            to-primary hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
                                                             focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
                                                             dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 
-                                                            py-2.5 text-center me-2 mb-2 ">+ Ajouter</button>
+                                                            py-2.5 text-center me-2 mb-2">+ Ajouter</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -604,10 +576,9 @@ const submitForm = () => {
                                                                         v-model="form.txt_activite_commercial_1"
                                                                         name="txt_activite_commercial_1" 
                                                                         id="Activite_commercial_1"  
-                                                                        class="block w-full rounded-md bg-white 
-                                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     </div>
                                                                 </div>
                                                                 <div class="sm:col-span-2">
@@ -617,10 +588,9 @@ const submitForm = () => {
                                                                         v-model="form.txt_occopan_commercial_1"
                                                                         name="txt_occopan_commercial_1" 
                                                                         id="Occopan_commercial_1"  
-                                                                        class="block w-full rounded-md bg-white 
-                                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     </div>
                                                                 </div>
                                                             </div>   
@@ -641,10 +611,9 @@ const submitForm = () => {
                                                             v-model="form.txt_activite_industriel"
                                                             name="txt_activite_industriel" 
                                                             id="Activite_industriel"  
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </div>
                                                     </div>
                                                     <div class="sm:col-span-2">
@@ -654,20 +623,19 @@ const submitForm = () => {
                                                             v-model="form.txt_occopan_industriel"
                                                             name="txt_occopan_industriel" 
                                                             id="Occopan_industriel"  
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </div>
                                                     </div>
                                                     <div class="sm:col-span-1">
                                                         <div>
                                                             <button  @click="showI = !showI"
-                                                            type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 
-                                                            to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                                            type="button" class="text-white bg-gradient-to-r from-primary via-primary-dark 
+                                                            to-primary hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
                                                             focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
                                                             dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 
-                                                            py-2.5 text-center me-2 mb-2 ">+ Ajouter</button>
+                                                            py-2.5 text-center me-2 mb-2">+ Ajouter</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -682,10 +650,9 @@ const submitForm = () => {
                                                                         v-model="form.txt_activite_industriel_1"
                                                                         name="txt_activite_industriel_1" 
                                                                         id="Activite_industriel_1"  
-                                                                        class="block w-full rounded-md bg-white 
-                                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     </div>
                                                                 </div>
                                                                 <div class="sm:col-span-2">
@@ -695,10 +662,9 @@ const submitForm = () => {
                                                                         v-model="form.txt_occopan_industriel_1"
                                                                         name="txt_occopan_industriel_1" 
                                                                         id="Occopan_industriel_1"  
-                                                                        class="block w-full rounded-md bg-white 
-                                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     </div>
                                                                 </div>
                                                             </div>   
@@ -718,10 +684,9 @@ const submitForm = () => {
                                                         v-model="form.txt_activite_agricole"
                                                         name="txt_activite_agricole" 
                                                         id="Activite_agricole"  
-                                                        class="block w-full rounded-md bg-white 
-                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                     </div>
                                                     <div class="sm:col-span-2">
                                                         <label for="Occopan_agricole" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
@@ -729,19 +694,18 @@ const submitForm = () => {
                                                         v-model="form.txt_occopan_agricole" 
                                                         name="txt_occopan_agricole" 
                                                         id="Occopan_agricole"  
-                                                        class="block w-full rounded-md bg-white 
-                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                     </div>
                                                     <div class="sm:col-span-1">
                                                         <div>
                                                             <button  @click="showA = !showA"
-                                                            type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 
-                                                            to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                                            type="button" class="text-white bg-gradient-to-r from-primary via-primary-dark 
+                                                            to-primary hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
                                                             focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
                                                             dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 
-                                                            py-2.5 text-center me-2 mb-2 ">+ Ajouter</button>
+                                                            py-2.5 text-center me-2 mb-2">+ Ajouter</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -755,10 +719,9 @@ const submitForm = () => {
                                                                     v-model="form.txt_activite_agricole_1" 
                                                                     name="txt_activite_agricole_1" 
                                                                     id="Activite_agricole_1"  
-                                                                    class="block w-full rounded-md bg-white 
-                                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                 </div>
                                                                 <div class="sm:col-span-2">
                                                                     <label for="Occopan_agricole_1" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
@@ -766,10 +729,9 @@ const submitForm = () => {
                                                                     v-model="form.txt_occopan_agricole_1" 
                                                                     name="txt_occopan_agricole_1" 
                                                                     id="Occopan_agricole_1"  
-                                                                    class="block w-full rounded-md bg-white 
-                                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                 </div>
                                                             </div>   
                                                         </div>
@@ -788,10 +750,9 @@ const submitForm = () => {
                                                         v-model="form.txt_activite_professionnelle" 
                                                         name="txt_activite_professionnelle" 
                                                         id="Activite_professionnelle"  
-                                                        class="block w-full rounded-md bg-white 
-                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                     </div>
                                                     <div class="sm:col-span-2">
                                                         <label for="Occopan_professionnelle" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
@@ -799,19 +760,18 @@ const submitForm = () => {
                                                         v-model="form.txt_occopan_professionnelle" 
                                                         name="txt_occopan_professionnelle" 
                                                         id="Occopan_professionnelle"  
-                                                        class="block w-full rounded-md bg-white 
-                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                     </div>
                                                     <div class="sm:col-span-1">
                                                         <div>
                                                             <button  @click="showP = !showP"
-                                                            type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 
-                                                            to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                                            type="button" class="text-white bg-gradient-to-r from-primary via-primary-dark 
+                                                            to-primary hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
                                                             focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
                                                             dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 
-                                                            py-2.5 text-center me-2 mb-2 ">+ Ajouter</button>
+                                                            py-2.5 text-center me-2 mb-2">+ Ajouter</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -825,10 +785,9 @@ const submitForm = () => {
                                                                     v-model="form.txt_activite_professionnelle_1" 
                                                                     name="txt_activite_professionnelle_1" 
                                                                     id="Activite_professionnelle_1"  
-                                                                    class="block w-full rounded-md bg-white 
-                                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                 </div>
                                                                 <div class="sm:col-span-2">
                                                                     <label for="Occopan_professionnelle_1" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
@@ -836,10 +795,9 @@ const submitForm = () => {
                                                                     v-model="form.txt_occopan_professionnelle_1" 
                                                                     name="txt_occopan_professionnelle_1" 
                                                                     id="Occopan_professionnelle_1"  
-                                                                    class="block w-full rounded-md bg-white 
-                                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                 </div>
                                                             </div>   
                                                         </div>
@@ -858,10 +816,9 @@ const submitForm = () => {
                                                         v-model="form.txt_activite_culte"  
                                                         name="txt_activite_culte" 
                                                         id="Activite_culte"  
-                                                        class="block w-full rounded-md bg-white 
-                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                     </div>
                                                     <div class="sm:col-span-2">
                                                         <label for="Occopan_culte" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
@@ -869,19 +826,18 @@ const submitForm = () => {
                                                         v-model="form.txt_occopan_culte" 
                                                         name="txt_occopan_culte" 
                                                         id="Occopan_culte"  
-                                                        class="block w-full rounded-md bg-white 
-                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                     </div>
                                                     <div class="sm:col-span-1">
                                                         <div>
                                                             <button  @click="showCl = !showCl"
-                                                            type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 
-                                                            to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                                            type="button" class="text-white bg-gradient-to-r from-primary via-primary-dark 
+                                                            to-primary hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
                                                             focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
                                                             dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 
-                                                            py-2.5 text-center me-2 mb-2 ">+ Ajouter</button>
+                                                            py-2.5 text-center me-2 mb-2">+ Ajouter</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -895,10 +851,9 @@ const submitForm = () => {
                                                                     v-model="form.txt_activite_culte_1" 
                                                                     name="txt_activite_culte_1" 
                                                                     id="Activite_culte_1"  
-                                                                    class="block w-full rounded-md bg-white 
-                                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                 </div>
                                                                 <div class="sm:col-span-2">
                                                                     <label for="Occopan_culte_1" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
@@ -906,10 +861,9 @@ const submitForm = () => {
                                                                     v-model="form.txt_occopan_culte_1" 
                                                                     name="txt_occopan_culte_1" 
                                                                     id="Occopan_culte_1"  
-                                                                    class="block w-full rounded-md bg-white 
-                                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                 </div>
                                                             </div>   
                                                         </div>
@@ -927,10 +881,9 @@ const submitForm = () => {
                                                         v-model="form.txt_Activite_administratif" 
                                                         name="txt_Activite_administratif" 
                                                         id="Activite_administratif"  
-                                                        class="block w-full rounded-md bg-white 
-                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                     </div>
                                                     <div class="sm:col-span-2">
                                                         <label for="Occupan_administratif" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
@@ -938,19 +891,18 @@ const submitForm = () => {
                                                         v-model="form.txt_occupan_administratif" 
                                                         name="txt_occupan_administratif" 
                                                         id="Occupan_administratif"  
-                                                        class="block w-full rounded-md bg-white 
-                                                        px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                        outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                        focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                     </div>
                                                     <div class="sm:col-span-1">
                                                         <div>
                                                             <button  @click="showAdm = !showAdm"
-                                                            type="button" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 
-                                                            to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                                            type="button" class="text-white bg-gradient-to-r from-primary via-primary-dark 
+                                                            to-primary hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
                                                             focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
                                                             dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 
-                                                            py-2.5 text-center me-2 mb-2 ">+ Ajouter</button>
+                                                            py-2.5 text-center me-2 mb-2">+ Ajouter</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -964,10 +916,9 @@ const submitForm = () => {
                                                                     v-model="form.txt_Activite_administratif_1" 
                                                                     name="txt_Activite_administratif_1" 
                                                                     id="Activite_administratif_1"  
-                                                                    class="block w-full rounded-md bg-white 
-                                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                 </div>
                                                                 <div class="sm:col-span-2">
                                                                     <label for="Occupan_administratif_1" class="block text-sm/6 font-medium text-gray-900">Occupant</label>
@@ -975,10 +926,9 @@ const submitForm = () => {
                                                                     v-model="form.txt_occupan_administratif_1" 
                                                                     name="txt_occupan_administratif_1" 
                                                                     id="Occupan_administratif_1"  
-                                                                    class="block w-full rounded-md bg-white 
-                                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                 </div>
                                                             </div>   
                                                         </div>
@@ -998,9 +948,10 @@ const submitForm = () => {
 
                                             <li class="w-1/3 text-center">
                                                 <button
+                                                    type="button"
                                                     @click="setActiveTab('terrain')"
                                                     :class="{
-                                                        'text-indigo-600 border-b-2 border-indigo-600': activeTab === 'terrain',
+                                                        'text-primary border-b-2 border-primary': activeTab === 'terrain',
                                                         'hover:text-gray-700 hover:border-gray-300': activeTab !== 'terrain'
                                                     }"
                                                     class="inline-block w-full p-4"
@@ -1011,9 +962,10 @@ const submitForm = () => {
 
                                             <li class="w-1/3 text-center">
                                                 <button
+                                                    type="button"
                                                     @click="setActiveTab('bati')"
                                                     :class="{
-                                                        'text-indigo-600 border-b-2 border-indigo-600': activeTab === 'bati',
+                                                        'text-primary border-b-2 border-primary': activeTab === 'bati',
                                                         'hover:text-gray-700 hover:border-gray-300': activeTab !== 'bati'
                                                     }"
                                                     class="inline-block w-full p-4"
@@ -1024,9 +976,10 @@ const submitForm = () => {
 
                                             <li class="w-1/3 text-center">
                                                 <button
+                                                    type="button"
                                                     @click="setActiveTab('Cours_amenagees')"
                                                     :class="{
-                                                        'text-indigo-600 border-b-2 border-indigo-600': activeTab === 'Cours_amenagees',
+                                                        'text-primary border-b-2 border-primary': activeTab === 'Cours_amenagees',
                                                         'hover:text-gray-700 hover:border-gray-300': activeTab !== 'Cours_amenagees'
                                                     }"
                                                     class="inline-block w-full p-4"
@@ -1037,9 +990,10 @@ const submitForm = () => {
 
                                             <li class="w-1/3 text-center">
                                                 <button
+                                                    type="button"
                                                     @click="setActiveTab('cloture')"
                                                     :class="{
-                                                        'text-indigo-600 border-b-2 border-indigo-600': activeTab === 'cloture',
+                                                        'text-primary border-b-2 border-primary': activeTab === 'cloture',
                                                         'hover:text-gray-700 hover:border-gray-300': activeTab !== 'cloture'
                                                     }"
                                                     class="inline-block w-full p-4"
@@ -1050,9 +1004,10 @@ const submitForm = () => {
                                             
                                             <li class="w-1/3 text-center">
                                                 <button
+                                                    type="button"
                                                     @click="setActiveTab('amenagement')"
                                                     :class="{
-                                                        'text-indigo-600 border-b-2 border-indigo-600': activeTab === 'amenagement',
+                                                        'text-primary border-b-2 border-primary': activeTab === 'amenagement',
                                                         'hover:text-gray-700 hover:border-gray-300': activeTab !== 'amenagement'
                                                     }"
                                                     class="inline-block w-full p-4"
@@ -1076,10 +1031,9 @@ const submitForm = () => {
                                                             v-model="form.txt_date_devaluation" 
                                                             name="txt_date_devaluation" 
                                                             id="Date_devaluation" 
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </div>
                                                     </div>
                                                 
@@ -1090,10 +1044,9 @@ const submitForm = () => {
                                                             v-model="form.txt_superficie_totale" 
                                                             name="txt_superficie_totale" 
                                                             id="Superficie_totale" 
-                                                            class="block w-full rounded-md bg-white 
-                                                            px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                            outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                            focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                            class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                         </div>
                                                     </div>
                                                 
@@ -1105,10 +1058,9 @@ const submitForm = () => {
                                                                 v-model="form.txt_superficie_bati_sol" 
                                                                 name="txt_superficie_bati_sol" 
                                                                 id="Superficie_bati_sol" 
-                                                                class="block w-full rounded-md bg-white 
-                                                                px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1119,10 +1071,10 @@ const submitForm = () => {
                                                             <div> 
                                                                 <select type="select" 
                                                                 v-model="form.slt_secteur" 
-                                                                name="slt_secteur" id="Secteur"  class="block w-full rounded-md bg-white 
-                                                                    px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                    outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                    focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                name="slt_secteur" id="Secteur" 
+                                                                class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                    outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                    focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     <option selected desabled></option>
                                                                     <option value="1">1</option>
                                                                     <option value="2">2</option>
@@ -1138,10 +1090,10 @@ const submitForm = () => {
                                                             <div>
                                                                 <input type="number" 
                                                                 v-model="form.nbr_prix_metre_carré" 
-                                                                name="nbr_prix_metre_carré" id="Prix_metre_carre"  class="block w-full rounded-md bg-white 
-                                                                px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                name="nbr_prix_metre_carré" id="Prix_metre_carre"  
+                                                                class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                             </div>
                                                         </div>
                                                     </div>  
@@ -1152,10 +1104,10 @@ const submitForm = () => {
                                                             <div>
                                                                 <input type="number"
                                                                 v-model="form.nbr_valeur_terrain"  
-                                                                name="nbr_valeur_terrain" id="Valeur_terrain"  class="block w-full rounded-md bg-white 
-                                                                px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
-                                                                outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
-                                                                focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                                name="nbr_valeur_terrain" id="Valeur_terrain"  
+                                                                class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1170,8 +1122,10 @@ const submitForm = () => {
                                                     <label for="Type_residence" class="block text-sm font-medium text-gray-900">Type de residence</label>
                                                     <select type="select" 
                                                         v-model="form.slt_type_residence"  
-                                                        name="slt_type_residence" id="Type_residence" class="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 border-gray-300 
-                                                        focus:ring-indigo-500 focus:border-indigo-500"
+                                                        name="slt_type_residence" id="Type_residence" 
+                                                        class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     >
                                                         <option selected disabled></option>
                                                         <option value="Residence Principal">Residence Principal</option>
@@ -1182,14 +1136,14 @@ const submitForm = () => {
                                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
                                                 <!-- Boutons radio -->
                                                 <div class="sm:col-span-2">
-                                                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                                                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-primary">
                                                         <MazRadio v-model="currentCat" 
                                                         value="Maison individuelle" 
                                                         label="Maison individuelle" />
                                                     </div>
                                                 </div>
                                                 <div class="sm:col-span-2">
-                                                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+                                                    <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-primary">
                                                         <MazRadio v-model="currentCat" 
                                                         value="Immeuble collectif" 
                                                         label="Immeuble collectif" />
@@ -2063,12 +2017,12 @@ const submitForm = () => {
                                 <!-- Bouton de soumission -->
                                 
                                 <div class="sm:col-span-6 flex justify-center">
-                                    <MazBtn no-shadow no-hover-effect
-                                        class="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 
-                                                hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 
-                                                dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
-                                                dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm 
-                                                px-5 py-2.5 text-center" >
+                                    <MazBtn @click.prevent="submitForm" no-shadow no-hover-effect
+                                            class="bg-gradient-to-r from-primary via-primary-light to-primary-dark 
+                                                hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-primary 
+                                                dark:focus:ring-primary-dark shadow-lg shadow-primary/50 
+                                                dark:shadow-lg dark:shadow-primary-dark font-medium rounded-lg text-sm 
+                                                px-5 py-2.5 text-center">
                                         Enregistrer
                                     </MazBtn>
                                 </div> 
@@ -2105,19 +2059,6 @@ const submitForm = () => {
 
 </style>
 
-<script > 
-import catA from './catA.vue'
-import catB from './catB.vue'
-
-export default {
-  components: { catA, catB },
-  data() {
-    return {
-      currentCat: 'catA'
-    }
-  },
-}
-</script>
 
 
 

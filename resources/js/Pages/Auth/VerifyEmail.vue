@@ -42,6 +42,7 @@ const verificationLinkSent = computed(
         <form @submit.prevent="submit">
             <div class="mt-4 flex items-center justify-between">
                 <PrimaryButton
+                    class="ms-4 bg-primary-dark text-white hover:bg-primary-dark focus:ring-primary-dark disabled:opacity-25"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >

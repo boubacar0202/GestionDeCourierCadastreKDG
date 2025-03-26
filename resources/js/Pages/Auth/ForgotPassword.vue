@@ -25,8 +25,8 @@ const submit = () => {
     <GuestLayout>
         <Head title="Forgot Password" />
 
-        <div class="mb-4 text-sm text-gray-600">
-            Forgot your password? No problem. Just let us know your email
+        <div class="mb-4 text-sm text-primary">
+            Forgot your password ? No problem. Just let us know your email
             address and we will email you a password reset link that will allow
             you to choose a new one.
         </div>
@@ -40,12 +40,14 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="Email" class="text-primary" />
 
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full h-10 text-lg px-3 py-2 rounded-md bg-white text-base text-gray-900 
+                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary-dark sm:text-sm/6"
                     v-model="form.email"
                     required
                     autofocus
@@ -57,6 +59,7 @@ const submit = () => {
 
             <div class="mt-4 flex items-center justify-end">
                 <PrimaryButton
+                    class="ms-4 bg-primary-dark text-white hover:bg-primary-dark focus:ring-primary-dark disabled:opacity-25"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >

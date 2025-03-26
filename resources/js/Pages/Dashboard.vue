@@ -8,7 +8,7 @@ import { vLazyImg } from 'maz-ui'
 
 <template>
     <Head title="Dashboard">
-    
+        <link rel="icon" sizes="512x512" href="/logo-01.png">
     </Head>
 
     <AuthenticatedLayout>

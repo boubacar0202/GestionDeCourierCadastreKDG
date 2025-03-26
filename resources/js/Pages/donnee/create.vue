@@ -22,10 +22,21 @@ const formatDate = (dateString) => {
   });
 };
 
+// 
+// const numero = ref('');
+// const txt_num_dossier = ref('');
+
+// const searchDossier = () => {
+//     console.log("Recherche du dossier :", numero.value);
+//     // Ajoute ici la logique de recherche
+// };
+
 </script>
 
 <template>
-    <Head title="Donnee"/>
+    <Head title="Donnee">
+        <link rel="icon" sizes="512x512" href="/logo-01.png">
+    </Head>
 
     <AuthenticatedLayout>
         <template #header>
@@ -34,6 +45,7 @@ const formatDate = (dateString) => {
             >
                 Base de données
             </h2>
+            
             <!-- Vérification pour afficher un message si aucune donnée -->
             <template v-if="!terrains || terrains.length === 0">
                 <p>Aucun terrain trouvé.</p>
@@ -45,12 +57,43 @@ const formatDate = (dateString) => {
             <div class="mx-auto max-w-7xl sm:px-8 lg:px-12">
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                     <div class="container">
+                        <form @submit.prevent="searchDossier" class="max-w-md mx-auto">
+                            <div class="sm:col-span-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="relative flex-grow">
+                                        <input 
+                                            v-model.trim="numero"
+                                            type="search"
+                                            id="default-search"
+                                            aria-label="Rechercher"
+                                            class="h-10 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                            placeholder="Entrez le numéro du dossier"
+                                            required
+                                        />
+                                    </div>
+                                    <MazBtn 
+                                        type="submit" 
+                                        no-shadow 
+                                        no-hover-effect
+                                        title="Rechercher"
+                                        class="h-10 bg-gradient-to-r from-primary via-primary-light to-primary-dark 
+                                                hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-primary 
+                                                dark:focus:ring-primary-dark shadow-lg shadow-primary/50 
+                                                dark:shadow-lg dark:shadow-primary-dark font-medium rounded-lg text-sm 
+                                                px-5 py-2.5 text-center"
+                                    >
+                                        Recherche
+                                    </MazBtn>
+                                </div>
+                            </div>
+                        </form>
                         <div class="card">
                             <div class="card-header">
                                 <div class="p-4 border-b bg-gray-100">
                                     <h1 class="text-lg font-semibold">Base de données</h1>
                                 </div>
-
                             </div>
                             <div class="card-body">
                                 <table class="table table-sm table-strictped table-bordered">
@@ -96,6 +139,9 @@ const formatDate = (dateString) => {
                                                 txt_lotissement
                                             </th>
                                             <th scope="col" class="px-6 py-3">
+                                                txt_HorsLotissement
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
                                                 txt_num_lotissement
                                             </th>
                                             <th scope="col" class="px-6 py-3">
@@ -103,6 +149,9 @@ const formatDate = (dateString) => {
                                             </th>
                                             <th scope="col" class="px-6 py-3">
                                                 txt_num_parcelle
+                                            </th>
+                                            <th>
+                                                txt_appartement
                                             </th>
                                             <th scope="col" class="px-6 py-3">
                                                 txt_num_titre
@@ -247,6 +296,9 @@ const formatDate = (dateString) => {
                                                 {{ terrain.txt_lotissement || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
+                                                {{ terrain.txt_HorsLotissement || 'Null'}}
+                                            </td>
+                                            <td class="px-6 py-4">
                                                 {{ terrain.txt_num_lotissement || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
@@ -254,6 +306,9 @@ const formatDate = (dateString) => {
                                             </td>
                                             <td class="px-6 py-4">
                                                 {{ terrain.txt_num_parcelle || 'Null'}}
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                {{ terrain.txt_appartement || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
                                                 {{ terrain.txt_num_titre || 'Null'}}

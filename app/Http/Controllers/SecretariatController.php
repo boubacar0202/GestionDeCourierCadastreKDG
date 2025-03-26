@@ -101,11 +101,13 @@ class SecretariatController extends Controller
             // table Terrain
             // 'txt_num_dossier' => 'required|exists:dossiers,id',
             'txt_lotissement' => 'nullable|string',
+            'txt_HorsLotissement' => 'nullable|string',
             'txt_num_lotissement' => 'nullable|string',
             'txt_num_section' => 'nullable|string',
             'txt_num_parcelle' => 'nullable|string',
             'txt_num_titre' => 'nullable|string',
             'nbr_surface' => 'nullable|numeric|min:0|max:99999999.99',
+            'txt_appartement' => 'nullable|string',
             'slt_document_admin' => 'nullable|string',
             'txt_num_deliberation' => 'nullable|string',
             'dt_date_deliberation' => 'nullable|date',
@@ -205,11 +207,13 @@ class SecretariatController extends Controller
             // table Terrain
             Terrain::create([
                 'txt_lotissement' => $validatedData['txt_lotissement'] ?? null,
+                'txt_HorsLotissement' => $validatedData['txt_HorsLotissement'] ?? null,
                 'txt_num_lotissement' => $validatedData['txt_num_lotissement'] ?? null,
                 'txt_num_section' => $validatedData['txt_num_section'] ?? null,
                 'txt_num_parcelle' => $validatedData['txt_num_parcelle'] ?? null,
                 'txt_num_titre' => $validatedData['txt_num_titre'] ?? null,
                 'nbr_surface' => $validatedData['nbr_surface'] ?? null,
+                'txt_appartement' => $validatedData['txt_appartement'] ?? null,
                 'slt_document_admin' => $validatedData['slt_document_admin'] ?? null,
                 'txt_num_deliberation' => $validatedData['txt_num_deliberation'] ?? null,
                 'dt_date_deliberation' => $validatedData['dt_date_deliberation'] ?? null,

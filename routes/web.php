@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DonneeController;
 use App\Http\Controllers\DossierController;
 use App\Http\Controllers\GeometreController;
@@ -8,10 +9,14 @@ use App\Http\Controllers\MatriceCadastraleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SecretariatController;
 use App\Models\Dossier;
-use App\Models\Terrain;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+
+// use Illuminate\Http\Request;
+// use Illuminate\Support\Facades\Auth;
+
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -22,6 +27,17 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+Route::post('/logout', function () {
+    \Illuminate\Support\Facades\Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+})->name('logout');
+
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -44,6 +60,7 @@ Route::post('/search-dossier', [GeometreController::class, 'search']);
 
 
 Route::post('/secretariat', [SecretariatController::class, 'store'])->name('secretariat.store');
+Route::post('/geometre', [GeometreController::class, 'store'])->name('geometre.store');
 Route::get('/dossier/last', function () {
     $lastDossier = Dossier::latest('id')->first();
 

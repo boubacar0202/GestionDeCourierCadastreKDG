@@ -40,13 +40,21 @@ createInertiaApp({
             app.config.globalProperties.$toast.error("Une erreur est survenue !");
         };
     
+        // Configuration de MazUI avec la couleur personnalisée
+        app.use(MazUI, {
+            colors: {
+                primary: '#FE5835',  // 🔥 Définit la couleur principale pour MazUI
+            },
+        });
+    
         // Ajout des plugins
         app.use(plugin)
             .use(ZiggyVue)
-            .use(installToaster, toasterOptions, MazUI)
+            .use(installToaster, toasterOptions)
             .mount(el);
     },    
+      
     progress: {
-        color: "#4B5563",
+        color: "#FE5835",
     },
 });

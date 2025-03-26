@@ -8,7 +8,12 @@ import axios from "axios";
 import { useToast } from "maz-ui";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import { Inertia } from '@inertiajs/inertia';
+
+
+
 defineOptions({ layout: DefaultLayout });
+
+
 
 const slt_region = ref();
 const slt_departement = ref();
@@ -22,6 +27,9 @@ const slt_dependant_domaine = ref(null); // ou ref({}) selon l'utilisation
 const txt_num_section = ref('');
 const txt_num_parcelle = ref('');
 const txt_appartement = ref('');
+//
+
+
 
 const txt_nicad = computed(() => {
     if (slt_commune.value === 1) {
@@ -63,12 +71,20 @@ const txt_nicad = computed(() => {
     }else if (slt_commune.value === 19) {
         return `13220203 ${txt_num_section.value} ${txt_num_parcelle.value} ${txt_appartement.value}`;
     }else {
-        return `${txt_num_section.value} ${txt_num_parcelle.value}`;
+        return `${txt_num_section.value} ${txt_num_parcelle.value}  ${txt_appartement.value}`;
     }
 });
 
 
 const toast = useToast();
+
+const showError = (message) => {
+    if (toast?.error) {
+        toast.error(message);
+    } else {
+        console.error("Erreur MazUI Toast : ", message);
+    }
+};
 
 const props = defineProps({
     regions: {
@@ -76,6 +92,7 @@ const props = defineProps({
         default: () => [],
     },
 });
+
 
 // const activeTab = ref(1);
 const activeTab = ref(""); // Valeur de la tab active
@@ -96,6 +113,7 @@ const form = useForm({
     slt_arrondissement: "",
     slt_commune: "",
     txt_lotissement: "",
+    txt_HorsLotissement:"",
     txt_num_lotissement: "",
     // txt_num_section: "",
     txt_num_section: "",
@@ -120,7 +138,6 @@ const form = useForm({
     txt_num_requisition: "",
     txt_surface_bornage: "",
     dt_date_bornage: "",
-    txt_appartement:"",
     txt_nom_geometre: "",
 
     // Table Titulaire
@@ -238,6 +255,64 @@ onMounted(() => {
     // Vous pouvez ajouter une logique pour initialiser les données ici
 });
 
+const show = ref(false);
+const handleSelectChange = () => {
+    show.value = form.issu_bornage === "Morcellement de Copropriété";
+};
+watch(() => form.issu_bornage, (newValue) => {
+    show.value = newValue === "Morcellement de Copropriété";
+});
+
+const errorMessage = ref("");
+const validateInput = () => {
+    const value = txt_appartement.value.toString();
+
+    if (value.length > 3) {
+        txt_appartement.value = value.slice(0, 3); // Coupe à 3 chiffres max
+    }
+
+    if (value.length < 3) {
+        errorMessage.value = "3 chiffres.";
+    } else {
+        errorMessage.value = "";
+    }
+};
+
+const errorMessageNumSection = ref("");
+// Validation de l'input (saisie à 3 caractères uniquement)
+const validateInputNumSection = () => {
+    const value = txt_num_section.value.toString();
+
+    // Si la longueur est plus grande que 3, on la coupe
+    if (value.length > 3) {
+        txt_num_section.value = value.slice(0, 3); // Limiter à 3 caractères
+    }
+    // Validation pour une saisie de 3 caractères exactement
+    if (value.length < 3) {
+        errorMessageNumSection.value = "3 chiffres.";
+    } else {
+        errorMessageNumSection.value = "";
+    }
+};
+
+const errorMessageNumParcelle = ref("");
+
+// Validation de l'input (saisie à 5 caractères uniquement)
+const validateInputNumParcelle = () => {
+    const value = txt_num_parcelle.value.toString();
+
+    // Si la longueur est plus grande que 5, on la coupe
+    if (value.length > 5) {
+        txt_num_parcelle.value = value.slice(0, 5); // Limiter à 5 caractères
+    }
+
+    // Validation pour une saisie de 5 caractères exactement
+    if (value.length < 5) {
+        errorMessageNumParcelle.value = "5 chiffres.";
+    } else {
+        errorMessageNumParcelle.value = "";
+    }
+};
 
 const submitForm = function () {  // Ajoutez `async` ici
     console.log("📤 Envoi du formulaire :", form);
@@ -266,6 +341,7 @@ const submitForm = function () {  // Ajoutez `async` ici
             });
         }
     });
+
 };
 
 const mazTabs = [
@@ -275,6 +351,7 @@ const mazTabs = [
         disabled: false,
     },
 ];
+
 </script>
 
 <template>
@@ -286,6 +363,10 @@ const mazTabs = [
                 Secretariat
                 
             </h2>
+            <!-- Affichage de l'utilisateur connecté et bouton de déconnexion -->
+
+
+
         </template>
 
         <div class="py-12">
@@ -312,18 +393,20 @@ const mazTabs = [
                                     >
                                         <div class="sm:col-span-2">
                                             <div class="sm:col-span-1">
-                                                <label class="block text-sm/6 font-medium text-gray-900">
+                                                <label 
+                                                    for="txt_num_dossier"
+                                                    class="block text-sm/6 font-medium text-gray-900">
                                                     N° Dossier
                                                 </label>
-                                                <div class="mt-1">
+                                                <div class="mt-2">
                                                     <input
                                                         type="text"
                                                         name="txt_num_dossier"
                                                         v-model="form.txt_num_dossier"
                                                         id="txt_num_dossier"
-                                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline 
-                                                        focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                         readonly
                                                     />
                                                 </div>
@@ -345,13 +428,17 @@ const mazTabs = [
                                                         "
                                                         id="slt_service_rendu"
                                                         autocomplete="address-level2"
-                                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        class="h-8  scrollbar-thin scrollbar-thumb-primary scrollbar-track-gray-300 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                        style="max-height: 200px;" 
                                                     >
                                                         <option
                                                             value=""
                                                             desabled
                                                         ></option>
                                                         <option
+                                                            
                                                             value="Delimitation"
                                                         >
                                                             Delimitation
@@ -398,6 +485,11 @@ const mazTabs = [
                                                         >
                                                             Enquête cadastrale
                                                         </option>
+                                                        <div class="absolute top-1/2 right-3 transform -translate-y-1/2 text-white">
+                                                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                            </svg>
+                                                        </div>
                                                     </select>
                                                 </div>
                                             </div>
@@ -418,7 +510,9 @@ const mazTabs = [
                                                         "
                                                         id="txt_etat_cession"
                                                         autocomplete="address-level2"
-                                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
                                             </div>
@@ -439,7 +533,9 @@ const mazTabs = [
                                                         "
                                                         id="txt_cession_definitive"
                                                         autocomplete="address-level2"
-                                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
                                             </div>
@@ -460,7 +556,9 @@ const mazTabs = [
                                                         "
                                                         id="dt_date_creation"
                                                         autocomplete="address-level2"
-                                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
                                             </div>
@@ -491,7 +589,9 @@ const mazTabs = [
                                                     @change="
                                                         fetchDepartements()
                                                     "
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 >
                                                     <option
                                                         v-for="region in regions"
@@ -517,7 +617,9 @@ const mazTabs = [
                                                     @change="
                                                         fetchArrondissements()
                                                     "
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 >
                                                     <option
                                                         value=""
@@ -550,7 +652,9 @@ const mazTabs = [
                                                     name="slt_arrondissement"
                                                     v-model="slt_arrondissement"
                                                     @change="fetchCommunes()"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 >
                                                     <option
                                                         value=""
@@ -584,7 +688,9 @@ const mazTabs = [
                                                     id="communes"
                                                     name="slt_commune  "
                                                     v-model="slt_commune"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 >
                                                     <option
                                                         value=""
@@ -605,7 +711,6 @@ const mazTabs = [
                                                 </select>
                                             </div>
                                         </div>
-
                                         <div class="sm:col-span-1">
                                             <label
                                                 for="txt_lotissement"
@@ -620,7 +725,29 @@ const mazTabs = [
                                                         form.txt_lotissement
                                                     "
                                                     id="txt_lotissement"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="sm:col-span-1">
+                                            <label
+                                                for="txt_HorsLotissement"
+                                                class="block text-sm font-medium"
+                                                >Hors Lotissement</label
+                                            >
+                                            <div class="mt-2">
+                                                <input
+                                                    type="text"
+                                                    name="txt_HorsLotissement"
+                                                    v-model="
+                                                        form.txt_HorsLotissement
+                                                    "
+                                                    id="txt_HorsLotissement"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -638,25 +765,9 @@ const mazTabs = [
                                                         form.txt_num_lotissement
                                                     "
                                                     id="txt_num_lotissement"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                                />
-                                            </div>
-                                        </div>
-                                       
-                                        <div class="sm:col-span-1">
-                                            <label
-                                                for="numTitre"
-                                                class="block text-sm/6 font-medium text-gray-900"
-                                                >N° Titre</label
-                                            >
-                                            <div class="mt-2">
-                                                <input
-                                                    type="text"
-                                                    name="txt_num_titre"
-                                                    v-model="form.txt_num_titre"
-                                                    id="numTitre"
-                                                    autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -675,7 +786,9 @@ const mazTabs = [
                                                     v-model="form.nbr_surface"
                                                     id="surface"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -693,7 +806,9 @@ const mazTabs = [
                                                     "
                                                     id="Document_admin"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 >
                                                     <option
                                                         selected
@@ -753,7 +868,9 @@ const mazTabs = [
                                                     "
                                                     id="Num_deliberation"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -772,7 +889,9 @@ const mazTabs = [
                                                     "
                                                     id="Date_deliberation"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -790,30 +909,34 @@ const mazTabs = [
                                                         txt_num_section
                                                     "
                                                     id="Num_section"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                    @input="validateInputNumSection"
+                                                    maxlength="3"
+                                                    minlength="3"
                                                 />
                                             </div>
+                                            <p v-if="errorMessageNumSection" class="text-red-500 text-sm mt-1">{{ errorMessageNumSection }}</p>
                                         </div>
                                      
                                         <div class="sm:col-span-1">
-                                            <label
-                                                for="Num_parcelle"
-                                                class="block text-sm/6 font-medium text-gray-900"
-                                                >N° Parcelle</label
-                                            >
+                                            <label for="Num_parcelle" class="block text-sm/6 font-medium text-gray-900">N° Parcelle</label>
                                             <div class="mt-2">
                                                 <input
                                                     type="text"
                                                     name="txt_num_parcelle"
-                                                    v-model="
-                                                        txt_num_parcelle
-                                                    "
+                                                    v-model="txt_num_parcelle"
                                                     id="Num_parcelle"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                    outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline 
-                                                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                    @input="validateInputNumParcelle"
+                                                    maxlength="5"
+                                                    minlength="5"
                                                 />
                                             </div>
+                                            <p v-if="errorMessageNumParcelle" class="text-red-500 text-sm mt-1">{{ errorMessageNumParcelle }}</p>
                                         </div>
                                         <div class="sm:col-span-2">
                                             <label 
@@ -829,9 +952,9 @@ const mazTabs = [
                                                         txt_nicad
                                                     "
                                                     id="txt_nicad"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                    outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline 
-                                                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     readonly
                                                 />
                                             </div>
@@ -858,7 +981,6 @@ const mazTabs = [
                                         value="Terrain Immatriculé"
                                         label="Terrain Immatriculé"
                                     />
-
                                         <!-- Contenus de chaque section selon les checkboxes sélectionnées -->
                                     <div v-if="activeTab.includes('Terrain Non Immatriculé')" class="maz-py-4">
                                         <!-- Contenu du Tab 1 ici -->
@@ -877,7 +999,9 @@ const mazTabs = [
                                                             v-model="slt_dependant_domaine"
                                                             name="slt_dependant_domaine"
                                                             id="slt_dependant_domaine"
-                                                            class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                         >
                                                             <option selected disabled>choisi ici</option>
                                                             <option value="Domaine National">Domaine National</option>
@@ -901,10 +1025,13 @@ const mazTabs = [
                                                     <label for="Bornage">Issu de bornage</label>
                                                     <div class="mt-2">
                                                         <select
-                                                            v-model="form.ussu_bornage"
-                                                            name="ussu_bornage"
+                                                            v-model="form.issu_bornage"
+                                                            name="issu_bornage"
                                                             id="Bornage"
-                                                            class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                            @change="handleSelectChange"
                                                         >
                                                             <option selected disabled>choisir ici</option>
                                                             <option value="Immatriculation">Immatriculation</option>
@@ -924,7 +1051,28 @@ const mazTabs = [
                                                             name="txt_titre_mere"
                                                             id="Titre_mere"
                                                             autocomplete="address-level2"
-                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="sm:col-span-1">
+                                                    <label
+                                                        for="numTitre"
+                                                        class="block text-sm/6 font-medium text-gray-900"
+                                                        >N° Titre</label
+                                                    >
+                                                    <div class="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="txt_num_titre"
+                                                            v-model="form.txt_num_titre"
+                                                            id="numTitre"
+                                                            autocomplete="address-level2"
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                         />
                                                     </div>
                                                 </div>
@@ -936,7 +1084,9 @@ const mazTabs = [
                                                             name="slt_lf"
                                                             id="LF"
                                                             autocomplete="address-level2"
-                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                         >
                                                             <option selected desabled></option>
                                                             <option value="NO">NO</option>
@@ -955,7 +1105,9 @@ const mazTabs = [
                                                             name="txt_num_requisition"
                                                             id="Num_requisition"
                                                             autocomplete="address-level2"
-                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                         />
                                                     </div>
                                                 </div>
@@ -968,7 +1120,9 @@ const mazTabs = [
                                                             name="txt_surface_bornage"
                                                             id="Surface_bornage"
                                                             autocomplete="address-level2"
-                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                         />
                                                     </div>
                                                 </div>
@@ -981,25 +1135,31 @@ const mazTabs = [
                                                             name="dt_date_bornage"
                                                             id="Date_bornage"
                                                             autocomplete="address-level2"
-                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                         />
                                                     </div>
                                                 </div>
-                                                <div class="sm:col-span-1">
-                                                    <label
-                                                        for="txt_confirmationNicad"
-                                                        class="block text-sm/6 font-medium text-gray-900"
-                                                        >Appartement</label
-                                                    >
+                                                <div v-if="show" class="sm:col-span-1">
+                                                    <label for="txt_appartement" class="block text-sm/6 font-medium font-medium text-gray-900">
+                                                        Appartement
+                                                    </label>
                                                     <div class="mt-2">
                                                         <input
-                                                            type="number"
+                                                            type="text"
                                                             name="txt_appartement"
                                                             v-model="txt_appartement"
                                                             id="txt_appartement"
-                                                            autocomplete="address-level2"
-                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                            autocomplete="off"
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                            @input="validateInput"
+                                                            maxlength="3"
+                                                            minlength="3"
                                                         />
+                                                        <p v-if="errorMessage" class="text-red-500 text-sm mt-1 font-medium text-gray-900">{{ errorMessage }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="sm:col-span-2">
@@ -1011,7 +1171,9 @@ const mazTabs = [
                                                             name="txt_nom_geometre"
                                                             id="Nom_geometre"
                                                             autocomplete="address-level2"
-                                                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                            class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                         />
                                                     </div>
                                                 </div>
@@ -1041,7 +1203,9 @@ const mazTabs = [
                                                     name="slt_titulaire"
                                                     v-model="form.slt_titulaire"
                                                     id="Titulaire"
-                                                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 >
                                                     >
                                                     <option selected disabled>
@@ -1078,7 +1242,9 @@ const mazTabs = [
                                                     "
                                                     id="Nationalite"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1093,7 +1259,9 @@ const mazTabs = [
                                                     name="slt_civilite"
                                                     v-model="form.slt_civilite"
                                                     id="Civilite"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 >
                                                     <option selected disabled>
                                                         Choisir ici
@@ -1120,7 +1288,9 @@ const mazTabs = [
                                                     v-model="form.txt_prenom"
                                                     id="Prenom"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1137,7 +1307,9 @@ const mazTabs = [
                                                     v-model="form.txt_nom"
                                                     id="nom"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1152,7 +1324,9 @@ const mazTabs = [
                                                     name="slt_piece"
                                                     v-model="form.slt_piece"
                                                     id="selectePiece"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 >
                                                     <option selected disabled>
                                                         Choisir ici
@@ -1179,7 +1353,9 @@ const mazTabs = [
                                                     v-model="form.txt_numPiece"
                                                     id="numPiece"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1198,7 +1374,9 @@ const mazTabs = [
                                                     "
                                                     id="dateDelivrance"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1217,7 +1395,9 @@ const mazTabs = [
                                                     "
                                                     id="dateNaissance"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1236,7 +1416,9 @@ const mazTabs = [
                                                     "
                                                     id="lieuNaissance"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1253,7 +1435,9 @@ const mazTabs = [
                                                     v-model="form.txt_adresse"
                                                     id="adresse"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1270,7 +1454,9 @@ const mazTabs = [
                                                     v-model="form.tel_telephone"
                                                     id="telephone"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1287,7 +1473,9 @@ const mazTabs = [
                                                     v-model="form.txt_ninea"
                                                     id="ninea"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1304,7 +1492,9 @@ const mazTabs = [
                                                     v-model="form.eml_email"
                                                     id="Email"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1323,7 +1513,9 @@ const mazTabs = [
                                                     "
                                                     id="txt_representant"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1342,7 +1534,9 @@ const mazTabs = [
                                                     "
                                                     id="tel_telRepresentant"
                                                     autocomplete="address-level2"
-                                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -1354,16 +1548,14 @@ const mazTabs = [
 
                                 <div class="sm:col-span-6 flex justify-center">
                                     <MazBtn type="submit" no-shadow no-hover-effect
-                                        class="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 
-                                                hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 
-                                                dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
-                                                dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm 
-                                                px-5 py-2.5 text-center" >
+                                            class="bg-gradient-to-r from-primary via-primary-light to-primary-dark 
+                                                hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-primary 
+                                                dark:focus:ring-primary-dark shadow-lg shadow-primary/50 
+                                                dark:shadow-lg dark:shadow-primary-dark font-medium rounded-lg text-sm 
+                                                px-5 py-2.5 text-center">
                                         Enregistrer
                                     </MazBtn>
-
                                 </div>
-
                             </div>
                         </form>
                     </div>
@@ -1372,3 +1564,4 @@ const mazTabs = [
         </div>
     </AuthenticatedLayout>
 </template>
+

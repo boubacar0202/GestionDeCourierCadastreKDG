@@ -1,18 +1,45 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from '@inertiajs/vue3';
+import { defineProps, onMounted } from 'vue';
+import DefaultLayout from "@/Layouts/DefaultLayout.vue";
+
+defineOptions({ layout: DefaultLayout });
+const props = defineProps({
+  terrains: Array,
+});
+
+onMounted(() => {
+  console.log(props.terrains); // Vérifie la structure des données
+});
+
+
+// Fonction pour formater la date
+const formatDate = (dateString) => {
+  if (!dateString) return 'Date inconnue';
+  return new Date(dateString).toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+};
+
 </script>
 
 <template>
-    <Head title="Matrice"/>
 
-    <AuthenticatedLayout>
+    <Head title="Matrice"/>
+    <AuthenticatedLayout>   
+
         <template #header>
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800"
             >
                 Matrice Cadastrale
             </h2>
+            <template v-if="!terrains || terrains.length === 0">
+                <p>Aucun terrain trouvé.</p>
+            </template>
            
         </template>
      
@@ -177,48 +204,50 @@ import { Head } from '@inertiajs/vue3';
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <tr v-for="terrain in terrains" :key="terrain.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                N°
+                                                {{ terrain.dossier ? terrain.dossier.id : 'Dossier Inconnue' }}
                                             </th>
                                             <td class="px-6 py-4">
-                                                Region
+                                                {{ terrain.region ? terrain.region.slt_region : 'Region inconnue' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Departement
+                                                {{ terrain.departement ? terrain.departement.slt_departement : 'Departement inconnue'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Commune
+                                                {{ terrain.commune ? terrain.commune.slt_commune : 'Commune inconnue'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Village/Quartier
+                                                <!--    quartier lotissement     -->
+                                                {{ terrain.txt_lotissement || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
                                                 Rue
                                             </td>
                                             <td class="px-6 py-4">
-                                                Section
+                                                {{ terrain.txt_num_section || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Lotissement
+                                                {{ terrain.txt_lotissement || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Numéro Lot
+                                                {{ terrain.txt_num_lotissement || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Numéro_Parcelle
+                                                {{ terrain.txt_num_parcelle || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                NICAD
+                                                {{ terrain.txt_nicad || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
                                                 Numéro_Prote
                                             </td>
                                             <td class="px-6 py-4">
-                                                Superfice Legale
+                                                {{ terrain.nbr_surface || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Superficie Batie
+                                                <!-- Superficie Batie -->
+                                                 {{ terrain.nbr_surface_bati || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
                                                 Type_Batie
@@ -239,7 +268,8 @@ import { Head } from '@inertiajs/vue3';
                                                 Source_Donnee
                                             </td>
                                             <td class="px-6 py-4">
-                                                Titre Mere
+                                                <!-- Titre Mere -->
+                                                 {{ terrain.references_cadastrales?.txt_titre_mere || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
                                                 Titre Parcelle
@@ -251,40 +281,50 @@ import { Head } from '@inertiajs/vue3';
                                                 Nature_Juridique
                                             </td>
                                             <td class="px-6 py-4">
-                                                Prenom_Pro
+                                                <!-- Prenom_Pro -->
+                                                 {{ terrain.titulaire.txt_prenom || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Nom_Pro
+                                                <!-- Nom_Pro -->
+                                                 {{ terrain.titulaire.txt_nom || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                CIN_Pro
+                                                <!-- CIN_Pro -->
+                                                 {{ terrain.titulaire.slt_piece }}
                                             </td>
                                             <td class="px-6 py-4">
                                                 Passport_Pro
                                             </td>
                                             <td class="px-6 py-4">
-                                                DateDelivrance_Pro
+                                                <!-- DateDelivrance_Pro -->
+                                                 {{ terrain.titulaire.dt_date_delivrance || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Date_Naissance
+                                                <!-- Date_Naissance -->
+                                                {{ terrain.titulaire.dt_date_naissance || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Lieu_Naissance
+                                                <!-- Lieu_Naissance -->
+                                                {{ terrain.titulaire.txt_lieu_naissance || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                NINEA_PRO
+                                                <!-- NINEA_PRO -->
+                                                {{ terrain.titulaire.txt_ninea || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Telephone1_Pro
+                                                <!-- Telephone1_Pro -->
+                                                {{ terrain.titulaire.tel_telephone || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Telephone2_Pro
+                                                <!-- Telephone2_Pro -->
+                                                {{ terrain.titulaire.tel_telephone || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Email_Pro
+                                                <!-- Email_Pro -->
+                                                {{ terrain.titulaire.eml_email || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
-                                                Prenom_Occupant
+                                                {{ terrain.titulaire.txt_representant || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
                                                 Nom_Occupant
@@ -308,7 +348,8 @@ import { Head } from '@inertiajs/vue3';
                                                 NINEA_Occupant
                                             </td>
                                             <td class="px-6 py-4">
-                                                Tel_Occupant
+                                                <!-- Tel_Occupant -->
+                                                {{ terrain.titulaire.tel_telRepresentant || 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
                                                 Email_Occupant
@@ -332,161 +373,6 @@ import { Head } from '@inertiajs/vue3';
                                             </td>
                                         </tr>
 
-                                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                
-                                            </th>
-                                            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                               <!--{{$item->region}}    -->
-                                               début
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                              
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                          
-                                            </td>
-                                            <td class="px-6 py-4">
-                                            
-                                            </td>
-                                            <td class="px-6 py-4">
-                                              
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                              
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                              
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                            
-                                            </td>
-                                            <td class="px-6 py-4">
-                                               
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                Fin_debut
-                                            </td>
-                                            <td class="flex items px-6 py-6">
-                                                <div class="mt-2">
-                                                    <MazBtn pastel size="sm">Modifier</MazBtn>
-                                                </div>
-                                                <div class="container">
-                                                    <p>.</p>
-                                                </div>
-                                                <div class="mt-2">
-                                                    <MazBtn color="danger" pastel size="sm">Supprimer</MazBtn>
-                                                </div>
-                                            </td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
