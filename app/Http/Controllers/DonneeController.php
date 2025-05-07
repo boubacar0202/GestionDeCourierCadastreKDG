@@ -12,22 +12,26 @@ class DonneeController extends Controller
     public function index(){
         return Inertia::render("donnee/create");
     }
-    public function create(){
-
-
-        $terrains = Terrain::with(['region', 'departement','commune', 'arrondissement', 'dossier', 'titulaire', 'references_cadastrales'])->get();
-
-        return Inertia::render("donnee/create", ["terrains"=> $terrains]);
-        // 
-    }
-
-    public function edit($id)
+    public function create()
     {
-        $terrain = Terrain::with(['dossier', 'references_cadastrales', 'titulaire'])->findOrFail($id);
+        $terrains = Terrain::with([
+            'region',
+            'departement',
+            'commune',
+            'arrondissement',
+            'dossier',
+            'titulaire',
+            'references_cadastrales',
+            'references_usages',
+        ])->get();
     
-        return inertia('Secretariat/Create', [
-            'terrain' => $terrain
+        $terrain = Terrain::with('references_usages')
+            ->where('txt_nicad', session('txt_nicad'))
+            ->first();
+    
+        return Inertia::render('donnee/create', [
+            'terrain' => $terrain,
+            'terrains' => $terrains,
         ]);
     }
-
 }

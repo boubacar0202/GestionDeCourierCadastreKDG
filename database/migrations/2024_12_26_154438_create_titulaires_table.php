@@ -29,7 +29,9 @@ return new class extends Migration
             $table->string('eml_email')->nullable();
             $table->string('txt_representant')->nullable();
             $table->string('tel_telRepresentant')->nullable();
+
             $table->timestamps();
+
         });
     }
 

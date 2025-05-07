@@ -15,10 +15,21 @@ class EvaluationCloture extends Model
         'nbr_coefficient_clo',
         'nbr_valeur_clo',
         'nbr_valeur_total_clotur',
+        'txt_num_parcelle',
+        'txt_num_dossier',
     ];
 
-    public function terrain()
-    {
-        return $this->belongsTo(Terrain::class);
+    // public function terrain()
+    // {
+    //     return $this->belongsTo(Terrain::class);
+    // }
+
+    
+    public function terrain() {
+        return $this->belongsTo(Terrain::class, 'txt_num_parcelle', 'id');
+    }
+
+    public function dossier() {
+        return $this->belongsTo(Dossier::class, 'txt_num_dossier', 'id');
     }
 }

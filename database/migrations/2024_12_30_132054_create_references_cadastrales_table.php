@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('txt_surface_bornage')->nullable();
             $table->string('dt_date_bornage')->nullable();
             $table->string('txt_nom_geometre')->nullable();
+
             $table->timestamps();
+            
         });
     }
 

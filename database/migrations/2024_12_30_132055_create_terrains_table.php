@@ -12,10 +12,11 @@ return new class extends Migration {
     {
         Schema::create('terrains', function (Blueprint $table) {
             $table->id();
+            $table->string('txt_num_parcelle')->nullable();
+            $table->index('txt_num_parcelle');
             $table->string('txt_lotissement')->nullable();
             $table->string('txt_num_lotissement')->nullable();
             $table->string('txt_num_section')->nullable();
-            $table->string('txt_num_parcelle')->nullable();
             $table->string('txt_num_titre')->nullable();
             $table->string('txt_titre_mere')->nullable();
             $table->decimal('nbr_surface', 10, 2)->nullable();
@@ -40,11 +41,10 @@ return new class extends Migration {
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down()
     {
         Schema::dropIfExists('terrains');
     }
+    
 };

@@ -4,32 +4,24 @@ import { Head } from '@inertiajs/vue3';
 import { defineProps, onMounted } from 'vue';
 
 const props = defineProps({
-  terrains: Array,
+    terrain: Object,
+    terrains: Array,
 });
 
 onMounted(() => {
-  console.log(props.terrains); // Vérifie la structure des données
+    console.log(props.terrains); // Vérifie la structure des données
 });
-
 
 // Fonction pour formater la date
 const formatDate = (dateString) => {
-  if (!dateString) return 'Date inconnue';
-  return new Date(dateString).toLocaleDateString('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+    if (!dateString) return 'Date inconnue';
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    });
 };
-
-// 
-// const numero = ref('');
-// const txt_num_dossier = ref('');
-
-// const searchDossier = () => {
-//     console.log("Recherche du dossier :", numero.value);
-//     // Ajoute ici la logique de recherche
-// };
+ 
 
 </script>
 
@@ -247,13 +239,52 @@ const formatDate = (dateString) => {
                                                 txt_telRepresentant
                                             </th>
                                             <th scope="col" class="px-6 py-3">
+                                                slt_reference_usage
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_residence
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                txt_nomOccupantTG
+                                            </th> 
+                                            <th scope="col" class="px-6 py-3">
+                                                txt_numAppartementTG
+                                            </th> 
+                                            <th scope="col" class="px-6 py-3">
+                                                txt_activiteTG
+                                            </th> 
+                                            <th scope="col" class="px-6 py-3">
+                                                txt_nineaTG
+                                            </th> 
+                                            <th scope="col" class="px-6 py-3">
+                                                tel_telephoneTG
+                                            </th> 
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_montantLoyerTG
+                                            </th> 
+                                            <th scope="col" class="px-6 py-3">
+                                                dt_dateNaissanceTG
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                txt_cniPasseportTG
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                dt_dateDelivranceTG
+                                            </th> 
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_montantLoyerTotal
+                                            </th> 
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_TVATotal
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
                                                 ACTIONS
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="terrain in terrains" :key="terrain.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                           
+                
                                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                                 {{ terrain.dossier ? terrain.dossier.id : 'Dossier inconnu' }}
                                             </th>
@@ -406,6 +437,46 @@ const formatDate = (dateString) => {
                                                 {{terrain.titulaire.tel_telRepresentant || 'Null'}}
                                             </td>
 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.slt_usage || 'Null' }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.slt_residence || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.txt_nomOccupantTG || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3" >
+                                                {{terrain.references_usages?.txt_numAppartementTG || 'Null' }}
+                                                <!-- {{ usage.txt_nomOccupantTG || 'Null' }} -->
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.txt_activiteTG || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.txt_nineaTG || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.tel_telephoneTG || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.nbr_montantLoyerTG || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.dt_dateNaissanceTG || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.txt_cniPasseportTG || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.dt_dateDelivranceTG || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.nbr_montantLoyerTotal || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.references_usages?.nbr_TVATotal || 'Null' }}
+                                            </td>
                                             <td class="flex items px-6 py-6">
                                                 <div class="mt-2">
                                                     <InertiaLink :href="`/secreatrit/create/${terrain.id}`">
@@ -419,8 +490,8 @@ const formatDate = (dateString) => {
                                                     <MazBtn color="danger" pastel size="sm">Supprimer</MazBtn>
                                                 </div>
                                             </td>
-                                        </tr>
 
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>

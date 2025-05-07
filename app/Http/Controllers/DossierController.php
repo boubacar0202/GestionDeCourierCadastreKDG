@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dossier;
-use Illuminate\Http\Request;
 
 class DossierController extends Controller
 {

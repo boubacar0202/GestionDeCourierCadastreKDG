@@ -106,7 +106,6 @@ const form = useForm({
     txt_etat_cession: "",
     txt_cession_definitive: "",
     dt_date_creation: "",
-
     //Table Terrain
     slt_region: "",
     slt_departement: "",
@@ -120,7 +119,6 @@ const form = useForm({
     txt_num_parcelle: "",
     txt_appartement:"",
     txt_nicad: "",
-
     // txt_num_parcelle: "",
     txt_num_titre: "",
     txt_titre_mere: "", // Supprimez l'une des occurrences
@@ -128,18 +126,15 @@ const form = useForm({
     slt_document_admin: "",
     txt_num_deliberation: "",
     dt_date_deliberation: "",
-    // txt_nicad: "",  // Supprimez l'une des occurrences
-
     // Table ReferenceCadastrale
     rd_immatriculation_terrain:"",
     slt_dependant_domaine: "",
-    ussu_bornage: "",
+    issu_bornage: "",
     slt_lf: "",
     txt_num_requisition: "",
     txt_surface_bornage: "",
     dt_date_bornage: "",
     txt_nom_geometre: "",
-
     // Table Titulaire
     slt_titulaire: "",
     txt_nationalite: "",
@@ -341,7 +336,6 @@ const submitForm = function () {  // Ajoutez `async` ici
             });
         }
     });
-
 };
 
 const mazTabs = [
@@ -363,9 +357,6 @@ const mazTabs = [
                 Secretariat
                 
             </h2>
-            <!-- Affichage de l'utilisateur connecté et bouton de déconnexion -->
-
-
 
         </template>
 
@@ -378,7 +369,6 @@ const mazTabs = [
                             <h1 class="text-lg font-semibold">Formulaire</h1>
                            
                         </div>
-
                         <!-- Corps du formulaire -->
                         <form @submit.prevent="submitForm">
                             <div class="p-6">
@@ -412,7 +402,6 @@ const mazTabs = [
                                                 </div>
                                             </div>
                                         </div>
-                                                                                
                                         <div class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label

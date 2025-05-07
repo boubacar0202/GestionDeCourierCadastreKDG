@@ -21,10 +21,21 @@ class EvaluationBati extends Model
         'nbr_surface_corriger',
         'nbr_valeur',
         'txt_valeur_terrain_bati',
+        'txt_num_parcelle',
+        'txt_num_dossier',
     ];
 
-    public function terrain()
-    {
-        return $this->belongsTo(Terrain::class);
+    // public function terrain()
+    // {
+    //     return $this->belongsTo(Terrain::class);
+    // }
+
+    
+    public function terrain() {
+        return $this->belongsTo(Terrain::class, 'txt_num_parcelle', 'id');
+    }
+
+    public function dossier() {
+        return $this->belongsTo(Dossier::class, 'txt_num_dossier', 'id');
     }
 }

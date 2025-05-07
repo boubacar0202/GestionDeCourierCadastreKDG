@@ -40,20 +40,20 @@ class SecretariatController extends Controller
         ]);
     }
 
-    private function generateNextSlug()
-    {
+    // private function generateNextSlug()
+    // {
 
-        // Récupérer le dernier dossier de l'année en cours
-        $lastDossier = Dossier::whereYear('created_at', date('Y'))
-                    ->orderBy('id', 'desc')
-                    ->first();
-        $number = $lastDossier ?
-        (int)substr($lastDossier->txt_num_dossier, 0, 6) +1 : 1;
+    //     // Récupérer le dernier dossier de l'année en cours
+    //     $lastDossier = Dossier::whereYear('created_at', date('Y'))
+    //                 ->orderBy('id', 'desc')
+    //                 ->first();
+    //     $number = $lastDossier ?
+    //     (int)substr($lastDossier->txt_num_dossier, 0, 6) +1 : 1;
 
-        // Calculer le prochain numéro
-        return sprintf('%06d/%s', $number, date('Y'));
+    //     // Calculer le prochain numéro
+    //     return sprintf('%06d/%s', $number, date('Y'));
         
-    }
+    // }
 
     public function store(Request $request)
     {
@@ -139,7 +139,6 @@ class SecretariatController extends Controller
             'slt_arrondissement.required' => 'Arrondissement requis',
             'slt_commune.required'=> 'Commune requis',
 
-            // Continuer ici l'affichage des erreurs
 
         ]);     
 
@@ -156,13 +155,6 @@ class SecretariatController extends Controller
             $lastNumOrder = Dossier::max('txt_num_dordre'); // Trouve la valeur max dans la colonne
             $newOrder = $lastNumOrder ? $lastNumOrder + 1 : 1; // Si null, commence à 1
 
-            // Vérifier la commune et générer txt_nicad
-            // $commune = Commune::find($validatedData['slt_commune']);
-            // if ($commune && $commune->slt_commune === "Kedougou") {
-            //     $txt_nicad = "13110100" . $validatedData['txt_num_section'] . $validatedData['txt_num_parcelle'];
-            // } else {
-            //     $txt_nicad = $validatedData['txt_num_section'] . ' ' . $validatedData['txt_num_parcelle'];
-            // }
 
             $dossier = Dossier::create([
                 'txt_num_dossier' =>  $validatedData['txt_num_dossier'], 
@@ -205,7 +197,7 @@ class SecretariatController extends Controller
             ]);
         
             // table Terrain
-            Terrain::create([
+            $terrain = Terrain::create([
                 'txt_lotissement' => $validatedData['txt_lotissement'] ?? null,
                 'txt_HorsLotissement' => $validatedData['txt_HorsLotissement'] ?? null,
                 'txt_num_lotissement' => $validatedData['txt_num_lotissement'] ?? null,
@@ -226,6 +218,12 @@ class SecretariatController extends Controller
                 'referencesCadastrale_id' => $referenceCadastrale->id,
                 'titulaire_id' => $titulaire->id,
             ]);
+
+            session([
+                'txt_nicad' => $terrain->txt_nicad,
+                'txt_num_parcelle' => $terrain->txt_num_parcelle,
+            ]);
+            
 
             return redirect()->back()->with('success', 'Donnée enregistrée !');
         

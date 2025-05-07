@@ -9,52 +9,62 @@ use App\Models\EvaluationCloture;
 use App\Models\EvaluationCoursAmenagee;
 use App\Models\EvaluationTerrain;
 use App\Models\ReferenceUsage;
+use App\Models\Terrain;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
 
 class GeometreController extends Controller
 {
     //
-    /*
+   
     public function index(){
         return Inertia::render("geometre/index");
     }
-    */
+
 
     public function create(){
-        return Inertia::render("geometre/create");
+
+        $terrain = Terrain::where('txt_nicad', session('txt_nicad'))->first();
+
+        return Inertia::render('geometre/create', [
+            'terrain' => $terrain,
+            'txt_nicad' => $terrain?->txt_nicad,
+        ]);
     }
+
 
     public function show()
     {
         $Niveau = 0; // Exemple de récupération d'un nombre depuis la base de données
         return view('geometre/create', compact('Niveau'));
     }
-
-    public function search(Request $request)
+    
+    public function verify(Request $request)
     {
-        // Récupérer le numéro de dossier depuis la requête
-        $numero = $request->input('numero');
+        $request->validate([
+            'txt_num_dossier' => 'required|string',
+        ]);
     
-        // Chercher le dossier dans la base de données
-        $dossier = Dossier::where('txt_num_dossier', $numero)->first();
+        $dossier = Dossier::where('txt_num_dossier', $request->txt_num_dossier)->first();
     
-        // Si le dossier existe, retourner les informations du dossier
         if ($dossier) {
+            // Pas de redirection — juste retour d'un flag JSON
             return response()->json([
-                'dossier' => $dossier,
-                'message' => 'Dossier trouvé !',
-                'messageType' => 'success'  // Type de message pour l'alerte
-            ]);
+                'success' => 'Dossier trouvé !',
+                'exists' => true,
+            ], 200);
         } else {
-            // Sinon, retourner un message d'erreur
             return response()->json([
-                'message' => "Numéro de dossier n'est pas enregistré.",
-                'messageType' => 'danger'  // Type de message pour l'alerte
-            ]);
+                'errors' => [
+                    'txt_num_dossier' => 'Numéro introuvable.'
+                ]
+            ], 422);
         }
     }
+    
+    
+    
+    
      // PAGES GEOMETRE
     public function store(Request $request)
     {
@@ -62,31 +72,43 @@ class GeometreController extends Controller
 
          $validatedData = $request->validate([
         //table Reference_usage
-        'slt_reference_usage' => 'nullable|string',
-        'txt_occupan_habitaion_1' => 'nullable|string',
-        'txt_activite_principal_hbt_1' => 'nullable|string',
-        'txt_ninea_occupan_hbt_1' => 'nullable|string',
-        'tel_tel_occupant_hbt_1' => 'nullable|numeric',
-        'nbr_montant_loyer_hbt_1' => 'nullable|integer',
-        'txt_activite_commercial' => 'nullable|string',
-        'txt_occopan_commercial' => 'nullable|string',
-        'txt_activite_industriel' => 'nullable|string',
-        'txt_occopan_industriel' => 'nullable|string',
-        'txt_activite_agricole' => 'nullable|string',
-        'txt_occopan_agricole' => 'nullable|string',
-        'txt_activite_professionnelle' => 'nullable|string',
-        'txt_occopan_professionnelle' => 'nullable|string',
-        'txt_activite_culte' => 'nullable|string',
-        'txt_occopan_culte' => 'nullable|string',
-        'txt_Activite_administratif' => 'nullable|string',
-        'txt_occupan_administratif' => 'nullable|string',
+        'txt_num_dossier' => 'required|string|exists:dossiers,txt_num_dossier',
+        'txt_nicad' => 'required|exists:terrains,txt_nicad',
+        // 'txt_nicad' => 'required|string',
 
-        // // table evaluation_terrains
+        'slt_residence' => 'nullable|string',
+        'slt_usage' => 'nullable|string',
+        // usage
+        'occupants' => 'required|array',
+        'occupants.*.txt_nomOccupantTG' => 'nullable|string',
+        'occupants.*.txt_numAppartementTG' => 'nullable|string',
+        'occupants.*.txt_activiteTG' => 'nullable|string',
+        'occupants.*.txt_nineaTG' => 'nullable|string',
+        'occupants.*.tel_telephoneTG' => 'nullable|string',
+        'occupants.*.nbr_montantLoyerTG' => 'nullable|numeric',
+        'occupants.*.txt_dateLieuNaissanceTG' => 'nullable|string',
+        'occupants.*.txt_cniPasseportTG' => 'nullable|string',
+        'occupants.*.dt_dateDelivranceTG' => 'nullable|date',
+        // Bti 
+        'txt_valeur_terrain_bati' =>'nullable|numeric',
+        'occupantsBP' => 'required|array',
+        'occupantsBP.*.slt_dependant_domaineTG' => 'nullable|string',
+        'occupantsBP.*.nbr_prix_metre_carreTG' => 'nullable|numeric',
+        'occupantsBP.*.nbr_surface_bati_solTG' => 'nullable|numeric',
+        'occupantsBP.*.nbr_niveauTG' => 'nullable|numeric',
+        'occupantsBP.*.nbr_surface_utileTG' => 'nullable|numeric',
+        'occupantsBP.*.slt_coeffTG' => 'nullable|numeric',
+        'occupantsBP.*.nbr_surface_corrigerTG' => 'nullable|numeric',
+        'occupantsBP.*.nbr_valeurTG' => 'nullable|numeric',
+
+
+
+        // table evaluation_terrains
         // 'txt_date_devaluation' => 'nullable|date',
         // 'txt_superficie_totale' => 'nullable|integer',
         // 'txt_superficie_bati_sol' => 'nullable|integer',
         // 'slt_secteur' => 'nullable|string',
-        // 'nbr_prix_metre_carré' => 'nullable|integer',
+        // 'nbr_prix_metre_carre' => 'nullable|integer',
         // 'nbr_valeur_terrain' => 'nullable|integer',
 
         // // table Evaluation_batis
@@ -134,37 +156,73 @@ class GeometreController extends Controller
 
         ]);
 
-            ReferenceUsage::create([
-                'slt_reference_usage' => $validatedData['slt_reference_usage'] ?? null,
-                'txt_occupan_habitaion_1' => $validatedData['txt_occupan_habitaion_1'] ?? null,
-                'txt_activite_principal_hbt_1' => $validatedData['txt_activite_principal_hbt_1'] ?? null,
-                'txt_ninea_occupan_hbt_1' => $validatedData['txt_ninea_occupan_hbt_1'] ?? null,
-                'tel_tel_occupant_hbt_1' => $validatedData['tel_tel_occupant_hbt_1'] ?? null,
-                'nbr_montant_loyer_hbt_1' => $validatedData['nbr_montant_loyer_hbt_1'] ?? null,
-                'txt_activite_commercial' => $validatedData['txt_activite_commercial'] ?? null,
-                'txt_occopan_commercial' => $validatedData['txt_occopan_commercial'] ?? null,
-                'txt_activite_industriel' => $validatedData['txt_activite_industriel'] ?? null,
-                'txt_occopan_industriel' => $validatedData['txt_occopan_industriel'] ?? null,
-                'txt_activite_agricole' => $validatedData['txt_activite_agricole'] ?? null,
-                'txt_occopan_agricole' => $validatedData['txt_occopan_agricole'] ?? null,
-                'txt_activite_professionnelle' => $validatedData['txt_activite_professionnelle'] ?? null,
-                'txt_occopan_professionnelle' => $validatedData['txt_occopan_professionnelle'] ?? null,
-                'txt_activite_culte' => $validatedData['txt_activite_culte'] ?? null,
-                'txt_occopan_culte' => $validatedData['txt_occopan_culte'] ?? null,
-                'txt_Activite_administratif' => $validatedData['txt_Activite_administratif'] ?? null,
-                'txt_occupan_administratif' => $validatedData['txt_occupan_administratif'] ?? null,
-            ]);
+            $occupants = $request->input('occupants');
+            $montantLoyerTotal = 0;
+            foreach ($request->input('occupants') as $occupant) {
+                $montantLoyerTotal += (float) $occupant['nbr_montantLoyerTG'];
+            }
+        
+            // Calcul de la TVA Total (18%)
+            $TVATotal = $montantLoyerTotal * 0.18;
 
+            foreach ($occupants as $occupant) {
+
+                ReferenceUsage::create([
+                    'txt_num_dossier'       => $validatedData['txt_num_dossier'], 
+                    'txt_nicad'             => $validatedData['txt_nicad'], 
+                    'slt_residence'         => $validatedData['slt_residence'],
+                    'slt_usage'             => $validatedData['slt_usage'],
+
+                    'txt_nomOccupantTG'     => $occupant['txt_nomOccupantTG'],
+                    'txt_numAppartementTG'  => $occupant['txt_numAppartementTG'],
+                    'txt_activiteTG'        => $occupant['txt_activiteTG'],
+                    'txt_nineaTG'           => $occupant['txt_nineaTG'],
+                    'tel_telephoneTG'       => $occupant['tel_telephoneTG'],
+                    'nbr_montantLoyerTG'    => $occupant['nbr_montantLoyerTG'],
+                    'txt_dateLieuNaissanceTG'    => $occupant['txt_dateLieuNaissanceTG'],
+                    'txt_cniPasseportTG'    => $occupant['txt_cniPasseportTG'],
+                    'dt_dateDelivranceTG'   => $occupant['dt_dateDelivranceTG'],
+
+                    // Ajouter les calculs du total et de la TVA
+                    'nbr_montantLoyerTotal' => $montantLoyerTotal,
+                    'nbr_TVATotal' => $TVATotal,
+
+                ]);
+            }
+
+            $occupantsBP = $request->input('occupantsBP');
+            $valeurTerrain_Bati = 0;
+            foreach ($request->input('occupants') as $occupant) {
+                $valeurTerrain_Bati += (float) $occupant['nbr_valeurTG'];
+            }
+            foreach ($occupantsBP as $occupant) {
+                EvaluationTerrain::create([
+                    // clé etrangère
+                    'txt_num_dossier'       => $validatedData['txt_num_dossier'], 
+                    'txt_nicad'             => $validatedData['txt_nicad'], 
+
+                    'slt_dependant_domaine'     => $occupant['slt_dependant_domaineTG'] ?? null,
+                    'nbr_prix_metre_carreTG'    => $occupant['nbr_prix_metre_carreTG'] ?? null,
+                    'nbr_surface_bati_solTG'    => $occupant['nbr_surface_bati_solTG'] ?? null,
+                    'nbr_niveauTG'              => $occupant['nbr_niveauTG'] ?? null,
+                    'nbr_surface_utileTG'       => $occupant['nbr_surface_utileTG'] ?? null,
+                    'slt_coeffTG'               => $occupant['slt_coeffTG'] ?? null,
+                    'nbr_surface_corrigerTG'    => $occupant['nbr_surface_corrigerTG'] ?? null,
+                    'nbr_valeurTG'              => $occupant['nbr_valeurTG'] ?? null,
+
+                    'txt_valeur_terrain_bati' => $valeurTerrain_Bati,
+                ]);
+            }
+        
             // // table evaluation_terrains
             // EvaluationTerrain::create([
-            //     'txt_date_devaluation' => $validatedData['txt_date_devaluation'] ?? null,
-            //     'txt_superficie_totale' => $validatedData['txt_superficie_totale'] ?? null,
-            //     'txt_superficie_bati_sol' => $validatedData['txt_superficie_bati_sol'] ?? null,
-            //     'slt_secteur' => $validatedData['slt_secteur'],
-            //     'nbr_prix_metre_carré' => $validatedData['nbr_prix_metre_carré'] ?? null,
-            //     'nbr_valeur_terrain' => $validatedData['nbr_valeur_terrain'] ?? null,
+            //     'txt_date_devaluation'      => $validatedData['txt_date_devaluation'] ?? null,
+            //     'txt_superficie_totale'     => $validatedData['txt_superficie_totale'] ?? null,
+            //     'txt_superficie_bati_sol'   => $validatedData['txt_superficie_bati_sol'] ?? null,
+            //     'slt_secteur'               => $validatedData['slt_secteur'],
+            //     'nbr_prix_metre_carre'      => $validatedData['nbr_prix_metre_carre'] ?? null,
+            //     'nbr_valeur_terrain'        => $validatedData['nbr_valeur_terrain'] ?? null,
             // ]);
-
 
             // // table Evaluation_batis
             // EvaluationBati::create([

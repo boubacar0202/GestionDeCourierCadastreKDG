@@ -33,6 +33,14 @@ class Terrain extends Model
 
     ];
 
+    public function references_usages()
+    {
+        return $this->hasOne(ReferenceUsage::class, 'txt_nicad', 'txt_nicad');
+    }
+//     public function references_usages()
+// {
+//     return $this->hasMany(ReferenceUsage::class, 'txt_nicad', 'txt_nicad');
+// }
 
     // Relations
     public function dossier() {

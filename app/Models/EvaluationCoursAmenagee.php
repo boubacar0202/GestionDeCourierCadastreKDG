@@ -15,10 +15,22 @@ class EvaluationCoursAmenagee extends Model
         'nbr_coefficient_ca_total',
         'nbr_valeur_ca_total',
         'nbr_valeur_total_cours',
+        'txt_num_parcelle',
+        'txt_num_dossier',
     ];
 
-    public function terrain()
-    {
-        return $this->belongsTo(Terrain::class);
+    // public function terrain()
+    // {
+    //     return $this->belongsTo(Terrain::class);
+    // }
+
+    
+    public function terrain() {
+        return $this->belongsTo(Terrain::class, 'txt_num_parcelle', 'id');
     }
+
+    public function dossier() {
+        return $this->belongsTo(Dossier::class, 'txt_num_dossier', 'id');
+    }
+    
 }

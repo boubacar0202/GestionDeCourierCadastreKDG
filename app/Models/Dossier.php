@@ -23,7 +23,11 @@ class Dossier extends Model
         'dt_date_creation' => 'date',
     ];
 
-
+    public function referencesUsage()
+    {
+        return $this->belongsTo(ReferenceUsage::class, 'txt_num_dossier', 'txt_num_dossier');
+    }
+    
     public function terrains()
     {
         return $this->hasMany(Terrain::class);

@@ -55,7 +55,8 @@ Route::resource('donnee', DonneeController::class);
 Route::resource('matriceCadastrale', MatriceCadastraleController::class);
 Route::get('/secretariat/create', [SecretariatController::class, 'create'])->name('secretariat.create');
 Route::get('/donnee/create', [DonneeController::class, 'create'])->name('donnee.create');
-Route::post('/search-dossier', [GeometreController::class, 'search']);
+Route::post('/dossier/verify', [GeometreController::class, 'verify'])->name('dossier.verify');
+
 
 
 
