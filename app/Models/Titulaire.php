@@ -32,4 +32,5 @@ class Titulaire extends Model
         {
             return $this->hasMany(Terrain::class);
         }
+
 }

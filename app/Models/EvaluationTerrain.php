@@ -11,6 +11,7 @@ class EvaluationTerrain extends Model
     protected $fillable = [
         'txt_nicad',
         'txt_num_dossier',
+        'nbr_surface',
         'txt_date_devaluation',
         'txt_superficie_totale',
         'txt_superficie_bati_sol',
@@ -23,7 +24,7 @@ class EvaluationTerrain extends Model
     public function terrain() {
         return $this->belongsTo(Terrain::class, 'txt_nicad', 'txt_nicad');
     }
-
+    
     public function dossier() {
         return $this->belongsTo(Dossier::class, 'txt_num_dossier', 'id');
     }

@@ -9,11 +9,7 @@ import { useToast } from "maz-ui";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import { Inertia } from '@inertiajs/inertia';
 
-
-
 defineOptions({ layout: DefaultLayout });
-
-
 
 const slt_region = ref();
 const slt_departement = ref();
@@ -28,8 +24,6 @@ const txt_num_section = ref('');
 const txt_num_parcelle = ref('');
 const txt_appartement = ref('');
 //
-
-
 
 const txt_nicad = computed(() => {
     if (slt_commune.value === 1) {
@@ -75,7 +69,6 @@ const txt_nicad = computed(() => {
     }
 });
 
-
 const toast = useToast();
 
 const showError = (message) => {
@@ -93,10 +86,8 @@ const props = defineProps({
     },
 });
 
-
 // const activeTab = ref(1);
 const activeTab = ref(""); // Valeur de la tab active
-
 
 const form = useForm({
     // Table Dossier
@@ -118,8 +109,7 @@ const form = useForm({
     txt_num_section: "",
     txt_num_parcelle: "",
     txt_appartement:"",
-    txt_nicad: "",
-    // txt_num_parcelle: "",
+    txt_nicad: "", 
     txt_num_titre: "",
     txt_titre_mere: "", // Supprimez l'une des occurrences
     nbr_surface: "",
@@ -151,8 +141,7 @@ const form = useForm({
     txt_ninea: "",
     eml_email: "",
     txt_representant: "",
-    tel_telRepresentant: "",
-    
+    tel_telRepresentant: "", 
 });
 
 // Récupérer le prochain numéro de dossier
@@ -166,8 +155,7 @@ const fetchNextDossier = async () => {
     } catch (error) {
         console.error("Erreur lors de la récupération du numéro de dossier :", error);
     }
-};
-
+};      
 // Charger le numéro de dossier au chargement du composant
 onMounted(fetchNextDossier);
 
@@ -367,7 +355,6 @@ const mazTabs = [
                         <!-- En-tête du formulaire -->
                         <div   class="p-4 border-b bg-gray-100">
                             <h1 class="text-lg font-semibold">Formulaire</h1>
-                           
                         </div>
                         <!-- Corps du formulaire -->
                         <form @submit.prevent="submitForm">
@@ -397,7 +384,7 @@ const mazTabs = [
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                             outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
-                                                        readonly
+ 
                                                     />
                                                 </div>
                                             </div>
@@ -534,7 +521,7 @@ const mazTabs = [
                                                 <label
                                                     for="dt_date_creation"
                                                     class="block text-sm/6 font-medium text-gray-900"
-                                                    >Date de creation</label
+                                                    >Date d'enregistrement</label
                                                 >
                                                 <div class="mt-2">
                                                     <input
@@ -633,8 +620,8 @@ const mazTabs = [
                                             <label
                                                 for="arrondissements"
                                                 class="block text-sm font-medium"
-                                                >Arrondissement</label
-                                            >
+                                                >Arrondissement
+                                            </label>
                                             <div class="mt-2">
                                                 <select
                                                     id="arrondissements"
@@ -642,8 +629,8 @@ const mazTabs = [
                                                     v-model="slt_arrondissement"
                                                     @change="fetchCommunes()"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 >
                                                     <option
                                                         value=""
@@ -678,8 +665,8 @@ const mazTabs = [
                                                     name="slt_commune  "
                                                     v-model="slt_commune"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 >
                                                     <option
                                                         value=""
@@ -715,8 +702,8 @@ const mazTabs = [
                                                     "
                                                     id="txt_lotissement"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -735,8 +722,8 @@ const mazTabs = [
                                                     "
                                                     id="txt_HorsLotissement"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
                                         </div>
@@ -785,7 +772,7 @@ const mazTabs = [
                                             <label
                                                 for="Document_admin"
                                                 class="block text-sm/6 font-medium text-gray-900"
-                                                >Document adminitratif</label
+                                                >Doc adminitratif</label
                                             >
                                             <div class="mt-2">
                                                 <select
@@ -963,14 +950,14 @@ const mazTabs = [
                                     <MazRadio
                                         v-model="activeTab"
                                         value="Terrain Non Immatriculé"
-                                        label="Terrain Non Immatriculé  ."
+                                        label="Terrain Non Immatriculé"
                                     />
                                     <MazRadio
                                         v-model="activeTab"
                                         value="Terrain Immatriculé"
                                         label="Terrain Immatriculé"
                                     />
-                                        <!-- Contenus de chaque section selon les checkboxes sélectionnées -->
+                                    <!-- Contenus de chaque section selon les checkboxes sélectionnées -->
                                     <div v-if="activeTab.includes('Terrain Non Immatriculé')" class="maz-py-4">
                                         <!-- Contenu du Tab 1 ici -->
                                         <br/>

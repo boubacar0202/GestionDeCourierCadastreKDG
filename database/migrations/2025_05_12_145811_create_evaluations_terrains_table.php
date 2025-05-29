@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -9,7 +10,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up(): void   
     {
         Schema::create('evaluations_terrains', function (Blueprint $table) {
             $table->id();
@@ -17,20 +18,23 @@ return new class extends Migration
             // Clés étrangères
             $table->string('txt_nicad');
             $table->string('txt_num_dossier');
+            $table->string('nbr_surface');
 
-            $table->date('txt_date_devaluation');
             $table->integer('txt_superficie_totale');
             $table->integer('txt_superficie_bati_sol');
             $table->string('slt_secteur');
             $table->integer('nbr_prix_metre_carre');
             $table->integer('nbr_valeur_terrain');
+            $table->decimal('nbr_valeurVenaleLimeuble', 15, 2)->nullable();
+            $table->decimal('nbr_valeurLocative', 15, 2)->nullable();
+            $table->date('dt_dateEvaluation')->nullable();
 
 
             $table->timestamps();
 
             // Déclaration des clés étrangères
             $table->foreign('txt_nicad')->references('txt_nicad')->on('terrains')->onDelete('cascade');
-            $table->foreign('txt_num_dossier')->references('txt_num_dossier')->on('dossiers')->onDelete('cascade');
+            $table->foreign(columns: 'txt_num_dossier')->references('txt_num_dossier')->on('dossiers')->onDelete('cascade');
 
         });
     }
@@ -43,3 +47,6 @@ return new class extends Migration
         Schema::dropIfExists('evaluations_terrains');
     }
 };
+
+
+

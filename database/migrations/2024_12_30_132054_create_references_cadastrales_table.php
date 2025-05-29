@@ -12,25 +12,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('references_cadastrales', function (Blueprint $table) {
+
             $table->id();
             $table->string('rd_immatriculation_terrain');
             $table->string('slt_dependant_domaine')->nullable();
             $table->string('ussu_bornage')->nullable();
             $table->string('txt_titre_mere')->nullable();
+            $table->string('txt_num_titre')->nullable(); 
+            $table->string('txt_appartement')->nullable(); 
             $table->string('slt_lf')->nullable();
             $table->string('txt_num_requisition')->nullable();
             $table->string('txt_surface_bornage')->nullable();
             $table->string('dt_date_bornage')->nullable();
             $table->string('txt_nom_geometre')->nullable();
-
+ 
             $table->timestamps();
-            
+ 
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+ 
     public function down(): void
     {
         Schema::dropIfExists('references_cadastrales');

@@ -26,6 +26,7 @@ class ReferenceUsage extends Model
         'nbr_TVATotal',
     ];
 
+ 
     public function terrain() {
         return $this->belongsTo(Terrain::class, 'txt_nicad', 'txt_nicad');
     }

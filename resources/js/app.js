@@ -7,7 +7,7 @@ import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import * as MazUI from "maz-ui";
 import DefaultLayout from "./Layouts/DefaultLayout.vue";
-import { installToaster } from 'maz-ui';
+import { installToaster } from 'maz-ui'; 
 
 
 
@@ -35,11 +35,11 @@ createInertiaApp({
         const app = createApp({ render: () => h(App, props) });
     
         // Gestion globale des erreurs
-        app.config.errorHandler = (err) => {
-            console.error("❌ Erreur attrapée :", err);
-            app.config.globalProperties.$toast.error("Une erreur est survenue !");
-        };
-    
+        app.config.errorHandler = (err, vm, info) => {
+            console.error('Erreur Vue attrapée:', err,vm, info)
+            alert('Une erreur est survenue. Vérifie la console.')
+        }
+
         // Configuration de MazUI avec la couleur personnalisée
         app.use(MazUI, {
             colors: {

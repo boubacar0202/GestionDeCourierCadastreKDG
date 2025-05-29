@@ -16,8 +16,7 @@ class Terrain extends Model
         'txt_HorsLotissement',
         'txt_num_lotissement',
         'txt_num_section',
-        'txt_num_parcelle',
-        'txt_num_titre',
+        'txt_num_parcelle', 
         'nbr_surface',
         'txt_appartement',
         'slt_document_admin',
@@ -29,20 +28,34 @@ class Terrain extends Model
         'slt_arrondissement',
         'slt_commune',
         'referencesCadastrale_id',
-        'titulaire_id',
-
+        'titulaire_id', 
     ];
 
+    public function evaluations_cours_amenagees()
+    {
+        return $this->hasOne(EvaluationCoursAmenagee::class, 'txt_nicad', 'txt_nicad');
+    }
+    public function evaluations_amenagements()
+    {
+        return $this->hasOne(EvaluationAmenagement::class, 'txt_nicad', 'txt_nicad');
+    }
+    public function evaluations_clotures()
+    {
+        return $this->hasOne(EvaluationCloture::class, 'txt_nicad', 'txt_nicad');
+    }
+    public function evaluations_batis()
+    {
+        return $this->hasOne(EvaluationBati::class, 'txt_nicad', 'txt_nicad');
+    }
+    public function evaluations_terrains()
+    {
+        return $this->hasOne(EvaluationTerrain::class, 'txt_nicad', 'txt_nicad');
+    }
     public function references_usages()
     {
         return $this->hasOne(ReferenceUsage::class, 'txt_nicad', 'txt_nicad');
     }
-//     public function references_usages()
-// {
-//     return $this->hasMany(ReferenceUsage::class, 'txt_nicad', 'txt_nicad');
-// }
-
-    // Relations
+ 
     public function dossier() {
         return $this->belongsTo(Dossier::class, 'txt_num_dossier', 'id');
     }
@@ -69,6 +82,7 @@ class Terrain extends Model
     {
         return $this->belongsTo(Titulaire::class, 'titulaire_id');
     }
+
 
     public function references_cadastrales()
     {

@@ -197,10 +197,7 @@ const formatDate = (dateString) => {
                                             </th>
                                             <th scope="col" class="px-6 py-3">
                                                 Observations
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                Action
-                                            </th>
+                                            </th> 
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -297,11 +294,11 @@ const formatDate = (dateString) => {
                                             </td>
                                             <td class="px-6 py-4">
                                                 <!-- DateDelivrance_Pro -->
-                                                 {{ terrain.titulaire.dt_date_delivrance || 'Null' }}
+                                                {{ formatDate(terrain.dt_date_deliberation) || 'Null'}}
                                             </td>
                                             <td class="px-6 py-4">
                                                 <!-- Date_Naissance -->
-                                                {{ terrain.titulaire.dt_date_naissance || 'Null' }}
+                                                {{ formatDate(terrain.titulaire.dt_date_naissance)|| 'Null' }}
                                             </td>
                                             <td class="px-6 py-4">
                                                 <!-- Lieu_Naissance -->
@@ -359,20 +356,8 @@ const formatDate = (dateString) => {
                                             </td>
                                             <td class="px-6 py-4">
                                                 Observations
-                                            </td>
-                                            <td class="flex items px-6 py-6">
-                                                <div class="mt-2">
-                                                    <MazBtn pastel size="sm">Modifier</MazBtn>
-                                                </div>
-                                                <div class="container">
-                                                    <p>.</p>
-                                                </div>
-                                                <div class="mt-2">
-                                                    <MazBtn color="danger" pastel size="sm">Supprimer</MazBtn>
-                                                </div>
-                                            </td>
-                                        </tr>
-
+                                            </td> 
+                                        </tr> 
                                     </tbody>
                                 </table>
                             </div>

@@ -33,23 +33,23 @@ class Dossier extends Model
         return $this->hasMany(Terrain::class);
     }
 
-    public static function boot()
-    {
-        parent::boot();
+    // public static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($dossier) {
-            // Récupérer le dernier dossier créé cette année
-            $lastDossier = self::whereYear('created_at', date('Y'))
-                ->orderBy('id', 'desc')
-                ->first();
+    //     static::creating(function ($dossier) {
+    //         // Récupérer le dernier dossier créé cette année
+    //         $lastDossier = self::whereYear('created_at', date('Y'))
+    //             ->orderBy('id', 'desc')
+    //             ->first();
                 
-            // Générer le numéro séquentiel
-            $number = $lastDossier ? (int)substr($lastDossier->txt_num_dossier, 0, 6) + 1 : 1;
+    //         // Générer le numéro séquentiel
+    //         $number = $lastDossier ? (int)substr($lastDossier->txt_num_dossier, 0, 5) + 1 : 1;
             
-            // Formatage avec 6 chiffres + année courante
-            $dossier->txt_num_dossier = sprintf('%06d/%s', $number, date('Y'));
-        });
-    }
+    //         // Formatage avec 6 chiffres + année courante
+    //         $dossier->txt_num_dossier = sprintf('%05d/%s', $number, date('Y'));
+    //     });
+    // }
 
 
 }

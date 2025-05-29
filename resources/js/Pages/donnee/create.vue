@@ -1,16 +1,41 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { ref, computed  } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import { defineProps, onMounted } from 'vue';
+import { router, usePage  } from '@inertiajs/vue3'
+import { Link as InertiaLink } from '@inertiajs/vue3'
+// import { toast } from 'vue3-toastify'
 
 const props = defineProps({
     terrain: Object,
-    terrains: Array,
+    terrains: Array,  
 });
+ 
+const numero = ref('')
+const numeroRecherche = ref('')
 
-onMounted(() => {
-    console.log(props.terrains); // Vérifie la structure des données
-});
+// Au clic sur "Rechercher"
+function searchDossier() {
+  numeroRecherche.value = numero.value.trim()
+}
+
+// Normalise une chaîne pour la comparaison
+function normalize(str) {
+  return str?.toString().trim().toLowerCase()
+}
+
+const terrains = computed(() => {
+  if (!numero.value) return props.terrains
+
+  const search = normalize(numero.value)
+
+  return props.terrains.filter(terrain => {
+    const dossierNum = normalize(terrain.dossier?.txt_num_dossier)
+    return dossierNum?.includes(search)
+  })
+})
+
 
 // Fonction pour formater la date
 const formatDate = (dateString) => {
@@ -21,8 +46,22 @@ const formatDate = (dateString) => {
         year: 'numeric',
     });
 };
- 
 
+// Suppromer enregistrement
+function supprimerTerrain(terrain) {
+    if (confirm(`Voulez-vous vraiment supprimer ce terrain avec le NICAD : ${terrain.txt_nicad} ?`)) {
+        router.delete(route('terrains.destroy', terrain.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                console.log('Terrain supprimé avec succès');
+            },
+            onError: (errors) => {
+                console.error('Erreur lors de la suppression', errors);
+            }
+        });
+    }
+}
+  
 </script>
 
 <template>
@@ -44,49 +83,41 @@ const formatDate = (dateString) => {
             </template>
            
         </template v-else>
-     
+
         <div class="py-12">
+
+            <div class="card">
+                <form @submit.prevent="searchDossier" class="max-w-md mx-auto">
+                    <div class="sm:col-span-4">
+                        <label for="default-search"><b>Recherche Dossier</b></label>
+                        <div class="flex items-center space-x-6">  
+                            <input 
+                                v-model="numero"
+                                type="search"
+                                id="default-search"
+                                aria-label="Rechercher"
+                                class="h-10 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                    outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                    focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                placeholder="Entrez le numéro du dossier"
+                                required
+                            />  
+                        </div>
+                    </div>
+                </form>
+            </div><br>
+            
             <div class="mx-auto max-w-7xl sm:px-8 lg:px-12">
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                     <div class="container">
-                        <form @submit.prevent="searchDossier" class="max-w-md mx-auto">
-                            <div class="sm:col-span-2">
-                                <div class="flex items-center space-x-2">
-                                    <div class="relative flex-grow">
-                                        <input 
-                                            v-model.trim="numero"
-                                            type="search"
-                                            id="default-search"
-                                            aria-label="Rechercher"
-                                            class="h-10 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
-                                            placeholder="Entrez le numéro du dossier"
-                                            required
-                                        />
-                                    </div>
-                                    <MazBtn 
-                                        type="submit" 
-                                        no-shadow 
-                                        no-hover-effect
-                                        title="Rechercher"
-                                        class="h-10 bg-gradient-to-r from-primary via-primary-light to-primary-dark 
-                                                hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-primary 
-                                                dark:focus:ring-primary-dark shadow-lg shadow-primary/50 
-                                                dark:shadow-lg dark:shadow-primary-dark font-medium rounded-lg text-sm 
-                                                px-5 py-2.5 text-center"
-                                    >
-                                        Recherche
-                                    </MazBtn>
-                                </div>
-                            </div>
-                        </form>
+
                         <div class="card">
                             <div class="card-header">
                                 <div class="p-4 border-b bg-gray-100">
                                     <h1 class="text-lg font-semibold">Base de données</h1>
                                 </div>
                             </div>
+
                             <div class="card-body">
                                 <table class="table table-sm table-strictped table-bordered">
                                     <thead >
@@ -108,10 +139,7 @@ const formatDate = (dateString) => {
                                             </th>
                                             <th scope="col" class="px-6 py-3">
                                                 Commune
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_num_dordre
-                                            </th>
+                                            </th> 
                                             <th scope="col" class="px-6 py-3">
                                                 slt_service_dendu
                                             </th>
@@ -278,20 +306,161 @@ const formatDate = (dateString) => {
                                                 nbr_TVATotal
                                             </th>
                                             <th scope="col" class="px-6 py-3">
+                                                txt_surface_bati_sol
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_prix_metre_carre
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                txt_superficie_totale
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_secteur
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                txt_date_devaluation
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_valeur_terrain
+                                            </th> 
+                                            <th scope="col" class="px-6 py-3">
+                                                currentCat
+                                            </th>   
+                                            <th scope="col" class="px-6 py-3">
+                                                txt_valeur_terrain_bati
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                txt_dependant_domainePR
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_categoriePR
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_prix_metre_carrePR
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_surface_bati_solPR
+                                            </th>    
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_niveauPR
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_surface_utilePR
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_coeffPR
+                                            </th>        
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_surface_corrigerPR
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_valeurPR
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_dependant_domaine
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_categorieTG
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_prix_metre_carreTG
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_surface_bati_solTG
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_niveauTG
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_surface_utileTG
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_coeffTG
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_surface_corrigerTG
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_valeurTG
+                                            </th> 
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_valeur_total_ca
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_cours_amenager_totale
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_surface_ca_total
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_categorie_ca_total
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_prix_metre_carre_ca_total
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_coefficient_ca_total
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_valeur_ca_total
+                                            </th>
+
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_cours_amenager_clo
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_longueur_avant_clo
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_categorie_clo
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_prix_metre_carre_clo
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_coefficient_clo
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_valeur_clo
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_valeur_total_clotur
+                                            </th>
+
+                                            <th scope="col" class="px-6 py-3">
+                                                txt_designation_am
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_valeur_unitaire_am
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_quantile_am
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                slt_coeficien_am
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_valeur_am
+                                            </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                nbr_valeur_totale_ap
+                                            </th>
+
+                                            <th scope="col" class="px-6 py-3">
                                                 ACTIONS
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
+ 
                                         <tr v-for="terrain in terrains" :key="terrain.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                 
                                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                {{ terrain.dossier ? terrain.dossier.id : 'Dossier inconnu' }}
+                                                {{ terrain.dossier ? terrain.dossier.txt_num_dordre : 'Dossier inconnu' }}
                                             </th>
                                             <td class="px-6 py-4">
-                                                {{ terrain.dossier ? terrain.dossier.txt_num_dossier : 'Dossier inconnu' }}
-                                            </td>
-                                            <!-- Affichage de la région, département et commune -->
+                                                {{ terrain.dossier ? terrain.dossier.txt_num_dossier : 'Dossier inconnu' }} 
+                                            </td> 
                                             <td class="px-6 py-4">
                                                 {{ terrain.region ? terrain.region.slt_region : 'Région inconnue' }}
                                             </td>
@@ -303,11 +472,7 @@ const formatDate = (dateString) => {
                                             </td>
                                             <td class="px-6 py-4">
                                                 {{ terrain.commune ? terrain.commune.slt_commune : 'Commune inconnue' }}
-                                            </td>
-                                            <!-- Autres champs -->
-                                            <td class="px-6 py-4">
-                                                {{ terrain.dossier.txt_num_dordre || 'Numéro de dossier inconnu' }}
-                                            </td>
+                                            </td> 
                                             <td class="px-6 py-4">
                                                 {{ terrain.dossier.slt_service_rendu || 'Service inconnu' }}
                                             </td>
@@ -392,49 +557,49 @@ const formatDate = (dateString) => {
                                                 {{ terrain.titulaire && terrain.titulaire.slt_titulaire ? terrain.titulaire.slt_titulaire : 'Nom definie' }}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.txt_nationalite || 'Null'}}
+                                                {{terrain.titulaire?.txt_nationalite || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.slt_civilite || 'Null'}}
+                                                {{terrain.titulaire?.slt_civilite || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.txt_prenom || 'Null'}}
+                                                {{terrain.titulaire?.txt_prenom || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.txt_nom || 'Null'}}
+                                                {{terrain.titulaire?.txt_nom || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.slt_piece || 'Null'}}
+                                                {{terrain.titulaire?.slt_piece || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.txt_numPiece || 'Null'}}
+                                                {{terrain.titulaire?.txt_numPiece || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{formatDate(terrain.titulaire.dt_date_delivrance) || 'Null'}}
+                                                {{formatDate(terrain.titulaire?.dt_date_delivrance) || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{formatDate(terrain.titulaire.dt_date_naissance) || 'Null'}}
+                                                {{formatDate(terrain.titulaire?.dt_date_naissance) || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.txt_lieu_naissance || 'Null'}}
+                                                {{terrain.titulaire?.txt_lieu_naissance || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.txt_adresse || 'Null'}}
+                                                {{terrain.titulaire?.txt_adresse || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.tel_telephone || 'Null'}}
+                                                {{terrain.titulaire?.tel_telephone || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.txt_ninea || 'Null'}}
+                                                {{terrain.titulaire?.txt_ninea || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.eml_email || 'Null'}}
+                                                {{terrain.titulaire?.eml_email || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.txt_representant || 'Null'}}
+                                                {{terrain.titulaire?.txt_representant || 'Null'}}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire.tel_telRepresentant || 'Null'}}
+                                                {{terrain.titulaire?.tel_telRepresentant || 'Null'}}
                                             </td>
 
                                             <td scope="col" class="px-6 py-3">
@@ -444,11 +609,11 @@ const formatDate = (dateString) => {
                                                 {{terrain.references_usages?.slt_residence || 'Null' }}
                                             </td> 
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.txt_nomOccupantTG || 'Null' }}
+                                                {{terrain.references_usages?.txt_nomOccupantTG || 'Null' }}
                                             </td> 
+
                                             <td scope="col" class="px-6 py-3" >
-                                                {{terrain.references_usages?.txt_numAppartementTG || 'Null' }}
-                                                <!-- {{ usage.txt_nomOccupantTG || 'Null' }} -->
+                                                {{terrain.references_usages?.txt_numAppartementTG || 'Null' }} 
                                             </td> 
                                             <td scope="col" class="px-6 py-3">
                                                 {{terrain.references_usages?.txt_activiteTG || 'Null' }}
@@ -463,7 +628,7 @@ const formatDate = (dateString) => {
                                                 {{terrain.references_usages?.nbr_montantLoyerTG || 'Null' }}
                                             </td> 
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.dt_dateNaissanceTG || 'Null' }}
+                                                {{terrain.references_usages?.txt_dateLieuNaissanceTG  || 'Null' }}
                                             </td> 
                                             <td scope="col" class="px-6 py-3">
                                                 {{terrain.references_usages?.txt_cniPasseportTG || 'Null' }}
@@ -477,17 +642,179 @@ const formatDate = (dateString) => {
                                             <td scope="col" class="px-6 py-3">
                                                 {{terrain.references_usages?.nbr_TVATotal || 'Null' }}
                                             </td>
+
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_terrains?.txt_superficie_bati_sol || 'Null' }}
+                                            </td> 
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_terrains?.nbr_prix_metre_carre  || 'Null'   }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_terrains?.txt_superficie_totale || 'Null'   }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_terrains?.slt_secteur   || 'Null'   }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_terrains?.txt_date_devaluation  || 'Null'   }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_terrains?.nbr_valeur_terrain    || 'Null'   }}
+                                            </td>
+
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.currentCat ||  'Null'  }}
+                                            </td>   
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.txt_valeur_terrain_bati    ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.txt_dependant_domainePR    ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.slt_categoriePR ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_prix_metre_carrePR ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_surface_bati_solPR ||  'Null'  }}
+                                            </td>    
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_niveauPR   ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_surface_utilePR    ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.slt_coeffPR    ||  'Null'  }}
+                                            </td>        
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_surface_corrigerPR ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_valeurPR   ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.slt_dependant_domaine  ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.slt_categorieTG    ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_prix_metre_carreTG ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_surface_bati_solTG ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_niveauTG   ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_surface_utileTG    ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.slt_coeffTG    ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_surface_corrigerTG ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_batis?.nbr_valeurTG   ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_cours_amenagees?.nbr_valeur_total_ca  ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_cours_amenagees?.slt_cours_amenager_totale    ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_cours_amenagees?.nbr_surface_ca_total ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_cours_amenagees?.slt_categorie_ca_total   ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_cours_amenagees?.nbr_prix_metre_carre_ca_total    ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_cours_amenagees?.nbr_coefficient_ca_total ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_cours_amenagees?.nbr_valeur_ca_total  ||  'Null'  }}
+                                            </td> 
+
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_clotures?.slt_cours_amenager_clo  ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_clotures?.nbr_longueur_avant_clo  ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_clotures?.slt_categorie_clo   ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_clotures?.nbr_prix_metre_carre_clo    ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_clotures?.nbr_coefficient_clo ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_clotures?.nbr_valeur_clo  ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_clotures?.nbr_valeur_total_clotur ||  'Null'  }}
+                                            </td>
+
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_amenagements?.txt_designation_am  ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_amenagements?.nbr_valeur_unitaire_am  ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_amenagements?.nbr_quantile_am ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_amenagements?.slt_coeficien_am    ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_amenagements?.nbr_valeur_am   ||  'Null'  }}
+                                            </td>
+                                            <td scope="col" class="px-6 py-3">
+                                                {{terrain.evaluations_amenagements?.nbr_valeur_totale_ap    ||  'Null'  }}
+                                            </td>
+ 
                                             <td class="flex items px-6 py-6">
                                                 <div class="mt-2">
-                                                    <InertiaLink :href="`/secreatrit/create/${terrain.id}`">
-                                                        <MazBtn pastel size="sm">Modifier</MazBtn>
-                                                    </InertiaLink>                                                
+                                                    <InertiaLink :href="`/secretariat/edit/${terrain.id}`">
+                                                        <MazBtn 
+                                                            color="white" pastel size="sm"
+                                                            class="h-8 w-28 text-white bg-gradient-to-r from-green-400 via-green-500 
+                                                            to-green-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                                            focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 
+                                                            dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 
+                                                            py-2.5 text-center me-2 mb-2"
+                                                        >
+                                                            Modifier
+                                                        </MazBtn>
+                                                    </InertiaLink> 
                                                 </div>
                                                 <div class="container">
                                                     <p>.</p>
                                                 </div>
                                                 <div class="mt-2">
-                                                    <MazBtn color="danger" pastel size="sm">Supprimer</MazBtn>
+                                                    <MazBtn 
+                                                        color="danger" size="sm"   
+                                                        @click="() => supprimerTerrain(terrain)"
+                                                        class="h-8 w-28 text-white bg-gradient-to-r from-danger-500 via-danger-600 
+                                                        to-danger-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                                        focus:ring-danger-300 dark:focus:ring-danger-800 shadow-lg shadow-danger-500/50 
+                                                        dark:shadow-lg dark:shadow-danger-800/80 font-medium rounded-lg text-sm px-5 
+                                                        py-2.5 text-center me-2 mb-2"
+                                                    >
+                                                        Supprimer
+                                                    </MazBtn>
                                                 </div>
                                             </td>
 

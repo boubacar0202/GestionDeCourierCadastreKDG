@@ -12,28 +12,27 @@ import axios from 'axios'
 
 const toast = useToast();
 const txt_num_dossier = ref(''); 
-const formVisible = ref(false);
-// const txt_valeur_terrain_bati = ref(0);
-const maxOccupants = 20
-const maxOccupantsBP = 5;
+const formVisible = ref(false); 
+const maxOccupants = 25
+const maxOccupantsBP = 4;
 const maxOccupantsCA = 3;
 const maxOccupantsCL = 3;
 const maxOccupantsAP = 3;
-
-// const currentCat = ref(''); // Valeur par défaut
-const currentCat = ref('Maison individuelle');
+// const tauxValeurLocative = ref(0.1);
+// const isPrincipalSelected = ref(false); 
+const currentCat = ref('');
 
 const props = defineProps({
-  terrain: Object,
-  txt_nicad: String,
-//   nbr_surface: decimal,
+    terrain: Object,
+    txt_nicad: String,
+    nbr_surface: Number,
 });
 
 const form = useForm({
     //recupèration
     txt_num_dossier:"",
     txt_nicad: props.txt_nicad,
-
+    nbr_surface: props.nbr_surface,
     // reference usage 
     slt_usage:'',
     slt_residence:'',
@@ -53,41 +52,55 @@ const form = useForm({
     ],
     nbr_montantLoyerTotal:'',
     nbr_TVATotal:'',
-    txt_date_devaluation: '', 
-    txt_superficie_totale: '', 
+    dt_dateEvaluation: '', 
+    // txt_superficie_totale: '',
+    // txt_superficie_totale: props.nbr_surface || 0,
     txt_superficie_bati_sol: '', 
     slt_secteur:'', 
     nbr_prix_metre_carre: '',
     nbr_valeur_terrain:'',
 
-    occupantsBP: [ // Liste des occupants Bâtiment Principal
+    txt_dependant_domainePR: '',
+    slt_categoriePR:'',
+    nbr_prix_metre_carrePR: null,
+    nbr_surface_bati_solPR: '',
+    nbr_niveauPR: '',
+    nbr_surface_utilePR: '',
+    slt_coeffPR: '',
+    nbr_surface_corrigerPR: '',
+    nbr_valeurPR: '',
+    currentCat: '',
+    occupantsBP: [   
         {
             slt_dependant_domaineTG: '',
+            slt_categorieTG:'',
             nbr_prix_metre_carreTG: '',
             nbr_surface_bati_solTG: '',
             nbr_niveauTG: '',
             nbr_surface_utileTG: '',
             slt_coeffTG: '',
             nbr_surface_corrigerTG: '',
-            nbr_valeurTG: ''
+            nbr_valeurTG: '',
+            tauxValeurLocative: 0,
         }
     ],
-    txt_valeur_terrain_bati:'',
+    txt_valeur_terrain_bati: '',
 
     occupantsCA:[
         {
-            chk_cours_amenager_totale:'', 
+            slt_cours_amenager_totale:'',
             nbr_surface_ca_total:'', 
             slt_categorie_ca_total:'', 
             nbr_prix_metre_carre_ca_total:'', 
             nbr_coefficient_ca_total:'',
+            nbr_valeur_ca_total:'',
         }
     ],
     nbr_valeur_total_ca:'',
 
     occupantsCL:[
         {
-            slt_cours_amenager_totale:'',  
+            slt_cours_amenager_clo:'',  
             nbr_longueur_avant_clo:'', 
             slt_categorie_clo:'', 
             nbr_prix_metre_carre_clo:'', 
@@ -106,12 +119,10 @@ const form = useForm({
             nbr_valeur_am:'',
         }
     ],
-    nbr_valeur_totale_ap:'',
-  
-    currentCat:"",
+    nbr_valeur_totale_ap:'', 
 
-    nbr_valeurVenaleLimeuble:'0.00',
-    nbr_valeurLocative:'0.00',
+    nbr_valeurVenaleLimeuble:'',
+    nbr_valeurLocative:'',
     dt_dateEvaluation:'',
 
 });
@@ -171,7 +182,7 @@ function addBlockBP() {
     if (form.occupantsBP.length < maxOccupantsBP) {
         form.occupantsBP.push({
             id: Date.now() + Math.random(),
-            chk_bati_principalTG: '',
+            // chk_bati_principalTG: '',
             slt_dependant_domaineTG: '',
             nbr_prix_metre_carreTG: '',
             nbr_surface_bati_solTG: '',
@@ -179,7 +190,7 @@ function addBlockBP() {
             nbr_surface_utileTG: '',
             slt_coeffTG: '',
             nbr_surface_corrigerTG: '',
-            nbr_valeurTG: '',
+            nbr_valeurTG: '', 
         })                
     }else {
         toast.error('Impossible d\'ajouter plus de 5 occupants.');
@@ -198,11 +209,12 @@ function addBlockCA() {
     if (form.occupantsCA.length < maxOccupantsCA) {
         form.occupantsCA.push({
             id: Date.now() + Math.random(),
-            chk_cours_amenager_totale:'', 
+            slt_cours_amenager_totale:'',
             nbr_surface_ca_total:'', 
             slt_categorie_ca_total:'', 
             nbr_prix_metre_carre_ca_total:'', 
             nbr_coefficient_ca_total:'',
+            nbr_valeur_ca_total:'',
         })                
     }else {
         toast.error('Impossible d\'ajouter plus de 3 occupants.');
@@ -221,7 +233,7 @@ function addBlockCL() {
     if (form.occupantsCL.length < maxOccupantsCL) {
         form.occupantsCL.push({
             id: Date.now() + Math.random(),
-            chk_perimetre_cloture:'',  
+            slt_cours_amenager_clo:'',  
             nbr_longueur_avant_clo:'', 
             slt_categorie_clo:'', 
             nbr_prix_metre_carre_clo:'', 
@@ -255,19 +267,54 @@ function addBlockAP() {
         toast.error('Impossible d\'ajouter plus de 3 occupants.');
     }
 }
-// bloc retirer 
+// Converire la récupération du choix de categorie  
 function removeBlockAP(i) {
     if (form.occupantsAP.length > 1) {
         form.occupantsAP.pop()
     }
 }
 
+const categories = {
+    'Maison individuelle': {
+        '1': 205891, '2': 190883, '3': 180937, '4': 158411,
+        '5': 119942, '6': 88201, '7': 58801, '8': 40663,
+        '9': 11117, '10': 10000, '11': 8000,
+    },
+    'Immeuble collectif': {
+        'A': 244257, 'B': 226543, 'C': 204069, 'D': 177171,
+        'E': 142293, 'F': 123552, 'G': 93878, 'H': 61602,
+        'I': 53793, 'J': 25000, 'K': 22000, 'L': 20000, 'M': 8000,
+    }
+}
+
+watch([currentCat, () => form.slt_categoriePR], ([type, cat]) => {
+    if (type && cat && categories[type]?.[cat]) {
+        form.nbr_prix_metre_carrePR = categories[type][cat]
+    } else {
+        form.nbr_prix_metre_carrePR = null
+    } 
+})
+watchEffect(() => {
+    form.occupantsBP.forEach((occupant) => {
+        const type = currentCat.value
+        const cat = occupant.slt_categorieTG
+
+        if (categories[type] && categories[type][cat]) {
+            occupant.nbr_prix_metre_carreTG = categories[type][cat]
+        } else {
+            occupant.nbr_prix_metre_carreTG = null
+        }
+    })
+}) 
+// Synchronisation automatique
+watch(currentCat, (newVal) => {
+  form.currentCat = newVal
+})
 const rechercherDossier = async () => {
   try {
     const { data } = await axios.post(route('dossier.verify'), {
       txt_num_dossier: txt_num_dossier.value
-    })
-    
+    }) 
     // data devrait être : { success: "...", exists: true }
     if (data.exists) {
         formVisible.value = true
@@ -279,8 +326,7 @@ const rechercherDossier = async () => {
         toast.error(data.error || 'Dossier introuvable.')
     }
   } catch (err) {
-        formVisible.value = false
-
+        formVisible.value = false 
         // Erreurs 422 renvoyées par Laravel
         if (err.response?.status === 422 && err.response.data.errors) {
         Object.values(err.response.data.errors).forEach(msg => toast.error(msg))
@@ -304,13 +350,44 @@ const nbr_TVATotal = computed(() => {
 });
 
 // Calculer Valeur Terrain  
+watchEffect(() => {
+  form.nbr_prix_metre_carre = Number(form.slt_secteur) || 0;
+});
 const nbr_valeur_terrain = computed(() => {
     const prix = parseFloat(form.nbr_prix_metre_carre) || 0;
     const bati = parseFloat(form.txt_superficie_bati_sol) || 0;
-    const total = parseFloat(form.txt_superficie_totale) || 0;
+    const total = parseFloat(form.nbr_surface) || 0;
 
   return ((prix / 2) * bati + prix * (total - bati)).toFixed(2);
 });
+ 
+watchEffect(() => {
+    form.nbr_valeur_terrain = nbr_valeur_terrain.value;
+});
+
+// Calcule Batiment : Princile  
+// Prix m² PR
+watchEffect(()  => {
+    form.txt_dependant_domainePR  = "Primaire";
+}),
+// Surface Utile PR
+watchEffect(() => {
+    const surfaceBS = parseFloat(form.nbr_surface_bati_solPR) || 0;
+    const nbrNiveau = parseFloat(form.nbr_niveauPR) || 0;
+    form.nbr_surface_utilePR = (surfaceBS * nbrNiveau * 0.78).toFixed(2);
+});
+// Surface Corrigée PR
+watchEffect(() => { 
+    const utile = parseFloat(form.nbr_surface_utilePR) || 0;
+    const coeff = parseFloat(form.slt_coeffPR) || 0;
+    form.nbr_surface_corrigerPR = (utile * coeff).toFixed(2); 
+});
+// Valeur Bâtie PR
+watchEffect(() => {
+    const prixmetrecarre = parseFloat(form.nbr_prix_metre_carrePR) || 0; 
+    const surfaceCorrige = parseFloat(form.nbr_surface_corrigerPR) || 0;
+    form.nbr_valeurPR = (prixmetrecarre * surfaceCorrige).toFixed(2); 
+}); 
 
 // Calcule Surface Utule
 watchEffect(() => {
@@ -328,7 +405,7 @@ watchEffect(() => {
     occupant.nbr_surface_corrigerTG = (utile * coeff).toFixed(2);
   });
 });
-//  Calcule Valeur Bati
+//  Calcule valeur TG : nbr_valeurTG
 watchEffect(() => {
   form.occupantsBP.forEach((occupant) => {
     const prixmetrecarre = parseFloat(occupant.nbr_prix_metre_carreTG) || 0; 
@@ -336,16 +413,24 @@ watchEffect(() => {
     occupant.nbr_valeurTG = ( prixmetrecarre * surfaceCorrige).toFixed(2);
   });
 });
-//  Calculer montant valeur batiment 
+//  Calculer montant valeur batiment  
 const txt_valeur_terrain_bati = computed(() => {
+    const valeurPR = parseFloat(form.nbr_valeurPR)  || 0;
     return form.occupantsBP.reduce((total, occupant) => {
         const montant = parseFloat(occupant.nbr_valeurTG) || 0;
-        return total + montant;
+        return total + montant + valeurPR;
     }, 0);
 });
+watchEffect(() => {
+    form.txt_valeur_terrain_bati = txt_valeur_terrain_bati.value;
+});
 
-
-// calculer nbr_valeur_ca_total
+// calculer nbr_valeur_ca_total     slt_categorie
+watchEffect(() => {
+    form.occupantsCA.forEach((occupant) => {
+        occupant.nbr_prix_metre_carre_ca_total = Number(occupant.slt_categorie_ca_total) || 0;
+    })
+})
 watchEffect(() => {
   form.occupantsCA.forEach((occupant) => {
     const prixmetrecarreCA = parseFloat(occupant.nbr_prix_metre_carre_ca_total) || 0; 
@@ -361,8 +446,17 @@ const nbr_valeur_total_ca = computed(() => {nbr_valeur_total_ca
         return total + montant;
     }, 0);
 });
+watchEffect(() => {
+    form.nbr_valeur_total_ca = nbr_valeur_total_ca.value;
+});
 
-// calculer nbr_valeur_clo
+
+// calculer nbr_valeur_clo 
+watchEffect(() => {
+    form.occupantsCL.forEach((occupant) => {
+        occupant.nbr_prix_metre_carre_clo = Number(occupant.slt_categorie_clo) || 0;
+    })
+})
 watchEffect(() => {
   form.occupantsCL.forEach((occupant) => {
     const prixmetrecarreCL = parseFloat(occupant.nbr_prix_metre_carre_clo) || 0; 
@@ -377,6 +471,9 @@ const nbr_valeur_total_clotur = computed(() => {nbr_valeur_total_clotur
         const montant = parseFloat(occupant.nbr_valeur_clo) || 0;
         return total + montant;
     }, 0);
+});
+watchEffect(() => {
+    form.nbr_valeur_total_clotur = nbr_valeur_total_clotur.value;
 });
 
 // calculer nbr_valeur_totale_ap, 
@@ -396,6 +493,9 @@ const nbr_valeur_totale_ap = computed(() => {nbr_valeur_totale_ap
         return total + montant;
     }, 0);
 });
+watchEffect(() => {
+    form.nbr_valeur_totale_ap = nbr_valeur_totale_ap.value;
+});
 
 // Calcule nbr_valeurVenaleLimeuble ,nbr_valeurLocative
 const nbr_valeurVenaleLimeuble = computed(() => {
@@ -405,6 +505,44 @@ const nbr_valeurVenaleLimeuble = computed(() => {
     const ap = parseFloat(nbr_valeur_totale_ap.value) || 0;
 
     return terrain + ca + clotur + ap;
+});
+watchEffect(() => {
+    form.nbr_valeurVenaleLimeuble = nbr_valeurVenaleLimeuble.value;
+});
+
+
+const isPrincipalSelected = computed(() => form.txt_dependant_domainePR = 'Principale');
+
+const tauxValeurLocative = computed(() => {
+    if (!isPrincipalSelected.value) return 0;
+
+    const cat = Number(form.nbr_prix_metre_carrePR) || 0;
+
+    if ([244257, 205891].includes(cat)) {
+        return 0.1344;
+    } else if ([226543, 204069, 180937, 190883].includes(cat)) {
+        return 0.12;
+    } else if (
+        [
+        177171, 142293, 123552, 93878, 61602, 53793,
+        25000, 22000, 20000, 8000, 158411, 119942,
+        88201, 58801, 40663, 11117, 10000
+        ].includes(cat)
+    ) {
+        return 0.10;
+    } else {
+        return 0.10;
+    }
+});
+
+const nbr_valeurLocative = computed(() => {
+    if (!isPrincipalSelected.value) return 0; 
+    const valeurVenale = parseFloat(form.nbr_valeurVenaleLimeuble) || 0;
+    const taux = tauxValeurLocative.value;
+    return valeurVenale * taux;
+});
+watchEffect(() => {
+    form.nbr_valeurLocative = nbr_valeurLocative.value;
 });
 
 const submitForm = () => {
@@ -417,8 +555,7 @@ const submitForm = () => {
         Object.values(errors).forEach(e => toast.error(e))
         }
     })
-}
-
+} 
 </script>
 
 <template>
@@ -432,8 +569,7 @@ const submitForm = () => {
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
                 Enquête Cadastrale 
             </h2>
-        </template>
-
+        </template> 
         <div class="py-12">
             <div class="flex justify-center">
                 <div class="w-full max-w-6xl">
@@ -449,15 +585,14 @@ const submitForm = () => {
                                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 w-full max-w-2xl">
                                     <div class="sm:col-span-4">
                                         <input 
-                                        v-model="txt_num_dossier" 
-                                        type="text"
-                                        name="txt_num_dossier" 
-                                        aria-label="Rechercher"
-                                        class="h-10 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                outline outline-1 outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                focus:outline-2 focus:outline-primary sm:text-sm/6"
-                                        placeholder="Entrez le numéro du dossier"
-                                        required
+                                            v-model="txt_num_dossier" 
+                                            type="text"
+                                            name="txt_num_dossier" 
+                                            aria-label="Rechercher"
+                                            class="h-10 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 outline-offset-1 
+                                                outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-primary sm:text-sm/6"
+                                            placeholder="Entrez le numéro du dossier"
+                                            required
                                         />
                                     </div>
 
@@ -591,7 +726,7 @@ const submitForm = () => {
                                                                     outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                                     focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                 </div>   
-                                                            </div>
+                                                            </div> 
                                                             <div class="sm:col-span-1">
                                                                 <label :for="'NunAppartement_${i}'" class="block text-sm/6 font-medium text-gray-900">N° Appart</label>
                                                                 <div>
@@ -832,18 +967,21 @@ const submitForm = () => {
                                         <div v-show="activeTab === 'terrain'" class="sgrid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
                                             <div class="mb-4">
                                                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-
-                                                
+ 
                                                     <div class="sm:col-span-2">
-                                                        <div class="mt-6">
+                                                        <div class="mt-6">   
                                                             <label for="Superficie_totale" class="block text-sm/6 font-medium text-gray-900">Superficie Totale Terrain</label>
-                                                            <input 
-                                                            type="number" 
-                                                            v-model="form.txt_superficie_totale"  
-                                                            id="Superficie_totale" 
-                                                            class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                            <div>
+                                                                <input 
+                                                                    type="number"  
+                                                                    :value="nbr_surface" 
+                                                                    name="nbr_surface"
+                                                                    readonly
+                                                                    id="Superficie_totale" 
+                                                                    class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                    outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                    focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 
@@ -854,7 +992,9 @@ const submitForm = () => {
                                                                 <input 
                                                                 type="number" 
                                                                 v-model="form.txt_superficie_bati_sol"  
+                                                                name="txt_superficie_bati_sol"
                                                                 id="Superficie_bati_sol" 
+                                                                min="0"
                                                                 class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                                 focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
@@ -867,7 +1007,7 @@ const submitForm = () => {
                                                             <label for="Secteur" class="block text-sm/6 font-medium text-gray-900">Secteur</label>
                                                             <div> 
                                                                 <select type="select" 
-                                                                v-model="form.nbr_prix_metre_carre" 
+                                                                v-model="form.slt_secteur" 
                                                                 name="slt_secteur" 
                                                                 id="Secteur" 
                                                                 class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -902,7 +1042,7 @@ const submitForm = () => {
                                                             <label for="Valeur_terrain" class="block text-sm/6 font-medium text-gray-900">Valeur du Terrain</label>
                                                             <div>
                                                                 <input type="number"
-                                                                v-model="form.nbr_valeur_terrain"  
+                                                                v-model="nbr_valeur_terrain"  
                                                                 readonly
                                                                 id="Valeur_terrain"  
                                                                 class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -938,6 +1078,186 @@ const submitForm = () => {
                                             <!-- Batiment  Princil-->
                                             <center><h6 class="text-lg"><b>Bâtiment(s) Principal(aux)</b></h6></center>
                                             <div class="w-full flex flex-wrap justify-between gap-4 mt-4">
+                                                <TransitionGroup>
+                                                    <div 
+                                                        class="sm:col-span-8">
+                                                        <div  class="flex grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                                                            <div class="sm:col-span-1">
+                                                                <label for="Dependant_domaine" class="block text-sm/6 font-medium text-gray-900">Bâtiment </label>
+                                                                    <div>   
+                                                                        <input 
+                                                                        v-model="form.txt_dependant_domainePR" 
+                                                                        name="txt_dependant_domainePR" 
+                                                                        readonly
+                                                                        id="Dependant_domaine" 
+                                                                        class="h-8 block w-36 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                                outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"> 
+                                                                    </input>
+                                                                    </div>
+                                                             </div>
+                                                            <div  class="sm:col-span-2">
+                                                                <div v-if="currentCat === 'Maison individuelle'" class="sm:col-span-1">
+                                                                    <!-- Vous avez sélectionné une catégorie de type Maison individuelle. -->
+                                                                    <label for="Dependant_domaine" class="block text-sm/6 font-medium text-gray-900">CAT</label>
+                                                                    <div>   
+                                                                        <select 
+                                                                        v-model="form.slt_categoriePR" 
+                                                                        name="slt_categoriePR" 
+                                                                        id="Dependant_domaine" 
+                                                                        class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                                outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                                            <option selected desable></option> 
+                                                                            <option value="1">1</option>
+                                                                            <option value="2">2</option>    
+                                                                            <option value="3">3</option>
+                                                                            <option value="4">4</option>
+                                                                            <option value="5">5</option>
+                                                                            <option value="6">6</option>
+                                                                            <option value="7">7</option>
+                                                                            <option value="8">8</option>
+                                                                            <option value="9">9</option>
+                                                                            <option value="10">10</option>
+                                                                            <option value="11">11</option>  
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div v-else-if="currentCat === 'Immeuble collectif'" class="block text-sm/6 font-medium text-gray-900">
+                                                                    <!-- Vous avez sélectionné une autre catégorie. -->
+                                                                    <label for="Dependant_domaine" class="block text-sm/6 font-medium text-gray-900">CAT</label>
+                                                                    <select 
+                                                                    v-model="form.slt_categoriePR"
+                                                                    name="slt_categoriePR" 
+                                                                    id="Dependant_domaine" 
+                                                                    class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                                        <option selected desable></option>  
+                                                                        <option value="A">A</option>   
+                                                                        <option value="B">B</option>  
+                                                                        <option value="C">C</option>
+                                                                        <option value="D">D</option>
+                                                                        <option value="E">E</option>
+                                                                        <option value="F">F</option>
+                                                                        <option value="G">G</option>
+                                                                        <option value="H">H</option>
+                                                                        <option value="I">I</option>
+                                                                        <option value="J">J</option>
+                                                                        <option value="K">K</option>
+                                                                        <option value="L">L</option>
+                                                                        <option value="M">M</option> 
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="sm:col-span-1"> 
+                                                                <label for="Prix_mettre_carre" class="block text-sm/6 font-medium text-gray-900">Prix m²</label>
+                                                                <div>  
+                                                                    <input 
+                                                                    v-model="form.nbr_prix_metre_carrePR"  
+                                                                    readonly
+                                                                    type="number" 
+                                                                    id="Prix_mettre_carre"  
+                                                                    class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                                </div>
+                                                            </div>  
+                                                            <div  class="sm:col-span-1"> 
+                                                                <label for="Surface_bati_sol" class="block text-sm/6 font-medium text-gray-900">Surf B S</label>
+                                                                <div>
+                                                                    <input  
+                                                                    v-model="form.nbr_surface_bati_solPR"
+                                                                    name="nbr_surface_bati_solPR"
+                                                                    type="number" 
+                                                                    id="Surface_bati_sol"  
+                                                                    class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                                </div>
+                                                            </div>
+                                                            <div class="sm:col-span-1">  
+                                                                <label for="nbr_niveauPR" class="block text-sm/6 font-medium text-gray-900">Niveau</label>
+                                                                <div>
+                                                                    <input  
+                                                                    v-model="form.nbr_niveauPR"
+                                                                    name="nbr_niveauPR"
+                                                                    type="number" 
+                                                                    id="nbr_niveauPR" 
+                                                                    class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                                </div>
+                                                            </div>
+                                                            <div  class="sm:col-span-1"> 
+                                                                <label for="Surface_utile" class="block text-sm/6 font-medium text-gray-900">Surf Utile</label>
+                                                                <div>   
+                                                                    <input  
+                                                                    v-model="form.nbr_surface_utilePR"
+                                                                    name="nbr_surface_utilePR"
+                                                                    type="number" 
+                                                                    id="Surface_utile" 
+                                                                    readonly
+                                                                    class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                                </div>
+                                                            </div>
+                                                            <div class="sm:col-span-1"> 
+                                                                <label for="Coeff" class="block text-sm/6 font-medium text-gray-900">Coeff</label>
+                                                                <div>  
+                                                                    <select  
+                                                                    v-model="form.slt_coeffPR"
+                                                                    name="slt_coeffPR"
+                                                                    id="Coeff"  
+                                                                    class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                                        <option selected desabled></option>
+                                                                        <option value="0.1">0.1</option>
+                                                                        <option value="0.2">0.2</option>
+                                                                        <option value="0.3">0.3</option>
+                                                                        <option value="0.4">0.4</option>
+                                                                        <option value="0.5">0.5</option>
+                                                                        <option value="0.6">0.6</option>
+                                                                        <option value="0.7">0.7</option>
+                                                                        <option value="0.8">0.8</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div  class="sm:col-span-1"> 
+                                                                <label for="Surface_corriger" class="block text-sm/6 font-medium text-gray-900">S.Corrigee</label>
+                                                                <div> 
+                                                                    <input                                               
+                                                                    v-model="form.nbr_surface_corrigerPR"
+                                                                    name="nbr_surface_corrigerPR"
+                                                                    type="number" 
+                                                                    id="Surface_corriger" 
+                                                                    readonly
+                                                                    class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                                </div>
+                                                            </div>
+                                                            <div class="sm:col-span-1"> 
+                                                                <label for="Valeur" class="block text-sm/6 font-medium text-gray-900">Valeur</label>
+                                                                <div>
+                                                                    <input 
+                                                                    type="number" 
+                                                                    v-model="form.nbr_valeurPR"
+                                                                    name="nbr_valeurPR"
+                                                                    readonly
+                                                                    id="Valeur"  
+                                                                    class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </TransitionGroup> 
+                                            </div>  
+                                            <div class="w-full flex flex-wrap justify-between gap-4 mt-4">
                                                 <TransitionGroup  name="slide-fade" tag="div">
                                                     <div 
                                                         v-for="(occupant, i) in form.occupantsBP" 
@@ -951,11 +1271,9 @@ const submitForm = () => {
                                                                         v-model="occupant.slt_dependant_domaineTG" 
                                                                         name="slt_dependant_domaine" 
                                                                         id="Dependant_domaine" 
-                                                                        class="h-8 block w-34 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                        class="h-8 block w-36 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                                 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
-                                                                            <option selected desable></option>
-                                                                            <option value="Principal">Principal</option>
+                                                                                focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"> 
                                                                             <option value="Secondaire">Secondaire</option>
                                                                             <option value="Tertiaire">Tertiaire</option>
                                                                             <option value="Dépendance">Dépendance</option>
@@ -969,24 +1287,24 @@ const submitForm = () => {
                                                                     <label for="Dependant_domaine" class="block text-sm/6 font-medium text-gray-900">CAT</label>
                                                                     <div>   
                                                                         <select 
-                                                                        v-model="occupant.nbr_prix_metre_carreTG" 
-                                                                        name="slt_dependant_domaine" 
+                                                                        v-model="occupant.slt_categorieTG" 
+                                                                        name="slt_categorieTG" 
                                                                         id="Dependant_domaine" 
                                                                         class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                                 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                                                 focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                             <option selected desable></option>
-                                                                            <option value="205891">1</option>
-                                                                            <option value="190883">2</option>
-                                                                            <option value="180937">3</option>
-                                                                            <option value="158411">4</option>
-                                                                            <option value="119942">5</option>
-                                                                            <option value="88201">6</option>
-                                                                            <option value="58801">7</option>
-                                                                            <option value="40663">8</option>
-                                                                            <option value="11117">9</option>
-                                                                            <option value="10000">10</option>
-                                                                            <option value="8000">11</option>
+                                                                            <option value="1">1</option>
+                                                                            <option value="2">2</option>    
+                                                                            <option value="3">3</option>
+                                                                            <option value="4">4</option>
+                                                                            <option value="5">5</option>
+                                                                            <option value="6">6</option>
+                                                                            <option value="7">7</option>
+                                                                            <option value="8">8</option>
+                                                                            <option value="9">9</option>
+                                                                            <option value="10">10</option>
+                                                                            <option value="11">11</option> 
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -994,26 +1312,26 @@ const submitForm = () => {
                                                                     <!-- Vous avez sélectionné une autre catégorie. -->
                                                                     <label for="Dependant_domaine" class="block text-sm/6 font-medium text-gray-900">CAT</label>
                                                                     <select 
-                                                                    v-model="occupant.nbr_prix_metre_carreTG"
-                                                                    name="slt_dependant_domaine" 
+                                                                    v-model="occupant.slt_categorieTG"
+                                                                    name="slt_categorieTG" 
                                                                     id="Dependant_domaine" 
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                             outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                         <option selected desable></option>
-                                                                        <option value="244257">A</option>
-                                                                        <option value="226543">B</option>
-                                                                        <option value="204069">C</option>
-                                                                        <option value="177171">D</option>
-                                                                        <option value="142293">E</option>
-                                                                        <option value="123552">F</option>
-                                                                        <option value="93878">G</option>
-                                                                        <option value="61602">H</option>
-                                                                        <option value="53793">I</option>
-                                                                        <option value="25000">J</option>
-                                                                        <option value="22000">K</option>
-                                                                        <option value="20000">L</option>
-                                                                        <option value="8000">M</option>
+                                                                        <option value="A">A</option>   
+                                                                        <option value="B">B</option>  
+                                                                        <option value="C">C</option>
+                                                                        <option value="D">D</option>
+                                                                        <option value="E">E</option>
+                                                                        <option value="F">F</option>
+                                                                        <option value="G">G</option>
+                                                                        <option value="H">H</option>
+                                                                        <option value="I">I</option>
+                                                                        <option value="J">J</option>
+                                                                        <option value="K">K</option>
+                                                                        <option value="L">L</option>
+                                                                        <option value="M">M</option> 
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -1025,7 +1343,7 @@ const submitForm = () => {
                                                                     readonly
                                                                     type="number" 
                                                                     id="Prix_mettre_carre"  
-                                                                    class="h-8 block w-24 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                                    class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                             outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                 </div>
@@ -1047,6 +1365,7 @@ const submitForm = () => {
                                                                 <div>
                                                                     <input  
                                                                     v-model="occupant.nbr_niveauTG"
+                                                                    name="nbr_niveauTG"
                                                                     type="number" 
                                                                     id="Niveau" 
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1059,6 +1378,7 @@ const submitForm = () => {
                                                                 <div>   
                                                                     <input  
                                                                     v-model="occupant.nbr_surface_utileTG"
+                                                                    name="nbr_surface_utileTG"
                                                                     type="number" 
                                                                     id="Surface_utile" 
                                                                     readonly
@@ -1072,6 +1392,7 @@ const submitForm = () => {
                                                                 <div>  
                                                                     <select  
                                                                     v-model="occupant.slt_coeffTG"
+                                                                    name="slt_coeffTG"
                                                                     id="Coeff"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                         outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
@@ -1093,6 +1414,7 @@ const submitForm = () => {
                                                                 <div> 
                                                                     <input                                               
                                                                     v-model="occupant.nbr_surface_corrigerTG"
+                                                                    name="nbr_surface_corrigerTG"
                                                                     type="number" 
                                                                     id="Surface_corriger" 
                                                                     readonly
@@ -1107,6 +1429,7 @@ const submitForm = () => {
                                                                     <input 
                                                                     type="number" 
                                                                     v-model="occupant.nbr_valeurTG"
+                                                                    name="nbr_valeurTG"
                                                                     readonly
                                                                     id="Valeur"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1148,10 +1471,10 @@ const submitForm = () => {
                                                 <div> 
                                                     <label for="Valeur_terrain_bati">Valeur(s) bâtiment (s)</label>
                                                     <input 
-                                                        type="text" 
-                                                        :value="txt_valeur_terrain_bati" 
+                                                        type="number" 
+                                                        :value="txt_valeur_terrain_bati"
                                                         readonly
-                                                        id="Valeur_terrain_bati"  
+                                                        id="Valeur_terrain_bati"
                                                         class="block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
@@ -1207,7 +1530,7 @@ const submitForm = () => {
                                                                     <label for="Categorie_ca_total" class="block text-sm/6 font-medium text-gray-900">Catégorie</label>
                                                                 <div> 
                                                                     <select type="select" 
-                                                                    v-model="occupant.nbr_prix_metre_carre_ca_total" 
+                                                                    v-model="occupant.slt_categorie_ca_total" 
                                                                     name="slt_categorie_ca_total"  
                                                                     id="Categorie_ca_total"  
                                                                     class="h-8 block w-28 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1225,7 +1548,7 @@ const submitForm = () => {
                                                                     <label for="Prix_metre_carre_ca_total" class="block text-sm/6 font-medium text-gray-900">P/m²</label>
                                                                 <div> 
                                                                     <input type="number" 
-                                                                    v-model="occupant.nbr_prix_metre_carre_ca_total" 
+                                                                    v-model="occupant.nbr_prix_metre_carre_ca_total"  
                                                                     readonly
                                                                     name="nbr_prix_metre_carre_ca_total" 
                                                                     id="Prix_metre_carre_ca_total"
@@ -1326,7 +1649,7 @@ const submitForm = () => {
                                                                     <label for="CoursAmenagerTotale" class="block text-sm/6 font-medium text-gray-900">Clôtures</label>
                                                                 <div>   
                                                                     <select 
-                                                                    v-model="occupant.slt_cours_amenager_totale" 
+                                                                    v-model="occupant.slt_cours_amenager_clo" 
                                                                     name="slt_dependant_domaine" 
                                                                     id="Dependant_domaine" 
                                                                     class="h-8 block w-34 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1358,7 +1681,7 @@ const submitForm = () => {
                                                                     <label for="Categorie_clo" class="block text-sm/6 font-medium text-gray-900">Catégorie</label>
                                                                 <div>  
                                                                     <select type="select" 
-                                                                    v-model="occupant.nbr_prix_metre_carre_clo" 
+                                                                    v-model="occupant.slt_categorie_clo" 
                                                                     name="slt_categorie_clo" 
                                                                     id="Categorie_clo"  
                                                                     class="h-8 block w-28 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1455,7 +1778,9 @@ const submitForm = () => {
                                                     <input type="number"         
                                                         v-model="nbr_valeur_total_clotur" 
                                                         readonly
-                                                        name="nbr_valeur_total_clotur" id="Valeur_total_clotur"  class="block w-full rounded-md bg-white 
+                                                        name="nbr_valeur_total_clotur" 
+                                                        id="Valeur_total_clotur"  
+                                                        class="block w-full rounded-md bg-white 
                                                         px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 
                                                         outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                         focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -1612,7 +1937,7 @@ const submitForm = () => {
                                                     <div> 
                                                         <label for="Valeur_locative" class="block text-sm/6 font-medium text-gray-900">Valeur Locative</label>
                                                         <input type="number"        
-                                                            v-model="form.nbr_valeurLocative" 
+                                                            v-model="nbr_valeurLocative" 
                                                             readonly
                                                             name="nbr_valeurLocative" 
                                                             id="Valeur_locative"  
@@ -1621,6 +1946,7 @@ const submitForm = () => {
                                                             outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 
                                                             focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                                     </div>
+                                                    <!-- <p>Taux détecté : {{ occupant.tauxValeurLocative }}</p> -->
                                                 </div>
                                                 <div  class="grid gap-6 mb-6 md:grid-cols-1">
                                                     <div> 

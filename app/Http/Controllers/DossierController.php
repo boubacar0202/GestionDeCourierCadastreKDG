@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dossier;
+use GuzzleHttp\Psr7\Request;
 
 class DossierController extends Controller
 {
@@ -13,12 +14,14 @@ class DossierController extends Controller
             ->orderBy('id', 'desc')
             ->first();
     
-        $number = $lastDossier ? (int)substr($lastDossier->txt_num_dossier, 0, 6) + 1 : 1;
+        $number = $lastDossier ? (int)substr($lastDossier->txt_num_dossier, 0, 5) + 1 : 1;
     
-        $nextNumDossier = sprintf('%06d/%s', $number, date('Y'));
+        $nextNumDossier = sprintf('%05d/%s', $number, date('Y'));
     
         return response()->json([
             'num_dossier' => $nextNumDossier
         ]);
     }
+
+
 }

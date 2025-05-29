@@ -23,10 +23,17 @@ class DonneeController extends Controller
             'titulaire',
             'references_cadastrales',
             'references_usages',
+            'evaluations_terrains',
+            'evaluations_clotures', 
+            'evaluations_amenagements', 
+            'evaluations_batis', 
+            'evaluations_cours_amenagees'
         ])->get();
     
-        $terrain = Terrain::with('references_usages')
-            ->where('txt_nicad', session('txt_nicad'))
+        $txtNicad = session('txt_nicad');
+
+        $terrain = Terrain::with(['references_usages', 'evaluations_terrains', 'evaluations_clotures', 'evaluations_amenagements', 'evaluations_batis', 'evaluations_cours_amenagees'])
+            ->where('txt_nicad', $txtNicad)
             ->first();
     
         return Inertia::render('donnee/create', [
@@ -34,4 +41,8 @@ class DonneeController extends Controller
             'terrains' => $terrains,
         ]);
     }
+
+
+
+
 }

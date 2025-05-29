@@ -11,10 +11,11 @@ class ReferenceCadastrale extends Model
     protected $table = 'references_cadastrales'; 
     protected $fillable = [
         'rd_immatriculation_terrain',
-        'slt_dependant_domaine',
-        'slt_bornage',
+        'slt_dependant_domaine', 
         'ussu_bornage',
-        'txt_titre_mere',
+        'txt_titre_mere', 
+        'txt_num_titre',
+        'txt_appartement',
         'slt_lf',
         'txt_num_requisition',
         'txt_surface_bornage',
@@ -26,4 +27,5 @@ class ReferenceCadastrale extends Model
     {
         return $this->hasMany(Terrain::class);
     }
+
 }

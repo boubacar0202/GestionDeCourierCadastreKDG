@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\CodeAccesController;
 use App\Http\Controllers\DonneeController;
 use App\Http\Controllers\DossierController;
 use App\Http\Controllers\GeometreController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MatriceCadastraleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SecretariatController;
+use App\Http\Controllers\TerrainController;
 use App\Models\Dossier;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Container\Attributes\Auth;
@@ -56,20 +58,30 @@ Route::resource('matriceCadastrale', MatriceCadastraleController::class);
 Route::get('/secretariat/create', [SecretariatController::class, 'create'])->name('secretariat.create');
 Route::get('/donnee/create', [DonneeController::class, 'create'])->name('donnee.create');
 Route::post('/dossier/verify', [GeometreController::class, 'verify'])->name('dossier.verify');
-
-
-
-
+ 
+Route::get('/secretariat', [SecretariatController::class, 'create'])->name('secretariat.create');
 Route::post('/secretariat', [SecretariatController::class, 'store'])->name('secretariat.store');
 Route::post('/geometre', [GeometreController::class, 'store'])->name('geometre.store');
 Route::get('/dossier/last', function () {
-    $lastDossier = Dossier::latest('id')->first();
-
+    $lastDossier = Dossier::latest('id')->first(); 
     return response()->json([
         'num_dossier' => $lastDossier ? $lastDossier->txt_num_dossier : ''
     ]);
 });
-Route::get('/dossier/next', [DossierController::class, 'getNextDossier']);
+// code d'accée
+Route::post('/code/verify', [CodeAccesController::class, 'verify'])->name('code.verify');
+
+Route::get('/donnee/create', [DonneeController::class, 'create'])->name('donnee.create');
+
+
+Route::put('/secretariat/update/{terrain}', [SecretariatController::class, 'update'])->name('secretariat.update'); 
+Route::get('/secretariat/edit/{terrain}', [SecretariatController::class, 'edit'])->name('secretariat.edit');
+
+
+Route::delete('/terrains/{terrain}', [TerrainController::class, 'destroy'])->name('terrains.destroy');
+
+
+Route::get('/dossier/next', [DossierController::class, 'getNextDossier']); 
 
 Route::get('/departements/{regionId}', [LocationController::class, 'getDepartementsByRegion']);
 Route::get('/arrondissements/{departementId}', [LocationController::class, 'getArrondissementByDepartement']);
