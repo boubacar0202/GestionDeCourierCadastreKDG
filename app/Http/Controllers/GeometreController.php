@@ -9,6 +9,7 @@ use App\Models\EvaluationCloture;
 use App\Models\EvaluationCoursAmenagee;
 use App\Models\EvaluationTerrain;
 use App\Models\ReferenceUsage;
+use App\Models\Region;
 use App\Models\Terrain; 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -25,6 +26,9 @@ class GeometreController extends Controller
 
         // Récupérer le dossier par son numéro
         $dossier = Dossier::where('txt_num_dossier', session('txt_num_dossier'))->first();
+
+        // Récupérer le dossier par son numéro
+        $terrain = Terrain::where('nbr_surface', session('nbr_surface'))->first();
 
         // Récupérer le terrain associé via l'ID du dossier
         $terrain = $dossier ? Terrain::where('txt_num_dossier', $dossier->id)->first() : null;
@@ -321,4 +325,6 @@ class GeometreController extends Controller
         
 
     }
+
+
 }

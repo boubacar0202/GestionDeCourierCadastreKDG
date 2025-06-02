@@ -53,18 +53,14 @@ class SecretariatController extends Controller
             'evaluations_batis', 
             'evaluations_cours_amenagees'
         ])->findOrFail($id);
-
-
  
         return Inertia::render('secretariat/edit', [
-            'terrain' => $terrain,
+            'terrain' => $terrain, 
+            'terrain' => $terrain->load('references_usages'), 
             'regions' => Region::select('id', 'slt_region')->get(),
             'departements' => Departement::select('id', 'slt_departement')->get(),
             'arrondissements' => Arrondissement::select('id', 'slt_arrondissement')->get(),
-            'communes' => Commune::select('id', 'slt_commune')->get(), 
-            'references_usages' => $terrain->references_usages, 
-            // On extrait tous les occupants liés aux references_usages
-            'occupants' => $terrain->references_usages, 
+            'communes' => Commune::select('id', 'slt_commune')->get(),  
         ]);
     }
 
@@ -236,14 +232,21 @@ class SecretariatController extends Controller
             ]);
             
 
-            return redirect()->back()->with('success', 'Donnée enregistrée !');
+            // return redirect()->back()->with('success', 'Donnée enregistrée !');
+
+            return Inertia::render('secretariat/create', [
+                'nbr_surface' => session('nbr_surface'), 
+                'txt_nicad' => session('txt_nicad'),  
+                'txt_num_dossier' => session('txt_num_dossier'),  
+            ]);
         
     }
 
     public function update(Request $request, $id)
     {
-        $terrain = Terrain::findOrFail($id);
 
+        // dd($request->all());
+        $terrain = Terrain::findOrFail($id); 
         // ✅ Mise à jour du terrain (champs directs)
         $terrain->update($request->only([
             'txt_nicad',
@@ -314,31 +317,40 @@ class SecretariatController extends Controller
             ]));
         }
 
-        // MAJ du terrain
-        $terrain->slt_usage = $request->input('slt_usage');
-        $terrain->slt_residence = $request->input('slt_residence');
-        // MAJ des occupants (référence usage)
-        foreach ($request->input('occupants') as $occupant) {
-                $ref = ReferenceUsage::find($occupant['id']);
-            if ($ref) {
-                $ref->update([
-                    'txt_nomOccupantTG' => $occupant['txt_nomOccupantTG'],
-                    'txt_numAppartementTG' => $occupant['txt_numAppartementTG'],
-                    'txt_activiteTG' => $occupant['txt_activiteTG'],
-                    'txt_nineaTG' => $occupant['txt_nineaTG'],
-                    'tel_telephoneTG' => $occupant['tel_telephoneTG'],
-                    'nbr_montantLoyerTG' => $occupant['nbr_montantLoyerTG'],
-                    'txt_dateLieuNaissanceTG' => $occupant['txt_dateLieuNaissanceTG'],
-                    'txt_cniPasseportTG' => $occupant['txt_cniPasseportTG'],
-                    'dt_dateDelivranceTG' => $occupant['dt_dateDelivranceTG'],
-                ]);
+        if ($terrain->references_usages && $request->has('occupants')) {
+            foreach ($request->input('occupants') as $occupantData) {
+                ReferenceUsage::updateOrCreate(
+                    [
+                        'txt_nicad' => $terrain->txt_nicad,
+                        'txt_nomOccupantTG' => $occupantData['txt_nomOccupantTG'] ?? null, // ou autre champ unique
+                    ],
+                    array_merge([
+                        'txt_num_dossier' => $terrain->dossier?->txt_num_dossier ?? $terrain->txt_num_dossier,
+                        'slt_usage', 
+                        'slt_residence',
+                        'nbr_montantLoyerTotal' => $request->input('nbr_montantLoyerTotal') ?? 0,
+                        'nbr_TVATotal' => $request->input('nbr_TVATotal') ?? 0,
+                    ], $occupantData)
+                );
             }
         }
 
+        if ($terrain->evaluations_terrains) {
+            $terrain->evaluations_terrains->update($request->only([
+                'nbr_surface',
+                'txt_superficie_bati_sol',
+                'slt_secteur',
+                'nbr_prix_metre_carre',
+                'nbr_valeur_terrain',
+            ]));
+        }
 
+
+
+
+ 
         return redirect()->route('donnee.create')->with('success', 'Modification réussi !'); 
-
-
+ 
     }
 
 }

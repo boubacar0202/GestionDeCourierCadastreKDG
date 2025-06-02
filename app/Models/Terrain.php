@@ -50,10 +50,10 @@ class Terrain extends Model
     public function evaluations_terrains()
     {
         return $this->hasOne(EvaluationTerrain::class, 'txt_nicad', 'txt_nicad');
-    }
+    } 
     public function references_usages()
     {
-        return $this->hasOne(ReferenceUsage::class, 'txt_nicad', 'txt_nicad');
+        return $this->hasMany(ReferenceUsage::class, 'txt_nicad', 'txt_nicad');
     }
  
     public function dossier() {

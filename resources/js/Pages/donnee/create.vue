@@ -265,46 +265,67 @@ function supprimerTerrain(terrain) {
                                             </th>
                                             <th scope="col" class="px-6 py-3">
                                                 txt_telRepresentant
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                slt_reference_usage
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                slt_residence
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_nomOccupantTG
                                             </th> 
+
                                             <th scope="col" class="px-6 py-3">
-                                                txt_numAppartementTG
+                                                <div class="justify-center">References Usages</div>
+                                                <tr> 
+                                                <th scope="col" class="px-6 py-3 font-normal">slt_usage</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">slt_residence</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">N° Appart</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">Activité</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">NINEA</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">Téléphone</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">Loyer</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">Date/Lieu Naissance</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">CNI / Passeport</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">Date Délivrance</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">Loyer Total</th>
+                                                <th scope="col" class="px-6 py-3 font-normal">TVA Total</th>
+                                                </tr>
                                             </th> 
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_activiteTG
-                                            </th> 
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_nineaTG
-                                            </th> 
-                                            <th scope="col" class="px-6 py-3">
-                                                tel_telephoneTG
-                                            </th> 
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_montantLoyerTG
-                                            </th> 
-                                            <th scope="col" class="px-6 py-3">
-                                                dt_dateNaissanceTG
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                txt_cniPasseportTG
-                                            </th>
-                                            <th scope="col" class="px-6 py-3">
-                                                dt_dateDelivranceTG
-                                            </th> 
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_montantLoyerTotal
-                                            </th> 
-                                            <th scope="col" class="px-6 py-3">
-                                                nbr_TVATotal
-                                            </th>
+
+<!--                                             
+                                            <tr>   
+                                                <th scope="col" class="px-6 py-3">
+                                                    slt_residence
+                                                </th>
+                                                <th scope="col" class="px-6 py-3">
+                                                    txt_nomOccupantTG
+                                                </th> 
+                                                <th scope="col" class="px-6 py-3">
+                                                    txt_numAppartementTG
+                                                </th> 
+                                                <th scope="col" class="px-6 py-3">
+                                                    txt_activiteTG
+                                                </th> 
+                                                <th scope="col" class="px-6 py-3">
+                                                    txt_nineaTG
+                                                </th> 
+                                                <th scope="col" class="px-6 py-3">
+                                                    tel_telephoneTG
+                                                </th> 
+                                                <th scope="col" class="px-6 py-3">
+                                                    nbr_montantLoyerTG
+                                                </th> 
+                                                <th scope="col" class="px-6 py-3">
+                                                    dt_dateNaissanceTG
+                                                </th>
+                                                <th scope="col" class="px-6 py-3">
+                                                    txt_cniPasseportTG
+                                                </th>
+                                                <th scope="col" class="px-6 py-3">
+                                                    dt_dateDelivranceTG
+                                                </th> 
+                                                <th scope="col" class="px-6 py-3">
+                                                    nbr_montantLoyerTotal
+                                                </th> 
+                                                <th scope="col" class="px-6 py-3">
+                                                    nbr_TVATotal
+                                                </th>
+
+                                            </tr> -->
+
                                             <th scope="col" class="px-6 py-3">
                                                 txt_surface_bati_sol
                                             </th>
@@ -453,7 +474,8 @@ function supprimerTerrain(terrain) {
                                     </thead>
                                     <tbody>
  
-                                        <tr v-for="terrain in terrains" :key="terrain.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <tr v-for="terrain in terrains" :key="terrain.id"  
+                                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                 
                                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                                 {{ terrain.dossier ? terrain.dossier.txt_num_dordre : 'Dossier inconnu' }}
@@ -602,7 +624,8 @@ function supprimerTerrain(terrain) {
                                                 {{terrain.titulaire?.tel_telRepresentant || 'Null'}}
                                             </td>
 
-                                            <td scope="col" class="px-6 py-3">
+
+                                            <!-- <td scope="col" class="px-6 py-3">
                                                 {{terrain.references_usages?.slt_usage || 'Null' }}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
@@ -641,7 +664,55 @@ function supprimerTerrain(terrain) {
                                             </td> 
                                             <td scope="col" class="px-6 py-3">
                                                 {{terrain.references_usages?.nbr_TVATotal || 'Null' }}
-                                            </td>
+                                            </td>   -->
+                                            <template v-if="terrain.references_usages && terrain.references_usages.length > 0">
+                                                <tr v-for="usage in terrain.references_usages" :key="usage.id"
+                                                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                    
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{usage.slt_usage || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{usage.slt_residence || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{ usage.txt_numAppartementTG || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{ usage.txt_activiteTG || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{ usage.txt_nineaTG || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{ usage.tel_telephoneTG || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{ usage.nbr_montantLoyerTG || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{ usage.txt_dateLieuNaissanceTG || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{ usage.txt_cniPasseportTG || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{ usage.dt_dateDelivranceTG || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{ usage.nbr_montantLoyerTotal || 'Null' }}
+                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">
+                                                        {{ usage.nbr_TVATotal || 'Null' }}
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                            <!-- Sinon afficher une ligne vide avec Null -->
+                                            <template v-else>
+                                                    <tr>
+                                                        <td colspan="10" class="text-center text-gray-500 italic">Aucune donnée d’usage (Null)</td>
+                                                    </tr>
+                                            </template>
 
                                             <td scope="col" class="px-6 py-3">
                                                 {{terrain.evaluations_terrains?.txt_superficie_bati_sol || 'Null' }}
@@ -650,7 +721,7 @@ function supprimerTerrain(terrain) {
                                                 {{terrain.evaluations_terrains?.nbr_prix_metre_carre  || 'Null'   }}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_terrains?.txt_superficie_totale || 'Null'   }}
+                                                {{terrain.evaluations_terrains?.nbr_surface || 'Null'   }}
                                             </td>
                                             <td scope="col" class="px-6 py-3">
                                                 {{terrain.evaluations_terrains?.slt_secteur   || 'Null'   }}
@@ -829,3 +900,5 @@ function supprimerTerrain(terrain) {
         </div>
     </AuthenticatedLayout>
 </template>
+
+ 

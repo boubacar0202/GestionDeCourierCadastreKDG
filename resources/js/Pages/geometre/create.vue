@@ -18,8 +18,7 @@ const maxOccupantsBP = 4;
 const maxOccupantsCA = 3;
 const maxOccupantsCL = 3;
 const maxOccupantsAP = 3;
-// const tauxValeurLocative = ref(0.1);
-// const isPrincipalSelected = ref(false); 
+
 const currentCat = ref('');
 
 const props = defineProps({
@@ -27,6 +26,8 @@ const props = defineProps({
     txt_nicad: String,
     nbr_surface: Number,
 });
+const localNbrSurface = ref(props.nbr_surface)
+console.log("Surface reçue :", props.nbr_surface)
 
 const form = useForm({
     //recupèration
@@ -50,11 +51,10 @@ const form = useForm({
             dt_dateDelivranceTG: '',
         }
     ],
+
     nbr_montantLoyerTotal:'',
     nbr_TVATotal:'',
-    dt_dateEvaluation: '', 
-    // txt_superficie_totale: '',
-    // txt_superficie_totale: props.nbr_surface || 0,
+    dt_dateEvaluation: '',  
     txt_superficie_bati_sol: '', 
     slt_secteur:'', 
     nbr_prix_metre_carre: '',
@@ -126,6 +126,7 @@ const form = useForm({
     dt_dateEvaluation:'',
 
 });
+ 
 
 let show = ref(true);
     show.value = show;
@@ -719,7 +720,10 @@ const submitForm = () => {
                                                             <div class="sm:col-span-1">
                                                                 <label :for="'NomOccupant_${i}'" class="block text-sm/6 font-medium text-gray-900">Nom Occupant {{ i }}</label>
                                                                 <div>  
-                                                                    <input type="text" 
+                                                                    <input 
+                                                                    autocomplete="off"
+                                                                    autocorrect="off"
+                                                                    type="text" 
                                                                     v-model="occupant.txt_nomOccupantTG"
                                                                     :id="'NomOccupant_${i}'"  
                                                                     class="h-8 block w-28 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -730,7 +734,10 @@ const submitForm = () => {
                                                             <div class="sm:col-span-1">
                                                                 <label :for="'NunAppartement_${i}'" class="block text-sm/6 font-medium text-gray-900">N° Appart</label>
                                                                 <div>
-                                                                    <input type="text" 
+                                                                    <input 
+                                                                    autocomplete="off"
+                                                                    autocorrect="off"
+                                                                    type="text" 
                                                                     v-model="occupant.txt_numAppartementTG"
                                                                     :id="'NunAppartement_${i}'"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -742,7 +749,9 @@ const submitForm = () => {
                                                             <div class="sm:col-span-1">
                                                                 <label :for="'Activite_${i}'" class="block text-sm/6 font-medium text-gray-900">Activite</label>
                                                                 <div>
-                                                                    <input type="text" 
+                                                                    <input type="text"
+                                                                    autocomplete="off"
+                                                                    autocorrect="off" 
                                                                     v-model="occupant.txt_activiteTG"
                                                                     :id="'Activite_${i}'"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -755,6 +764,8 @@ const submitForm = () => {
                                                                 <label :for="'Ninea_${i}'" class="block text-sm/6 font-medium text-gray-900">Ninea </label>
                                                                 <div>
                                                                     <input type="text" 
+                                                                    autocomplete="off"
+                                                                    autocorrect="off" 
                                                                     v-model="occupant.txt_nineaTG"
                                                                     :id="'Ninea_${i}'"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -767,6 +778,8 @@ const submitForm = () => {
                                                                 <label :for="'Telephone_${i}'" class="block text-sm/6 font-medium text-gray-900">Téléphone </label>
                                                                 <div>
                                                                     <input type="tel" 
+                                                                    autocomplete="off"
+                                                                    autocorrect="off" 
                                                                     v-model="occupant.tel_telephoneTG"
                                                                     :id="'Telephone_${i}'"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -777,7 +790,9 @@ const submitForm = () => {
                                                             <div class="sm:col-span-1">
                                                                 <label :for="'Montant_loyer_${i}'" class="block text-sm/6 font-medium text-gray-900">Mnt Loyer</label>
                                                                 <div>
-                                                                    <input type="number" 
+                                                                    <input type="number"  
+                                                                    autocomplete="off"
+                                                                    autocorrect="off"  
                                                                     v-model="occupant.nbr_montantLoyerTG"
                                                                     :id="'Montant_loyer_${i}'"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -789,6 +804,8 @@ const submitForm = () => {
                                                                 <label :for="'DateNaissnace_${i}'" class="block text-sm/6 font-medium text-gray-900">Date-lieu Nais</label>
                                                                 <div>
                                                                     <input type="text" 
+                                                                    autocomplete="off"
+                                                                    autocorrect="off" 
                                                                     v-model="occupant.txt_dateLieuNaissanceTG"
                                                                     :id="'DateNaissnace_${i}'"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -800,6 +817,8 @@ const submitForm = () => {
                                                                 <label :for="'CNIPasseport_${i}'" class="block text-sm/6 font-medium text-gray-900">CNI/Pasprt</label>
                                                                 <div>
                                                                     <input type="text" 
+                                                                    autocomplete="off"
+                                                                    autocorrect="off" 
                                                                     v-model="occupant.txt_cniPasseportTG"
                                                                     :id="'CNIPasseport_${i}'"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -811,6 +830,8 @@ const submitForm = () => {
                                                                 <label :for="'DateDelivrance_${i}'" class="block text-sm/6 font-medium text-gray-900">Date Déliv</label>
                                                                 <div>
                                                                     <input type="date" 
+                                                                    autocomplete="off"
+                                                                    autocorrect="off" 
                                                                     v-model="occupant.dt_dateDelivranceTG"
                                                                     :id="'DateDelivrance_${i}'"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -974,10 +995,10 @@ const submitForm = () => {
                                                             <div>
                                                                 <input 
                                                                     type="number"  
-                                                                    :value="nbr_surface" 
+                                                                    :value="localNbrSurface"  
                                                                     name="nbr_surface"
                                                                     readonly
-                                                                    id="Superficie_totale" 
+                                                                    id="nbr_surface" 
                                                                     class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                     outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                                     focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
