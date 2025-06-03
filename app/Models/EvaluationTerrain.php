@@ -17,7 +17,10 @@ class EvaluationTerrain extends Model
         'txt_superficie_bati_sol',
         'slt_secteur',
         'nbr_prix_metre_carre',
-        'nbr_valeur_terrain', 
+        'nbr_valeur_terrain',  
+        'nbr_valeurVenaleLimeuble',
+        'nbr_valeurLocative',
+        'dt_dateEvaluation',
     ];
 
     

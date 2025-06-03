@@ -16,7 +16,7 @@ class CreateEvaluationsBatisTable extends Migration
             $table->string('txt_num_dossier'); 
             $table->string('txt_nicad'); 
             $table->string('txt_dependant_domainePR')->nullable();
-            $table->string('slt_categorieP')->nullable();
+            $table->string('slt_categoriePR')->nullable();
             $table->decimal('nbr_prix_metre_carrePR',10,2)->nullable();
             $table->decimal('nbr_surface_bati_solPR',10,2)->nullable();
             $table->integer('nbr_niveauPR')->nullable();
@@ -24,7 +24,7 @@ class CreateEvaluationsBatisTable extends Migration
             $table->decimal('slt_coeffPR',10,2)->nullable();
             $table->decimal('nbr_surface_corrigerPR',10,2)->nullable();
             $table->decimal('nbr_valeurPR',10,2)->nullable();  
-            $table->string('slt_dependant_domaine')->nullable(); // Le domaine, si applicable
+            $table->string('slt_dependant_domaineTG')->nullable(); // Le domaine, si applicable
             $table->string('slt_categorieTG')->nullable();
             $table->decimal('nbr_prix_metre_carreTG', 10, 2)->nullable(); // Prix par mètre carré
             $table->decimal('nbr_surface_bati_solTG', 10, 2)->nullable(); // Surface bâtie au sol

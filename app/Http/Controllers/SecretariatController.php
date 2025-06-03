@@ -7,6 +7,10 @@ use App\Models\Departement;
 use App\Models\Arrondissement;
 use App\Models\Commune;
 use App\Models\Dossier;
+use App\Models\EvaluationAmenagement;
+use App\Models\EvaluationBati;
+use App\Models\EvaluationCloture;
+use App\Models\EvaluationCoursAmenagee;
 use App\Models\ReferenceCadastrale;
 use App\Models\ReferenceUsage;
 use App\Models\Terrain;
@@ -317,6 +321,7 @@ class SecretariatController extends Controller
             ]));
         }
 
+        // ✅ Mise à jour de la relation reference_usage
         if ($terrain->references_usages && $request->has('occupants')) {
             foreach ($request->input('occupants') as $occupantData) {
                 ReferenceUsage::updateOrCreate(
@@ -335,6 +340,7 @@ class SecretariatController extends Controller
             }
         }
 
+        // ✅ Mise à jour de la relation evaluation_terrains
         if ($terrain->evaluations_terrains) {
             $terrain->evaluations_terrains->update($request->only([
                 'nbr_surface',
@@ -342,10 +348,85 @@ class SecretariatController extends Controller
                 'slt_secteur',
                 'nbr_prix_metre_carre',
                 'nbr_valeur_terrain',
+                'nbr_valeurVenaleLimeuble',
+                'nbr_valeurLocative',
+                'dt_dateEvaluation',
             ]));
         }
 
+        // ✅ Mise à jour de la relation evaluations_batis
+        if ($terrain->evaluations_batis && $request->has('occupantsBP')) {
+            foreach ($request->input('occupantsBP') as $occupantData) {
+                EvaluationBati::updateOrCreate(
+                    [
+                        'txt_nicad' => $terrain->txt_nicad,
+                    ],
+                    array_merge([
+                        'txt_num_dossier' => $terrain->dossier?->txt_num_dossier ?? $terrain->txt_num_dossier,
+                        'txt_dependant_domainePR' => $request->input('txt_dependant_domainePR'),
+                        'slt_categoriePR' => $request->input('slt_categoriePR'),
+                        'nbr_prix_metre_carrePR' => $request->input('nbr_prix_metre_carrePR'),
+                        'nbr_surface_bati_solPR' => $request->input('nbr_surface_bati_solPR'),
+                        'nbr_niveauPR' => $request->input('nbr_niveauPR'),
+                        'nbr_surface_utilePR' => $request->input('nbr_surface_utilePR'),
+                        'slt_coeffPR' => $request->input('slt_coeffPR'),
+                        'nbr_surface_corrigerPR' => $request->input('nbr_surface_corrigerPR'),
+                        'nbr_valeurPR' => $request->input('nbr_valeurPR'),
+                        'currentCat' => $request->input('currentCat'),
+                        'txt_valeur_terrain_bati' => $request->input('txt_valeur_terrain_bati') ?? 0,
+                    ], $occupantData)
+                );
 
+            }
+        }
+
+        // ✅ Mise à jour de la relation evaluation_cours_amenagees
+        if ($terrain->evaluations_cours_amenagees && $request->has('occupantsCA')) {
+            foreach ($request->input('occupantsCA') as $occupantData) {
+                EvaluationCoursAmenagee::updateOrCreate(
+                    [
+                        'txt_nicad' => $terrain->txt_nicad,
+                    ],
+                    array_merge([
+                        'txt_num_dossier' => $terrain->dossier?->txt_num_dossier ?? $terrain->txt_num_dossier,
+                        'nbr_valeur_total_ca' => $request->input('nbr_valeur_total_ca') ?? 0,
+                    ], $occupantData)
+                );
+
+            }
+        }
+
+        // ✅ Mise à jour de la relation evaluation_clotures
+        if ($terrain->evaluations_clotures && $request->has('occupantsCL')) {
+            foreach ($request->input('occupantsCL') as $occupantData) {
+                EvaluationCloture::updateOrCreate(
+                    [
+                        'txt_nicad' => $terrain->txt_nicad,
+                    ],
+                    array_merge([
+                        'txt_num_dossier' => $terrain->dossier?->txt_num_dossier ?? $terrain->txt_num_dossier,
+                        'nbr_valeur_total_clotur' => $request->input('nbr_valeur_total_clotur') ?? 0,
+                    ], $occupantData)
+                );
+
+            }
+        }
+
+        // ✅ Mise à jour de la relation evaluation_clotures
+        if ($terrain->evaluations_amenagements && $request->has('occupantsAP')) {
+            foreach ($request->input('occupantsAP') as $occupantData) {
+                EvaluationAmenagement::updateOrCreate(
+                    [
+                        'txt_nicad' => $terrain->txt_nicad,
+                    ],
+                    array_merge([
+                        'txt_num_dossier' => $terrain->dossier?->txt_num_dossier ?? $terrain->txt_num_dossier,
+                        'nbr_valeur_totale_ap' => $request->input('nbr_valeur_totale_ap') ?? 0,
+                    ], $occupantData)
+                );
+
+            }
+        }
 
 
  

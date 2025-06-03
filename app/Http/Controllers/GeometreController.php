@@ -242,7 +242,7 @@ class GeometreController extends Controller
                     'currentCat' => $request->currentCat, 
                     'slt_categorieTG'        => $occupant['slt_categorieTG'] ?? null,
                     'txt_valeur_terrain_bati'=> $valeurTerrain_Bati,
-                    'slt_dependant_domaine'  => $occupant['slt_dependant_domaineTG'] ?? null,
+                    'slt_dependant_domaineTG'  => $occupant['slt_dependant_domaineTG'] ?? null,
                     'nbr_prix_metre_carreTG' => $occupant['nbr_prix_metre_carreTG'] ?? null,
                     'nbr_surface_bati_solTG' => $occupant['nbr_surface_bati_solTG'] ?? null,
                     'nbr_niveauTG'           => $occupant['nbr_niveauTG'] ?? null,
