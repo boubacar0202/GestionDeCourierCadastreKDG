@@ -369,9 +369,7 @@ const rechercherDossier = async () => {
         }
     }
 };
-
-
-
+ 
 //  Calculer Montant Total Loyer 
 const nbr_montantLoyerTotal = computed(() => {
     return form.occupants.reduce((total, occupant) => {
@@ -388,13 +386,37 @@ const nbr_TVATotal = computed(() => {
 // Calculer Valeur Terrain  
 watchEffect(() => {
     const bati = Number(form.txt_superficie_bati_sol);
+    const surfacebatiSolPR = Number(form.nbr_surface_bati_solPR);
+    // const surfacebatiSolTG = Number(form.nbr_surface_bati_solTG);
+
     const surface = Number(form.nbr_surface);
 
     if (bati > surface) {
-        toast.error("La superficie bâtie dépasse la superficie totale du terrain.");
+        toast.error("Surface bâtie dépasse la superficie terrain.");
         form.txt_superficie_bati_sol = surface; // Ou remettre à 0 si tu préfères
+    }if (surfacebatiSolPR > surface) {
+        toast.error("Surface bâtie dépasse la superficie terrain.");
+        form.nbr_surface_bati_solPR = surface; // Ou remettre à 0 si tu préfères        
     }
 });
+// Verification saisis nbr_surface_bati_solTG
+function verifierSurfaceOccupant(occupant) {
+    const surfaceTotale = Number(form.nbr_surface);
+    const surfacebatisolTG = Number(occupant.nbr_surface_bati_solTG);
+    const surfaceCA = Number(occupant.nbr_surface_ca_total);
+        
+    if (surfacebatisolTG > surfaceTotale) {
+        toast.error("Surface bâtie de l'occupant dépasser la superficie terrain.");
+        occupant.nbr_surface_bati_solTG = surfaceTotale;
+        // nbr_surface_bati_solTG
+    } if (surfaceCA > surfaceTotale) {
+        toast.error("Surface bâtie de l'occupant dépasser la superficie terrain.");
+        occupant.nbr_surface_ca_total = surfaceTotale;
+        // nbr_surface_ca_total
+    }
+}
+
+// Calcule nbr_surface_bati_solPR 
 const prixParSecteur = {
   1: 3000,
   2: 2000,
@@ -407,9 +429,8 @@ watchEffect(() => {
 const nbr_valeur_terrain = computed(() => {
     const prix = parseFloat(form.nbr_prix_metre_carre) || 0;
     const bati = parseFloat(form.txt_superficie_bati_sol) || 0;
-    const total = parseFloat(form.nbr_surface) || 0;
-
-  return ((prix / 2) * bati + prix * (total - bati)).toFixed(2);
+    const total = parseFloat(form.nbr_surface) || 0; 
+    return ((prix / 2) * bati + prix * (total - bati)).toFixed(2);
 });
  
 watchEffect(() => {
@@ -476,19 +497,26 @@ watchEffect(() => {
     form.txt_valeur_terrain_bati = txt_valeur_terrain_bati.value;
 });
 
-// calculer nbr_valeur_ca_total     slt_categorie
+// calculer nbr_valeur_ca_total     
+const coeffCAValues = {
+  1: 17500,
+  2: 13500,
+  3: 10500,
+  4: 5000
+}; 
 watchEffect(() => {
     form.occupantsCA.forEach((occupant) => {
-        occupant.nbr_prix_metre_carre_ca_total = Number(occupant.slt_categorie_ca_total) || 0;
-    })
-})
-watchEffect(() => {
-  form.occupantsCA.forEach((occupant) => {
-    const prixmetrecarreCA = parseFloat(occupant.nbr_prix_metre_carre_ca_total) || 0; 
-    const surfaceCA = parseFloat(occupant.nbr_surface_ca_total) || 0;
-    const coeffCA = parseFloat(occupant.nbr_coefficient_ca_total) || 0;
-    occupant.nbr_valeur_ca_total = ( surfaceCA * prixmetrecarreCA * coeffCA).toFixed(2);
-  });
+        const categorie = Number(occupant.slt_categorie_ca_total) || 0;
+        const prixMetre = coeffCAValues[categorie] || 0; 
+
+        // const prixmetrecarreCA = parseFloat(occupant.nbr_prix_metre_carre_ca_total) || 0;
+
+        const surfaceCA = parseFloat(occupant.nbr_surface_ca_total) || 0;
+        const coeffCA = parseFloat(occupant.nbr_coefficient_ca_total) || 0;
+        occupant.nbr_prix_metre_carre_ca_total = prixMetre;
+
+        occupant.nbr_valeur_ca_total = (surfaceCA * prixMetre * coeffCA).toFixed(2);
+    });
 }); 
 // Sommes Cours Amenager nbr_valeur_total_cours
 const nbr_valeur_total_ca = computed(() => {nbr_valeur_total_ca
@@ -500,22 +528,44 @@ const nbr_valeur_total_ca = computed(() => {nbr_valeur_total_ca
 watchEffect(() => {
     form.nbr_valeur_total_ca = nbr_valeur_total_ca.value;
 });
-
-
+ 
 // calculer nbr_valeur_clo 
+// watchEffect(() => {
+//     form.occupantsCL.forEach((occupant) => {
+//         occupant.nbr_prix_metre_carre_clo = Number(occupant.slt_categorie_clo) || 0;
+//     })
+// })
+// watchEffect(() => {
+//   form.occupantsCL.forEach((occupant) => {
+//     const prixmetrecarreCL = parseFloat(occupant.nbr_prix_metre_carre_clo) || 0; 
+//     const lineaire = parseFloat(occupant.nbr_longueur_avant_clo) || 0;
+//     const coeffCL = parseFloat(occupant.nbr_coefficient_clo) || 0;
+//     occupant.nbr_valeur_clo = ( lineaire * prixmetrecarreCL * coeffCL).toFixed(2);
+//   });
+// });
+const coeffCLValues = { 
+    1: 48269,
+    2: 35105,
+    3: 28084,
+    4: 25744,
+    5: 11848,
+    6: 4209,
+    7: 853
+}; 
 watchEffect(() => {
     form.occupantsCL.forEach((occupant) => {
-        occupant.nbr_prix_metre_carre_clo = Number(occupant.slt_categorie_clo) || 0;
-    })
-})
-watchEffect(() => {
-  form.occupantsCL.forEach((occupant) => {
-    const prixmetrecarreCL = parseFloat(occupant.nbr_prix_metre_carre_clo) || 0; 
-    const lineaire = parseFloat(occupant.nbr_longueur_avant_clo) || 0;
-    const coeffCL = parseFloat(occupant.nbr_coefficient_clo) || 0;
-    occupant.nbr_valeur_clo = ( lineaire * prixmetrecarreCL * coeffCL).toFixed(2);
-  });
-});
+        const categorieCL = Number(occupant.slt_categorie_clo) || 0;
+        const prixmetrecarreCL = coeffCLValues[categorieCL] || 0; 
+
+        // const prixmetrecarreCA = parseFloat(occupant.nbr_prix_metre_carre_ca_total) || 0;    nbr_prix_metre_carre_clo
+
+        const lineaire = parseFloat(occupant.nbr_longueur_avant_clo) || 0;
+        const coeffCL = parseFloat(occupant.nbr_coefficient_clo) || 0;
+        occupant.nbr_prix_metre_carre_clo = prixmetrecarreCL;
+
+        occupant.nbr_valeur_clo = ( lineaire * prixmetrecarreCL * coeffCL).toFixed(2);
+    });
+}); 
 // Sommes Cours Amenager nbr_valeur_total_clotur
 const nbr_valeur_total_clotur = computed(() => {nbr_valeur_total_clotur
     return form.occupantsCL.reduce((total, occupant) => {
@@ -1244,6 +1294,8 @@ const submitForm = () => {
                                                                     <input  
                                                                     v-model="form.nbr_surface_bati_solPR"
                                                                     name="nbr_surface_bati_solPR"
+                                                                    :min="0"
+                                                                    :max="form.nbr_surface"
                                                                     type="number" 
                                                                     id="Surface_bati_sol"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1428,6 +1480,9 @@ const submitForm = () => {
                                                                 <div>
                                                                     <input  
                                                                     v-model="occupant.nbr_surface_bati_solTG"
+                                                                    :min="0"
+                                                                    :max="form.nbr_surface"
+                                                                    @input="verifierSurfaceOccupant(occupant)"
                                                                     type="number" 
                                                                     id="Surface_bati_sol"  
                                                                     class="h-8 block w-20 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1595,6 +1650,9 @@ const submitForm = () => {
                                                                 <div> 
                                                                     <input type="number"
                                                                     v-model="occupant.nbr_surface_ca_total" 
+                                                                    :min="0"
+                                                                    :max="form.nbr_surface"
+                                                                    @input="verifierSurfaceOccupant(occupant)"
                                                                     name="nbr_surface_ca_total" id="Surface_ca_total"  
                                                                     class="h-8 block w-28 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                     outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
@@ -1612,10 +1670,10 @@ const submitForm = () => {
                                                                     outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                                     focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                             <option selected sesabled></option>
-                                                                            <option value="17500">1</option>
-                                                                            <option value="13500">2</option>
-                                                                            <option value="10500">3</option>
-                                                                            <option value="5000" >4</option>
+                                                                            <option :value="1">1</option>
+                                                                            <option :value="2">2</option>
+                                                                            <option :value="3">3</option>
+                                                                            <option :value="4">4</option> 
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -1762,14 +1820,14 @@ const submitForm = () => {
                                                                     class="h-8 block w-28 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                     outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                                     focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
-                                                                            <option selected sesabled></option>
-                                                                            <option value="48269">1</option>
-                                                                            <option value="35105">2</option>
-                                                                            <option value="28084">3</option>
-                                                                            <option value="25744">4</option>
-                                                                            <option value="11848">5</option>
-                                                                            <option value="4209">6</option>
-                                                                            <option value="853">7</option>
+                                                                        <option selected sesabled></option>
+                                                                        <option :value="1">1</option>
+                                                                        <option :value="2">2</option>
+                                                                        <option :value="3">3</option>
+                                                                        <option :value="4">4</option>
+                                                                        <option :value="5">5</option>
+                                                                        <option :value="6">6</option>
+                                                                        <option :value="7">7</option> 
                                                                     </select>
                                                                 </div>
                                                             </div> 
