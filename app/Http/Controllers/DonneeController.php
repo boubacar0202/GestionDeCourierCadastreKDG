@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EvaluationBati;
 use App\Models\ReferenceUsage;
 use App\Models\Terrain;
 use Inertia\Inertia;
@@ -39,7 +40,8 @@ class DonneeController extends Controller
         return Inertia::render('donnee/create', [
             'terrain' => $terrain,
             'terrains' => $terrains,
-            'references_usages' => ReferenceUsage::with('terrain')->get(),
+            'references_usages' => ReferenceUsage::with('terrain')->get(), 
+                        'evaluations_batis' => EvaluationBati::with('terrain')->get(), 
         ]);
     }
 

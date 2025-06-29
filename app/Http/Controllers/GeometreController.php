@@ -84,7 +84,7 @@ class GeometreController extends Controller
         $validatedData = $request->validate([
         //table Reference_usage
         'txt_num_dossier' => 'required|string|exists:dossiers,txt_num_dossier',
-        'txt_nicad' => 'required|exists:terrains,txt_nicad',
+        'txt_nicad' => 'required|string|exists:terrains,txt_nicad',
  
         // usage
         'slt_residence' => 'nullable|string',

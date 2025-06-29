@@ -28,12 +28,22 @@ const props = defineProps({
 });
 const localNbrSurface = ref(props.nbr_surface)
 console.log("Surface reçue :", props.nbr_surface)
+function safeProps(p) {
+  return {
+    txt_nicad: p.txt_nicad ?? "",
+    nbr_surface: p.nbr_surface ?? 0,
+    // autres champs...
+  }
+}
+const safe = safeProps(props);
 
 const form = useForm({
     //recupèration
     txt_num_dossier:"",
-    txt_nicad: props.txt_nicad,
-    nbr_surface: props.nbr_surface,
+    // txt_nicad: props.txt_nicad,
+    // nbr_surface: props.nbr_surface,
+    txt_nicad: safe.txt_nicad,
+    nbr_surface: safe.nbr_surface,
     // reference usage 
     slt_usage:'',
     slt_residence:'',
@@ -119,8 +129,8 @@ const form = useForm({
             nbr_valeur_am:'',
         }
     ],
-    nbr_valeur_totale_ap:'', 
-
+    nbr_valeur_totale_ap:'',  
+    
     nbr_valeurVenaleLimeuble:'',
     nbr_valeurLocative:'',
     dt_dateEvaluation:'',
@@ -587,13 +597,13 @@ const submitForm = () => {
                                     <div class="sm:col-span-4">
                                         <input 
                                             v-model="txt_num_dossier" 
+                                            required
                                             type="text"
                                             name="txt_num_dossier" 
                                             aria-label="Rechercher"
                                             class="h-10 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 outline-offset-1 
                                                 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-primary sm:text-sm/6"
-                                            placeholder="Entrez le numéro du dossier"
-                                            required
+                                            placeholder="Entrez le numéro du dossier" 
                                         />
                                     </div>
 
@@ -634,6 +644,7 @@ const submitForm = () => {
                                                         <label for="Occupant" class="block text-sm/6 font-medium text-gray-900">Usage</label>
                                                         <select 
                                                             v-model="form.slt_usage"   
+                                                            required
                                                             name = "slt_usage"
                                                             id="Occupant"
                                                             class="h-8 block w-64 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -687,6 +698,7 @@ const submitForm = () => {
                                                         <label for="Residence" class="block text-sm/6 font-medium text-gray-900">Type de residence</label>
                                                         <select type="select" 
                                                             v-model="form.slt_residence"  
+                                                            required
                                                             name="slt_residence" id="Residence" 
                                                             class="h-8 block w-64 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 

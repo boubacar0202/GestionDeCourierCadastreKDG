@@ -60,7 +60,7 @@ class SecretariatController extends Controller
  
         return Inertia::render('secretariat/edit', [
             'terrain' => $terrain, 
-            'terrain' => $terrain->load('references_usages'), 
+            // 'terrain' => $terrain->load('references_usages'), 
             'regions' => Region::select('id', 'slt_region')->get(),
             'departements' => Departement::select('id', 'slt_departement')->get(),
             'arrondissements' => Arrondissement::select('id', 'slt_arrondissement')->get(),

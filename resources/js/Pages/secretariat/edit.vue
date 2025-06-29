@@ -21,6 +21,9 @@ const maxOccupantsCA = 3;
 const maxOccupantsCL = 3;
 const maxOccupantsAP = 3; 
 const currentCat = ref(''); 
+const valeur = terrain?.nbr_valeurVenaleLimeuble || 0 
+console.log(terrain);
+ 
 
 const categories = {
     'Maison individuelle': {
@@ -204,7 +207,7 @@ const form = useForm({
   dt_date_creation: terrain.dossier.dt_date_creation || '',
   //Table Terrain
   slt_region: terrain.region.id || '',
-  slt_departement: terrain.departement.id || '',
+  slt_departement: terrain.departement?.id || '',
   slt_commune: terrain.commune.id || '',
   slt_arrondissement: terrain.arrondissement.id || '',
   txt_lotissement: terrain.txt_lotissement || '',
@@ -250,24 +253,27 @@ const form = useForm({
   tel_telRepresentant:  terrain.titulaire.tel_telRepresentant || '',
   // References Usage  
 
-  slt_usage: terrain.references_usages?.[0]?.slt_usage || '',
-  slt_residence: terrain.references_usages?.[0]?.slt_residence || '',
-  terrain_id: terrain.terrain?.id ?? null,
+  slt_usage: terrain.references_usages?.[0].slt_usage || '',
+  slt_residence: terrain.references_usages?.[0].slt_residence || '',
+  terrain_id: terrain.terrain.id ?? null,
   occupants: formatOccupants(terrain.references_usages), 
   nbr_montantLoyerTotal: terrain.references_usages.nbr_montantLoyerTotal  ||  '',
   nbr_TVATotal: terrain.references_usages.nbr_TVATotal  ||  '', 
   // Evaluation Terrain 
-  nbr_surface: terrain.evaluations_terrains?.nbr_surface || '',
-  txt_superficie_bati_sol: terrain.evaluations_terrains?.txt_superficie_bati_sol || '',
-  slt_secteur: terrain.evaluations_terrains?.slt_secteur || '',
-  nbr_prix_metre_carre: terrain.evaluations_terrains?.nbr_prix_metre_carre || '',
-  nbr_valeur_terrain: terrain.evaluations_terrains?.nbr_valeur_terrain || '',
-  nbr_valeurVenaleLimeuble: terrain.evaluations_terrains.nbr_valeurVenaleLimeuble ||  '',
-  nbr_valeurLocative: terrain.evaluations_terrains.nbr_valeurLocative ||  '',
+  nbr_surface: terrain.evaluationsTerrains.nbr_surface || '',
+  txt_superficie_bati_sol: terrain.evaluationsTerrains.txt_superficie_bati_sol || '',
+  slt_secteur: terrain.evaluationsTerrains.slt_secteur || '',
+  nbr_prix_metre_carre: terrain.evaluationsTerrains.nbr_prix_metre_carre || '',
+  nbr_valeur_terrain: terrain.evaluations_terrains.nbr_valeur_terrain || '',
+  nbr_valeurVenaleLimeuble: terrain.evaluations_terrains?.nbr_valeurVenaleLimeuble ??  0,
+  // nbr_valeurVenaleLimeuble: evaluationsTerrains.nbr_valeurVenaleLimeuble || 0,
+  // // nbr_valeurVenaleLimeuble: terrain.evaluations_terrains?.nbr_valeurVenaleLimeuble || 0, 
+  nbr_valeurLocative: terrain.evaluations_terrains.nbr_valeurLocative ||  0,
   dt_dateEvaluation:  terrain.evaluations_terrains.dt_dateEvaluation  ||  '',
+  
   //  Evaluation Bati 
   txt_dependant_domainePR: terrain.evaluations_batis.txt_dependant_domainePR  || '',
-  slt_categoriePR:  terrain.evaluations_batis?.slt_categoriePR ||  '',
+  slt_categoriePR:  terrain.evaluations_batis.slt_categoriePR ||  '',
   nbr_prix_metre_carrePR: terrain.evaluations_batis.nbr_prix_metre_carrePR  || '',
   nbr_surface_bati_solPR: terrain.evaluations_batis.nbr_surface_bati_solPR  ||  '',
   nbr_niveauPR: terrain.evaluations_batis.nbr_niveauPR  ||'',
@@ -288,8 +294,7 @@ const form = useForm({
   occupantsAP: formatOccupantsAP(terrain.evaluations_amenagements), 
   nbr_valeur_totale_ap: terrain.evaluations_amenagements.nbr_valeur_totale_ap || '',
 }) 
-  console.log('Usage initial:', form.slt_usage);
-  console.log('Résidence initiale:', form.slt_residence);
+ 
 // Regference Usage
 // bloc ajouter 
 function addBlock() {
@@ -691,9 +696,9 @@ const rechercherDossier = async () => {
 
 // Soumission du formulaire
 function submit() {
-  form.put(route('secretariat.update', terrain.id), {
+  form.put(route('secretariat.update', props.terrain?.id), {
     preserveScroll: true,
-    onSuccess: () => {
+    onSuccess: (page) => {
       console.log("✅ Succès Laravel :", page);
       const message = page.props.flash?.success || "Modification réussie !";
       toast.success(message);  
@@ -705,8 +710,9 @@ function submit() {
       });
     }
   })
-} 
- 
+}
+
+
 </script>
 
 <template>

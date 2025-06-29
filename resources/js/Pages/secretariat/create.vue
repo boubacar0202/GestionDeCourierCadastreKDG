@@ -90,22 +90,21 @@ const props = defineProps({
 const activeTab = ref(""); // Valeur de la tab active
 
 const form = useForm({
-    // Table Dossier
+    //  Dossier
     txt_num_dossier: "",
     txt_num_dordre: "",
     slt_service_rendu: "",
     txt_etat_cession: "",
     txt_cession_definitive: "",
     dt_date_creation: "",
-    //Table Terrain
+    // Terrain
     slt_region: "",
     slt_departement: "",
     slt_arrondissement: "",
     slt_commune: "",
     txt_lotissement: "",
     txt_HorsLotissement:"",
-    txt_num_lotissement: "",
-    // txt_num_section: "",
+    txt_num_lotissement: "", 
     txt_num_section: "",
     txt_num_parcelle: "",
     txt_appartement:"",
@@ -116,16 +115,16 @@ const form = useForm({
     slt_document_admin: "",
     txt_num_deliberation: "",
     dt_date_deliberation: "",
-    // Table ReferenceCadastrale
+    //  ReferenceCadastrale
     rd_immatriculation_terrain:"",
     slt_dependant_domaine: "",
-    issu_bornage: "",
+    ussu_bornage: "",
     slt_lf: "",
     txt_num_requisition: "",
     txt_surface_bornage: "",
     dt_date_bornage: "",
     txt_nom_geometre: "",
-    // Table Titulaire
+    //  Titulaire
     slt_titulaire: "",
     txt_nationalite: "",
     slt_civilite: "",
@@ -240,9 +239,9 @@ onMounted(() => {
 
 const show = ref(false);
 const handleSelectChange = () => {
-    show.value = form.issu_bornage === "Morcellement de Copropriété";
+    show.value = form.ussu_bornage === "Morcellement de Copropriété";
 };
-watch(() => form.issu_bornage, (newValue) => {
+watch(() => form.ussu_bornage, (newValue) => {
     show.value = newValue === "Morcellement de Copropriété";
 });
 
@@ -297,6 +296,11 @@ const validateInputNumParcelle = () => {
     }
 };
 
+function isValidDate(dateString) {
+  // Vérifie format YYYY-MM-DD basique (peut être amélioré)
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateString);
+}
+
 const submitForm = function () {  // Ajoutez `async` ici
     console.log("📤 Envoi du formulaire :", form);
     form.rd_immatriculation_terrain = activeTab.value || "";  // Mise à jour de la donnée
@@ -308,7 +312,18 @@ const submitForm = function () {  // Ajoutez `async` ici
     form.txt_num_section = txt_num_section?.value || ""; // Accès via this.slt_commune
     form.txt_num_parcelle = txt_num_parcelle?.value || ""; // Accès via this.slt_commune
     form.txt_appartement = txt_appartement?.value || ""; // Accès via this.slt_commune
-
+      if (!form.dt_date_creation || !isValidDate(form.dt_date_creation)) {
+    toast.error("La date de création est obligatoire et doit être au format YYYY-MM-DD.");
+    return;
+    }
+    if (!form.dt_date_naissance || !isValidDate(form.dt_date_naissance)) {
+        toast.error("La date de naissance est obligatoire et doit être au format YYYY-MM-DD.");
+        return;
+    }
+    if (!form.dt_date_delivrance || !isValidDate(form.dt_date_delivrance)) {
+        toast.error("La date de délivrance est obligatoire et doit être au format YYYY-MM-DD.");
+        return;
+    }
     // Formulaire Laravel
     form.post(route("secretariat.store"), {
         onSuccess: (page) => {
@@ -380,6 +395,7 @@ const mazTabs = [
                                                         type="text"
                                                         name="txt_num_dossier"
                                                         v-model="form.txt_num_dossier"
+                                                        required
                                                         id="txt_num_dossier"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                             outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
@@ -461,11 +477,6 @@ const mazTabs = [
                                                         >
                                                             Enquête cadastrale
                                                         </option>
-                                                        <div class="absolute top-1/2 right-3 transform -translate-y-1/2 text-white">
-                                                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                                            </svg>
-                                                        </div>
                                                     </select>
                                                 </div>
                                             </div>
@@ -530,6 +541,7 @@ const mazTabs = [
                                                         v-model="
                                                             form.dt_date_creation
                                                         "
+                                                        required
                                                         id="dt_date_creation"
                                                         autocomplete="address-level2"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -562,6 +574,7 @@ const mazTabs = [
                                                     id="slt_region"
                                                     name="slt_region"
                                                     v-model="slt_region"
+                                                    required
                                                     @change="
                                                         fetchDepartements()
                                                     "
@@ -590,6 +603,7 @@ const mazTabs = [
                                                     id="departements"
                                                     name="slt_departement"
                                                     v-model="slt_departement"
+                                                    required
                                                     @change="
                                                         fetchArrondissements()
                                                     "
@@ -627,6 +641,7 @@ const mazTabs = [
                                                     id="arrondissements"
                                                     name="slt_arrondissement"
                                                     v-model="slt_arrondissement"
+                                                    required
                                                     @change="fetchCommunes()"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                         outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
@@ -664,6 +679,7 @@ const mazTabs = [
                                                     id="communes"
                                                     name="slt_commune  "
                                                     v-model="slt_commune"
+                                                    required
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                         outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                         focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -998,10 +1014,10 @@ const mazTabs = [
                                         <div class="sm:col-span-12">
                                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
                                                 <div class="sm:col-span-1">
-                                                    <label for="Bornage">Issu de bornage</label>
+                                                    <label for="Bornage">Ussu de bornage</label>
                                                     <div class="mt-2">
                                                         <select
-                                                            v-model="form.issu_bornage"
+                                                            v-model="form.ussu_bornage"
                                                             name="issu_bornage"
                                                             id="Bornage"
                                                             class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1179,6 +1195,7 @@ const mazTabs = [
                                                     name="slt_titulaire"
                                                     v-model="form.slt_titulaire"
                                                     id="Titulaire"
+                                                    required
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                             outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -1216,6 +1233,7 @@ const mazTabs = [
                                                     v-model="
                                                         form.txt_nationalite
                                                     "
+                                                    required
                                                     id="Nationalite"
                                                     autocomplete="address-level2"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1234,6 +1252,7 @@ const mazTabs = [
                                                 <select
                                                     name="slt_civilite"
                                                     v-model="form.slt_civilite"
+                                                    required
                                                     id="Civilite"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                             outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
@@ -1262,6 +1281,7 @@ const mazTabs = [
                                                     type="text"
                                                     name="txt_prenom"
                                                     v-model="form.txt_prenom"
+                                                    required
                                                     id="Prenom"
                                                     autocomplete="address-level2"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1281,6 +1301,7 @@ const mazTabs = [
                                                     type="text"
                                                     name="txt_nom"
                                                     v-model="form.txt_nom"
+                                                    required
                                                     id="nom"
                                                     autocomplete="address-level2"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1299,6 +1320,7 @@ const mazTabs = [
                                                 <select
                                                     name="slt_piece"
                                                     v-model="form.slt_piece"
+                                                    required
                                                     id="selectePiece"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                             outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
@@ -1327,6 +1349,7 @@ const mazTabs = [
                                                     type="text"
                                                     name="txt_num_piece"
                                                     v-model="form.txt_numPiece"
+                                                    required
                                                     id="numPiece"
                                                     autocomplete="address-level2"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1348,6 +1371,7 @@ const mazTabs = [
                                                     v-model="
                                                         form.dt_date_delivrance
                                                     "
+                                                    required
                                                     id="dateDelivrance"
                                                     autocomplete="address-level2"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1369,6 +1393,7 @@ const mazTabs = [
                                                     v-model="
                                                         form.dt_date_naissance
                                                     "
+                                                    required
                                                     id="dateNaissance"
                                                     autocomplete="address-level2"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1390,6 +1415,7 @@ const mazTabs = [
                                                     v-model="
                                                         form.txt_lieu_naissance
                                                     "
+                                                    required
                                                     id="lieuNaissance"
                                                     autocomplete="address-level2"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1409,6 +1435,7 @@ const mazTabs = [
                                                     type="text"
                                                     name="txt_adresse"
                                                     v-model="form.txt_adresse"
+                                                    required
                                                     id="adresse"
                                                     autocomplete="address-level2"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -1428,6 +1455,7 @@ const mazTabs = [
                                                     type="tel"
                                                     name="tel_telephone"
                                                     v-model="form.tel_telephone"
+                                                    required
                                                     id="telephone"
                                                     autocomplete="address-level2"
                                                     class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 

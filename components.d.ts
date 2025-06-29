@@ -7,18 +7,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    MazAlert: typeof import('maz-ui/components/MazAlert')['default']
     MazBtn: typeof import('maz-ui/components/MazBtn')['default']
-    MazButton: typeof import('maz-ui/components/MazButton')['default']
-    MazCheckbo: typeof import('maz-ui/components/MazCheckbo')['default']
-    MazCheckbox: typeof import('maz-ui/components/MazCheckbox')['default']
-    MazRadio: typeof import('maz-ui/components/MazRadio')['default']
-    MazTabs: typeof import('maz-ui/components/MazTabs')['default']
-    MazTabsBar: typeof import('maz-ui/components/MazTabsBar')['default']
-    MazTabsContent: typeof import('maz-ui/components/MazTabsContent')['default']
-    MazTabsContentItem: typeof import('maz-ui/components/MazTabsContentItem')['default']
-  }
-  export interface ComponentCustomProperties {
-    vLazyImg: typeof import('maz-ui')['vLazyImg']
   }
 }

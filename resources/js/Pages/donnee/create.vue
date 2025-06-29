@@ -12,6 +12,7 @@ const props = defineProps({
     terrains: Array,  
 });
  
+ 
 const numero = ref('')
 const numeroRecherche = ref('')
 
@@ -25,15 +26,24 @@ function normalize(str) {
   return str?.toString().trim().toLowerCase()
 }
 
+// Normaliser le champ : tableau même si un seul objet
+const evaluationsBatis = computed(() => {
+  const eb = props.terrain?.evaluations_batis;
+
+  if (!eb) return [];
+  if (Array.isArray(eb)) return eb;
+  return [eb];
+});
+
 const terrains = computed(() => {
-  if (!numero.value) return props.terrains
+    if (!numero.value) return props.terrains
 
-  const search = normalize(numero.value)
+    const search = normalize(numero.value)
 
-  return props.terrains.filter(terrain => {
-    const dossierNum = normalize(terrain.dossier?.txt_num_dossier)
-    return dossierNum?.includes(search)
-  })
+    return props.terrains.filter(terrain => {
+        const dossierNum = normalize(terrain.dossier?.txt_num_dossier)
+        return dossierNum?.includes(search)
+    })
 })
 
 
@@ -46,6 +56,7 @@ const formatDate = (dateString) => {
         year: 'numeric',
     });
 };
+
 
 // Suppromer enregistrement
 function supprimerTerrain(terrain) {
@@ -60,8 +71,7 @@ function supprimerTerrain(terrain) {
             }
         });
     }
-}
-  
+} 
 </script>
 
 <template>
@@ -266,66 +276,26 @@ function supprimerTerrain(terrain) {
                                             <th scope="col" class="px-6 py-3">
                                                 txt_telRepresentant
                                             </th> 
-
-                                            <th scope="col" class="px-6 py-3">
-                                                <div class="justify-center">References Usages</div>
-                                                <tr> 
-                                                <th scope="col" class="px-6 py-3 font-normal">slt_usage</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">slt_residence</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">N° Appart</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">Activité</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">NINEA</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">Téléphone</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">Loyer</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">Date/Lieu Naissance</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">CNI / Passeport</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">Date Délivrance</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">Loyer Total</th>
-                                                <th scope="col" class="px-6 py-3 font-normal">TVA Total</th>
-                                                </tr>
-                                            </th> 
-
-<!--                                             
-                                            <tr>   
+                                            <thead> 
                                                 <th scope="col" class="px-6 py-3">
-                                                    slt_residence
-                                                </th>
-                                                <th scope="col" class="px-6 py-3">
-                                                    txt_nomOccupantTG
+                                                    <div class="justify-center">References Usages</div>
+                                                    <tr> 
+                                                        <th scope="col" class="px-6 py-3 font-normal">slt_usage</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">slt_residence</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">N° Appart</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">Activité</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">NINEA</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">Téléphone</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">Loyer</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">Date/Lieu Naissance</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">CNI / Passeport</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">Date Délivrance</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">Loyer Total</th>
+                                                        <th scope="col" class="px-6 py-3 font-normal">TVA Total</th>
+                                                    </tr>
                                                 </th> 
-                                                <th scope="col" class="px-6 py-3">
-                                                    txt_numAppartementTG
-                                                </th> 
-                                                <th scope="col" class="px-6 py-3">
-                                                    txt_activiteTG
-                                                </th> 
-                                                <th scope="col" class="px-6 py-3">
-                                                    txt_nineaTG
-                                                </th> 
-                                                <th scope="col" class="px-6 py-3">
-                                                    tel_telephoneTG
-                                                </th> 
-                                                <th scope="col" class="px-6 py-3">
-                                                    nbr_montantLoyerTG
-                                                </th> 
-                                                <th scope="col" class="px-6 py-3">
-                                                    dt_dateNaissanceTG
-                                                </th>
-                                                <th scope="col" class="px-6 py-3">
-                                                    txt_cniPasseportTG
-                                                </th>
-                                                <th scope="col" class="px-6 py-3">
-                                                    dt_dateDelivranceTG
-                                                </th> 
-                                                <th scope="col" class="px-6 py-3">
-                                                    nbr_montantLoyerTotal
-                                                </th> 
-                                                <th scope="col" class="px-6 py-3">
-                                                    nbr_TVATotal
-                                                </th>
-
-                                            </tr> -->
-
+                                            </thead>
+                                            <!-- Bati -->
                                             <th scope="col" class="px-6 py-3">
                                                 txt_surface_bati_sol
                                             </th>
@@ -350,6 +320,7 @@ function supprimerTerrain(terrain) {
                                             <th scope="col" class="px-6 py-3">
                                                 txt_valeur_terrain_bati
                                             </th>
+                                            <!-- Domaine Principal -->
                                             <th scope="col" class="px-6 py-3">
                                                 txt_dependant_domainePR
                                             </th>
@@ -377,8 +348,11 @@ function supprimerTerrain(terrain) {
                                             <th scope="col" class="px-6 py-3">
                                                 nbr_valeurPR
                                             </th>
+                                            <!-- Dimaine Suivants -->
+
+
                                             <th scope="col" class="px-6 py-3">
-                                                slt_dependant_domaine
+                                                slt_dependant_domaineTG
                                             </th>
                                             <th scope="col" class="px-6 py-3">
                                                 slt_categorieTG
@@ -404,6 +378,10 @@ function supprimerTerrain(terrain) {
                                             <th scope="col" class="px-6 py-3">
                                                 nbr_valeurTG
                                             </th> 
+
+                            
+
+                                            <!-- Cours Amenagers -->
                                             <th scope="col" class="px-6 py-3">
                                                 nbr_valeur_total_ca
                                             </th>
@@ -425,7 +403,7 @@ function supprimerTerrain(terrain) {
                                             <th scope="col" class="px-6 py-3">
                                                 nbr_valeur_ca_total
                                             </th>
-
+                                            <!-- Clotures -->
                                             <th scope="col" class="px-6 py-3">
                                                 slt_cours_amenager_clo
                                             </th>
@@ -447,7 +425,7 @@ function supprimerTerrain(terrain) {
                                             <th scope="col" class="px-6 py-3">
                                                 nbr_valeur_total_clotur
                                             </th>
-
+                                            <!-- Amenagements -->
                                             <th scope="col" class="px-6 py-3">
                                                 txt_designation_am
                                             </th>
@@ -556,305 +534,108 @@ function supprimerTerrain(terrain) {
                                             <td scope="col" class="px-6 py-3">
                                                 {{terrain.references_cadastrales?.ussu_bornage || 'Null'}}
                                             </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_cadastrales?.txt_titre_mere || 'Null'}}
+                                            <td scope="col" class="px-6 py-3">{{terrain.references_cadastrales?.txt_titre_mere || 'Null'}}
                                             </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_cadastrales?.slt_lf || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_cadastrales?.txt_num_requisition || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_cadastrales?.txt_surface_bornage || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{formatDate(terrain.references_cadastrales?.dt_date_bornage) || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_cadastrales?.txt_nom_geometre || 'Null'}}
-                                            </td>
-                                            <!--  -->
-                                            <td scope="col" class="px-6 py-3">
-                                                {{ terrain.titulaire && terrain.titulaire.slt_titulaire ? terrain.titulaire.slt_titulaire : 'Nom definie' }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.txt_nationalite || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.slt_civilite || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.txt_prenom || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.txt_nom || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.slt_piece || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.txt_numPiece || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{formatDate(terrain.titulaire?.dt_date_delivrance) || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{formatDate(terrain.titulaire?.dt_date_naissance) || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.txt_lieu_naissance || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.txt_adresse || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.tel_telephone || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.txt_ninea || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.eml_email || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.txt_representant || 'Null'}}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.titulaire?.tel_telRepresentant || 'Null'}}
-                                            </td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.references_cadastrales?.slt_lf || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.references_cadastrales?.txt_num_requisition || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.references_cadastrales?.txt_surface_bornage || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{formatDate(terrain.references_cadastrales?.dt_date_bornage) || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.references_cadastrales?.txt_nom_geometre || 'Null'}}</td>
+                                            <!-- Titulaire -->
+                                            <td scope="col" class="px-6 py-3">{{ terrain.titulaire && terrain.titulaire.slt_titulaire ? terrain.titulaire.slt_titulaire : 'Nom definie' }} </td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.txt_nationalite || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.slt_civilite || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.txt_prenom || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.txt_nom || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.slt_piece || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.txt_numPiece || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{formatDate(terrain.titulaire?.dt_date_delivrance) || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{formatDate(terrain.titulaire?.dt_date_naissance) || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.txt_lieu_naissance || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.txt_adresse || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.tel_telephone || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.txt_ninea || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.eml_email || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.txt_representant || 'Null'}}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.titulaire?.tel_telRepresentant || 'Null'}}</td>
 
-
-                                            <!-- <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.slt_usage || 'Null' }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.slt_residence || 'Null' }}
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.txt_nomOccupantTG || 'Null' }}
-                                            </td> 
-
-                                            <td scope="col" class="px-6 py-3" >
-                                                {{terrain.references_usages?.txt_numAppartementTG || 'Null' }} 
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.txt_activiteTG || 'Null' }}
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.txt_nineaTG || 'Null' }}
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.tel_telephoneTG || 'Null' }}
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.nbr_montantLoyerTG || 'Null' }}
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.txt_dateLieuNaissanceTG  || 'Null' }}
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.txt_cniPasseportTG || 'Null' }}
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.dt_dateDelivranceTG || 'Null' }}
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.nbr_montantLoyerTotal || 'Null' }}
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.references_usages?.nbr_TVATotal || 'Null' }}
-                                            </td>   -->
                                             <template v-if="terrain.references_usages && terrain.references_usages.length > 0">
                                                 <tr v-for="usage in terrain.references_usages" :key="usage.id"
                                                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                                     
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{usage.slt_usage || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{usage.slt_residence || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{ usage.txt_numAppartementTG || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{ usage.txt_activiteTG || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{ usage.txt_nineaTG || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{ usage.tel_telephoneTG || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{ usage.nbr_montantLoyerTG || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{ usage.txt_dateLieuNaissanceTG || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{ usage.txt_cniPasseportTG || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{ usage.dt_dateDelivranceTG || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{ usage.nbr_montantLoyerTotal || 'Null' }}
-                                                    </td>
-                                                    <td scope="col" class="px-6 py-3">
-                                                        {{ usage.nbr_TVATotal || 'Null' }}
-                                                    </td>
+                                                    <td scope="col" class="px-6 py-3">{{usage.slt_usage || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{usage.slt_residence || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{ usage.txt_numAppartementTG || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{ usage.txt_activiteTG || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{ usage.txt_nineaTG || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{ usage.tel_telephoneTG || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{ usage.nbr_montantLoyerTG || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{ usage.txt_dateLieuNaissanceTG || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{ usage.txt_cniPasseportTG || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{ usage.dt_dateDelivranceTG || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{ usage.nbr_montantLoyerTotal || 'Null' }}</td>
+                                                    <td scope="col" class="px-6 py-3">{{ usage.nbr_TVATotal || 'Null' }}</td>
                                                 </tr>
-                                            </template>
-                                            <!-- Sinon afficher une ligne vide avec Null -->
+                                            </template> 
                                             <template v-else>
-                                                    <tr>
-                                                        <td colspan="10" class="text-center text-gray-500 italic">Aucune donnée d’usage (Null)</td>
-                                                    </tr>
+                                                    <tr><td colspan="10" class="text-center text-gray-500 italic">Aucune donnée d’usage (Null)</td></tr>
                                             </template>
 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_terrains?.txt_superficie_bati_sol || 'Null' }}
-                                            </td> 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_terrains?.nbr_prix_metre_carre  || 'Null'   }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_terrains?.nbr_surface || 'Null'   }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_terrains?.slt_secteur   || 'Null'   }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_terrains?.txt_date_devaluation  || 'Null'   }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_terrains?.nbr_valeur_terrain    || 'Null'   }}
-                                            </td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_terrains?.txt_superficie_bati_sol || 'Null' }}</td> 
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_terrains?.nbr_prix_metre_carre || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_terrains?.nbr_surface || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_terrains?.slt_secteur || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_terrains?.txt_date_devaluation  || 'Null'   }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_terrains?.nbr_valeur_terrain || 'Null' }}</td>
 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.currentCat ||  'Null'  }}
-                                            </td>   
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.txt_valeur_terrain_bati    ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.txt_dependant_domainePR    ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.slt_categoriePR ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_prix_metre_carrePR ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_surface_bati_solPR ||  'Null'  }}
-                                            </td>    
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_niveauPR   ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_surface_utilePR    ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.slt_coeffPR    ||  'Null'  }}
-                                            </td>        
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_surface_corrigerPR ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_valeurPR   ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.slt_dependant_domaine  ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.slt_categorieTG    ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_prix_metre_carreTG ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_surface_bati_solTG ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_niveauTG   ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_surface_utileTG    ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.slt_coeffTG    ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_surface_corrigerTG ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_batis?.nbr_valeurTG   ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_cours_amenagees?.nbr_valeur_total_ca  ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_cours_amenagees?.slt_cours_amenager_totale    ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_cours_amenagees?.nbr_surface_ca_total ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_cours_amenagees?.slt_categorie_ca_total   ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_cours_amenagees?.nbr_prix_metre_carre_ca_total    ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_cours_amenagees?.nbr_coefficient_ca_total ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_cours_amenagees?.nbr_valeur_ca_total  ||  'Null'  }}
-                                            </td> 
+                                            <!-- Domaine Principal -->
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.currentCat || 'Null' }}</td>   
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.txt_valeur_terrain_bati || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.txt_dependant_domainePR || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.slt_categoriePR || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.nbr_prix_metre_carrePR || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.nbr_surface_bati_solPR || 'Null' }}</td>    
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.nbr_niveauPR || 'Null'  }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.nbr_surface_utilePR  || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.slt_coeffPR || 'Null' }}</td>        
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.nbr_surface_corrigerPR ||  'Null'  }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_batis?.nbr_valeurPR || 'Null' }}</td>
 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_clotures?.slt_cours_amenager_clo  ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_clotures?.nbr_longueur_avant_clo  ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_clotures?.slt_categorie_clo   ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_clotures?.nbr_prix_metre_carre_clo    ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_clotures?.nbr_coefficient_clo ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_clotures?.nbr_valeur_clo  ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_clotures?.nbr_valeur_total_clotur ||  'Null'  }}
-                                            </td>
+                                            <!-- Domaine Suivants --> 
+                                            <td  scope="col" class="px-6 py-3">{{ terrain.evaluations_batis?.slt_dependant_domaineTG || 'Null' }}</td>
+                                            <td  scope="col" class="px-6 py-3">{{ terrain.evaluations_batis?.slt_categorieTG || 'Null' }}</td>
+                                            <td  scope="col" class="px-6 py-3">{{ terrain.evaluations_batis?.nbr_prix_metre_carreTG || 'Null' }}</td>
+                                            <td  scope="col" class="px-6 py-3">{{ terrain.evaluations_batis?.nbr_surface_bati_solTG || 'Null' }}</td>
+                                            <td  scope="col" class="px-6 py-3">{{ terrain.evaluations_batis?.nbr_niveauTG || 'Null' }}</td>
+                                            <td  scope="col" class="px-6 py-3">{{ terrain.evaluations_batis?.nbr_surface_utileTG || 'Null' }}</td>
+                                            <td  scope="col" class="px-6 py-3">{{ terrain.evaluations_batis?.slt_coeffTG || 'Null' }}</td>
+                                            <td  scope="col" class="px-6 py-3">{{ terrain.evaluations_batis?.nbr_surface_corrigerTG || 'Null' }}</td>
+                                            <td  scope="col" class="px-6 py-3">{{ terrain.evaluations_batis?.nbr_valeurTG || 'Null' }}</td>
+                                          
+                                            <!-- Cours amenagers  -->
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_cours_amenagees?.nbr_valeur_total_ca || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_cours_amenagees?.slt_cours_amenager_totale || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_cours_amenagees?.nbr_surface_ca_total ||  'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_cours_amenagees?.slt_categorie_ca_total || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_cours_amenagees?.nbr_prix_metre_carre_ca_total  || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_cours_amenagees?.nbr_coefficient_ca_total ||  'Null'  }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_cours_amenagees?.nbr_valeur_ca_total || 'Null'  }}</td> 
 
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_amenagements?.txt_designation_am  ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_amenagements?.nbr_valeur_unitaire_am  ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_amenagements?.nbr_quantile_am ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_amenagements?.slt_coeficien_am    ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_amenagements?.nbr_valeur_am   ||  'Null'  }}
-                                            </td>
-                                            <td scope="col" class="px-6 py-3">
-                                                {{terrain.evaluations_amenagements?.nbr_valeur_totale_ap    ||  'Null'  }}
-                                            </td>
+                                            <!-- Cours cloture  -->
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_clotures?.slt_cours_amenager_clo || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_clotures?.nbr_longueur_avant_clo  ||  'Null'  }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_clotures?.slt_categorie_clo   ||  'Null'  }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_clotures?.nbr_prix_metre_carre_clo || 'Null'  }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_clotures?.nbr_coefficient_clo ||  'Null'  }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_clotures?.nbr_valeur_clo || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_clotures?.nbr_valeur_total_clotur || 'Null' }}</td>
+                                            <!-- Amenagement -->
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_amenagements?.txt_designation_am  || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_amenagements?.nbr_valeur_unitaire_am  ||  'Null'  }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_amenagements?.nbr_quantile_am || 'Null' }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_amenagements?.slt_coeficien_am    ||  'Null'  }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_amenagements?.nbr_valeur_am   ||  'Null'  }}</td>
+                                            <td scope="col" class="px-6 py-3">{{terrain.evaluations_amenagements?.nbr_valeur_totale_ap    ||  'Null'  }}</td>
  
                                             <td class="flex items px-6 py-6">
                                                 <div class="mt-2">

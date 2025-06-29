@@ -32,7 +32,9 @@ export default defineConfig({
             ],
         }),
     ],
-    server: {
-        port: 3000, // Changez le port si nécessaire
+    server: { 
+        host:   'localhost',
+        port:8000,
+
     },
 });

@@ -89,7 +89,5 @@ class Terrain extends Model
         return $this->belongsTo(ReferenceCadastrale::class, 'referencesCadastrale_id');
     }
 
-
-
-
+ 
 }

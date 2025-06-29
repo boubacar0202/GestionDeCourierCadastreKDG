@@ -15,9 +15,11 @@ return new class extends Migration {
             $table->string('txt_num_parcelle')->nullable();
             $table->index('txt_num_parcelle');
             $table->string('txt_lotissement')->nullable();
+            $table->string('txt_HorsLotissement')->nullable();
             $table->string('txt_num_lotissement')->nullable();
             $table->string('txt_num_section')->nullable(); 
             $table->decimal('nbr_surface', 10, 2)->nullable();
+            $table->string('txt_appartement')->nullable();
             $table->string('slt_document_admin')->nullable();
             $table->string('txt_num_deliberation')->nullable();
             $table->date('dt_date_deliberation')->nullable();
