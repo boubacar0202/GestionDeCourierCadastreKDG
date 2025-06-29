@@ -11,7 +11,7 @@ use App\Models\EvaluationTerrain;
 use App\Models\ReferenceUsage;
 use App\Models\Region;
 use App\Models\Terrain; 
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; 
 use Inertia\Inertia;
 
 class GeometreController extends Controller
@@ -22,25 +22,22 @@ class GeometreController extends Controller
         return Inertia::render("geometre/index");
     }
  
-    public function create(){
-
-        // Récupérer le dossier par son numéro
+ 
+    public function create()
+    {
+        // Récupération du dossier à partir du numéro en session
         $dossier = Dossier::where('txt_num_dossier', session('txt_num_dossier'))->first();
 
-        // Récupérer le dossier par son numéro
-        $terrain = Terrain::where('nbr_surface', session('nbr_surface'))->first();
-
-        // Récupérer le terrain associé via l'ID du dossier
+        // Vérifie que le dossier existe avant de chercher le terrain
         $terrain = $dossier ? Terrain::where('txt_num_dossier', $dossier->id)->first() : null;
-        
-        $terrain = Terrain::where('txt_nicad', session('txt_nicad'))->first();
 
         return Inertia::render('geometre/create', [
             'terrain' => $terrain,
             'txt_nicad' => $terrain?->txt_nicad,
-            'nbr_surface' => $terrain?->nbr_surface, 
+            'nbr_surface' => $terrain?->nbr_surface,
         ]);
     }
+
 
 
     public function show()
@@ -48,7 +45,7 @@ class GeometreController extends Controller
         $Niveau = 0; // Exemple de récupération d'un nombre depuis la base de données
         return view('geometre/create', compact('Niveau'));
     }
-    
+     
     public function verify(Request $request)
     {
         $request->validate([
@@ -56,12 +53,14 @@ class GeometreController extends Controller
         ]);
     
         $dossier = Dossier::where('txt_num_dossier', $request->txt_num_dossier)->first();
+        $terrain = Terrain::where('txt_num_dossier', $request->txt_num_dossier)->first();
  
         if ($dossier) {
             // Pas de redirection — juste retour d'un flag JSON
             return response()->json([
                 'success' => 'Dossier trouvé !',
                 'exists' => true,
+                'terrain' => $terrain,
             ], 200);
         } else {
             return response()->json([
@@ -70,13 +69,19 @@ class GeometreController extends Controller
                 ]
             ], 422);
         }
-    }
+    } 
+
+
+    
+
+
+
 
 
      // PAGES GEOMETRE
     public function store(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
         $request->merge([
             'slt_categoriePR' => (string) $request->slt_categoriePR,
         ]);

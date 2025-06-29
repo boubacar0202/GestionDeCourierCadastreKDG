@@ -25,25 +25,16 @@ const props = defineProps({
     terrain: Object,
     txt_nicad: String,
     nbr_surface: Number,
-});
-const localNbrSurface = ref(props.nbr_surface)
-console.log("Surface reçue :", props.nbr_surface)
-function safeProps(p) {
-  return {
-    txt_nicad: p.txt_nicad ?? "",
-    nbr_surface: p.nbr_surface ?? 0,
-    // autres champs...
-  }
-}
-const safe = safeProps(props);
+}); 
+ 
 
 const form = useForm({
     //recupèration
     txt_num_dossier:"",
     // txt_nicad: props.txt_nicad,
     // nbr_surface: props.nbr_surface,
-    txt_nicad: safe.txt_nicad,
-    nbr_surface: safe.nbr_surface,
+    txt_nicad: props.txt_nicad,
+    nbr_surface: props.nbr_surface,
     // reference usage 
     slt_usage:'',
     slt_residence:'',
@@ -321,31 +312,65 @@ watchEffect(() => {
 watch(currentCat, (newVal) => {
   form.currentCat = newVal
 })
+// const rechercherDossier = async () => {
+//   try {
+//     const { data } = await axios.post(route('dossier.verify'), {
+//       txt_num_dossier: txt_num_dossier.value
+//     }) 
+//     // data devrait être : { success: "...", exists: true }
+//     if (data.exists) {
+//         formVisible.value = true
+//         form.txt_num_dossier = txt_num_dossier.value
+//         toast.success(data.success)
+//     } else {
+//         // au cas où ton back renverrait un 200 sans exists=true
+//         formVisible.value = false
+//         toast.error(data.error || 'Dossier introuvable.')
+//     }
+//   } catch (err) {
+//         formVisible.value = false 
+//         // Erreurs 422 renvoyées par Laravel
+//         if (err.response?.status === 422 && err.response.data.errors) {
+//         Object.values(err.response.data.errors).forEach(msg => toast.error(msg))
+//         } else {
+//         toast.error("Une erreur est survenue lors de la vérification.")
+//         }
+//   }
+// }
+
 const rechercherDossier = async () => {
-  try {
-    const { data } = await axios.post(route('dossier.verify'), {
-      txt_num_dossier: txt_num_dossier.value
-    }) 
-    // data devrait être : { success: "...", exists: true }
-    if (data.exists) {
-        formVisible.value = true
-        form.txt_num_dossier = txt_num_dossier.value
-        toast.success(data.success)
-    } else {
-        // au cas où ton back renverrait un 200 sans exists=true
-        formVisible.value = false
-        toast.error(data.error || 'Dossier introuvable.')
-    }
-  } catch (err) {
-        formVisible.value = false 
-        // Erreurs 422 renvoyées par Laravel
-        if (err.response?.status === 422 && err.response.data.errors) {
-        Object.values(err.response.data.errors).forEach(msg => toast.error(msg))
-        } else {
-        toast.error("Une erreur est survenue lors de la vérification.")
+    try {
+        const { data } = await axios.post('/dossier/verify', {
+        txt_num_dossier: txt_num_dossier.value
+        });
+
+        if (data.exists) {
+            formVisible.value = true;
+            form.txt_num_dossier = txt_num_dossier.value;
+            toast.success(data.success);
+
+            // ✅ Récupérer les infos du terrain directement ici
+            const terrain = data.terrain;
+
+            form.txt_nicad = terrain?.txt_nicad ?? '';
+            form.nbr_surface = terrain?.nbr_surface ?? 0;
+
+            console.log("Terrain chargé :", terrain);
         }
-  }
-}
+    } catch (err) {
+        formVisible.value = false;
+
+        console.error("Erreur complète :", err);
+
+        if (err.response?.status === 422 && err.response.data.errors) {
+            Object.values(err.response.data.errors).forEach(msg => toast.error(msg));
+        } else {
+        toast.error("Une erreur est survenue lors de la vérification.");
+        }
+    }
+};
+
+
 
 //  Calculer Montant Total Loyer 
 const nbr_montantLoyerTotal = computed(() => {
@@ -362,8 +387,23 @@ const nbr_TVATotal = computed(() => {
 
 // Calculer Valeur Terrain  
 watchEffect(() => {
-  form.nbr_prix_metre_carre = Number(form.slt_secteur) || 0;
+    const bati = Number(form.txt_superficie_bati_sol);
+    const surface = Number(form.nbr_surface);
+
+    if (bati > surface) {
+        toast.error("La superficie bâtie dépasse la superficie totale du terrain.");
+        form.txt_superficie_bati_sol = surface; // Ou remettre à 0 si tu préfères
+    }
 });
+const prixParSecteur = {
+  1: 3000,
+  2: 2000,
+  3: 1000,
+} 
+watchEffect(() => {
+  const secteur = Number(form.slt_secteur);
+  form.nbr_prix_metre_carre = prixParSecteur[secteur] || 0;
+}); 
 const nbr_valeur_terrain = computed(() => {
     const prix = parseFloat(form.nbr_prix_metre_carre) || 0;
     const bati = parseFloat(form.txt_superficie_bati_sol) || 0;
@@ -1006,8 +1046,9 @@ const submitForm = () => {
                                                             <label for="Superficie_totale" class="block text-sm/6 font-medium text-gray-900">Superficie Totale Terrain</label>
                                                             <div>
                                                                 <input 
+
                                                                     type="number"  
-                                                                    :value="localNbrSurface"  
+                                                                    v-model="form.nbr_surface"
                                                                     name="nbr_surface"
                                                                     readonly
                                                                     id="nbr_surface" 
@@ -1027,7 +1068,8 @@ const submitForm = () => {
                                                                 v-model="form.txt_superficie_bati_sol"  
                                                                 name="txt_superficie_bati_sol"
                                                                 id="Superficie_bati_sol" 
-                                                                min="0"
+                                                                :min="0"
+                                                                :max="form.nbr_surface"
                                                                 class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                                 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                                 focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
@@ -1047,9 +1089,9 @@ const submitForm = () => {
                                                                     outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
                                                                     focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6">
                                                                     <option selected desabled></option>
-                                                                    <option value="3000">1</option>
-                                                                    <option value="2000">2</option>
-                                                                    <option value="1000">3</option>
+                                                                    <option :value="1">1 (3000 FCFA/m²)</option>
+                                                                    <option :value="2">2 (2000 FCFA/m²)</option>
+                                                                    <option :value="3">3 (1000 FCFA/m²)</option>
                                                                 </select>
                                                             </div>
                                                         </div>

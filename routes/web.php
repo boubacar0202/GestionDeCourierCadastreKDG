@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Dossier;
+use App\Models\Terrain;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CodeAccesController;
 use App\Http\Controllers\DonneeController;
@@ -9,8 +11,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MatriceCadastraleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SecretariatController;
-use App\Http\Controllers\TerrainController;
-use App\Models\Dossier;
+use App\Http\Controllers\TerrainController; 
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Foundation\Application;
@@ -51,13 +52,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/dossier/next', [DossierController::class, 'getNextDossier']);  
+Route::get('/departements/{regionId}', [LocationController::class, 'getDepartementsByRegion']);
+Route::get('/arrondissements/{departementId}', [LocationController::class, 'getArrondissementByDepartement']);
+Route::get('/communes/{arrondissementId}', [LocationController::class, 'getCommunesByArrondissement']);
 Route::resource('secretariat', SecretariatController::class);
 Route::resource('geometre', GeometreController::class);
 Route::resource('donnee', DonneeController::class);
 Route::resource('matriceCadastrale', MatriceCadastraleController::class);
 Route::get('/secretariat/create', [SecretariatController::class, 'create'])->name('secretariat.create');
-Route::get('/donnee/create', [DonneeController::class, 'create'])->name('donnee.create');
-Route::post('/dossier/verify', [GeometreController::class, 'verify'])->name('dossier.verify');
+Route::get('/donnee/create', [DonneeController::class, 'create'])->name('donnee.create'); 
+  
+Route::post('dossier/verify', [GeometreController::class, 'verify'])->name('dossier.verify');
  
 Route::get('/secretariat', [SecretariatController::class, 'create'])->name('secretariat.create');
 Route::post('/secretariat', [SecretariatController::class, 'store'])->name('secretariat.store');
@@ -69,22 +75,13 @@ Route::get('/dossier/last', function () {
     ]);
 });
 // code d'accée
-Route::post('/code/verify', [CodeAccesController::class, 'verify'])->name('code.verify');
-
+Route::post('/code/verify', [CodeAccesController::class, 'verify'])->name('code.verify'); 
 Route::get('/donnee/create', [DonneeController::class, 'create'])->name('donnee.create');
-
-
+ 
 Route::put('/secretariat/update/{terrain}', [SecretariatController::class, 'update'])->name('secretariat.update'); 
-Route::get('/secretariat/edit/{terrain}', [SecretariatController::class, 'edit'])->name('secretariat.edit');
-
-
+Route::get('/secretariat/edit/{terrain}', [SecretariatController::class, 'edit'])->name('secretariat.edit'); 
 Route::delete('/terrains/{terrain}', [TerrainController::class, 'destroy'])->name('terrains.destroy');
-
-
-Route::get('/dossier/next', [DossierController::class, 'getNextDossier']); 
-
-Route::get('/departements/{regionId}', [LocationController::class, 'getDepartementsByRegion']);
-Route::get('/arrondissements/{departementId}', [LocationController::class, 'getArrondissementByDepartement']);
-Route::get('/communes/{arrondissementId}', [LocationController::class, 'getCommunesByArrondissement']);
+ 
+ 
 
 require __DIR__ . '/auth.php';
