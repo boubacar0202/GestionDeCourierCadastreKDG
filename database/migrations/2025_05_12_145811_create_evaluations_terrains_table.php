@@ -20,16 +20,15 @@ return new class extends Migration
             $table->string('txt_num_dossier');
             $table->string('nbr_surface');
 
-            $table->integer('txt_superficie_totale');
-            $table->integer('txt_superficie_bati_sol');
-            $table->string('slt_secteur');
+            $table->decimal('txt_superficie_totale',15,2);
+            $table->decimal('txt_superficie_bati_sol',15,2);
+            $table->integer('slt_secteur');
             $table->integer('nbr_prix_metre_carre');
-            $table->integer('nbr_valeur_terrain');
+            $table->decimal('nbr_valeur_terrain',15,2);
             $table->decimal('nbr_valeurVenaleLimeuble', 15, 2)->nullable();
             $table->decimal('nbr_valeurLocative', 15, 2)->nullable();
             $table->date('dt_dateEvaluation')->nullable();
-
-
+ 
             $table->timestamps();
 
             // Déclaration des clés étrangères

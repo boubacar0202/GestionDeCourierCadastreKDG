@@ -5,10 +5,12 @@ import MazBtn from "maz-ui/components/MazBtn";
 import MazRadio from "maz-ui/components/MazRadio";
 import { Inertia } from '@inertiajs/inertia'
 import { useForm } from '@inertiajs/vue3';
-import { ref, watch, watchEffect, computed, onMounted } from 'vue';
-import { router, usePage } from '@inertiajs/vue3' 
+import { reactive, ref, watch, watchEffect, computed } from 'vue'; 
+import DefaultLayout from "@/Layouts/DefaultLayout.vue"; 
 import { useToast } from 'maz-ui'
 import axios from 'axios'
+
+defineOptions({ layout: DefaultLayout });
 
 const toast = useToast();
 const txt_num_dossier = ref(''); 
@@ -26,13 +28,10 @@ const props = defineProps({
     txt_nicad: String,
     nbr_surface: Number,
 }); 
- 
-
+  
 const form = useForm({
     //recupèration
     txt_num_dossier:"",
-    // txt_nicad: props.txt_nicad,
-    // nbr_surface: props.nbr_surface,
     txt_nicad: props.txt_nicad,
     nbr_surface: props.nbr_surface,
     // reference usage 
@@ -50,6 +49,7 @@ const form = useForm({
             txt_dateLieuNaissanceTG: '',
             txt_cniPasseportTG: '',
             dt_dateDelivranceTG: '',
+            
         }
     ],
 
@@ -312,31 +312,6 @@ watchEffect(() => {
 watch(currentCat, (newVal) => {
   form.currentCat = newVal
 })
-// const rechercherDossier = async () => {
-//   try {
-//     const { data } = await axios.post(route('dossier.verify'), {
-//       txt_num_dossier: txt_num_dossier.value
-//     }) 
-//     // data devrait être : { success: "...", exists: true }
-//     if (data.exists) {
-//         formVisible.value = true
-//         form.txt_num_dossier = txt_num_dossier.value
-//         toast.success(data.success)
-//     } else {
-//         // au cas où ton back renverrait un 200 sans exists=true
-//         formVisible.value = false
-//         toast.error(data.error || 'Dossier introuvable.')
-//     }
-//   } catch (err) {
-//         formVisible.value = false 
-//         // Erreurs 422 renvoyées par Laravel
-//         if (err.response?.status === 422 && err.response.data.errors) {
-//         Object.values(err.response.data.errors).forEach(msg => toast.error(msg))
-//         } else {
-//         toast.error("Une erreur est survenue lors de la vérification.")
-//         }
-//   }
-// }
 
 const rechercherDossier = async () => {
     try {
@@ -418,9 +393,9 @@ function verifierSurfaceOccupant(occupant) {
 
 // Calcule nbr_surface_bati_solPR 
 const prixParSecteur = {
-  1: 3000,
-  2: 2000,
-  3: 1000,
+    1: 3000,
+    2: 2000,
+    3: 1000,
 } 
 watchEffect(() => {
   const secteur = Number(form.slt_secteur);
@@ -463,27 +438,27 @@ watchEffect(() => {
 
 // Calcule Surface Utule
 watchEffect(() => {
-  form.occupantsBP.forEach((occupant) => {
-    const surfaceBS = parseFloat(occupant.nbr_surface_bati_solTG) || 0;
-    const nbrNiveau = parseFloat(occupant.nbr_niveauTG) || 0;
-    occupant.nbr_surface_utileTG = (surfaceBS * nbrNiveau * 0.78).toFixed(2);
-  });
+    form.occupantsBP.forEach((occupant) => {
+        const surfaceBS = parseFloat(occupant.nbr_surface_bati_solTG) || 0;
+        const nbrNiveau = parseFloat(occupant.nbr_niveauTG) || 0;
+        occupant.nbr_surface_utileTG = (surfaceBS * nbrNiveau * 0.78).toFixed(2);
+    });
 });
 // Calcule Surface corrige 
 watchEffect(() => {
-  form.occupantsBP.forEach((occupant) => {
-    const utile = parseFloat(occupant.nbr_surface_utileTG) || 0;
-    const coeff = parseFloat(occupant.slt_coeffTG) || 0;
-    occupant.nbr_surface_corrigerTG = (utile * coeff).toFixed(2);
-  });
+    form.occupantsBP.forEach((occupant) => {
+        const utile = parseFloat(occupant.nbr_surface_utileTG) || 0;
+        const coeff = parseFloat(occupant.slt_coeffTG) || 0;
+        occupant.nbr_surface_corrigerTG = (utile * coeff).toFixed(2);
+    });
 });
 //  Calcule valeur TG : nbr_valeurTG
 watchEffect(() => {
-  form.occupantsBP.forEach((occupant) => {
-    const prixmetrecarre = parseFloat(occupant.nbr_prix_metre_carreTG) || 0; 
-    const surfaceCorrige = parseFloat(occupant.nbr_surface_corrigerTG) || 0;
-    occupant.nbr_valeurTG = ( prixmetrecarre * surfaceCorrige).toFixed(2);
-  });
+    form.occupantsBP.forEach((occupant) => {
+        const prixmetrecarre = parseFloat(occupant.nbr_prix_metre_carreTG) || 0; 
+        const surfaceCorrige = parseFloat(occupant.nbr_surface_corrigerTG) || 0;
+        occupant.nbr_valeurTG = ( prixmetrecarre * surfaceCorrige).toFixed(2);
+    });
 });
 //  Calculer montant valeur batiment  
 const txt_valeur_terrain_bati = computed(() => {
@@ -499,18 +474,15 @@ watchEffect(() => {
 
 // calculer nbr_valeur_ca_total     
 const coeffCAValues = {
-  1: 17500,
-  2: 13500,
-  3: 10500,
-  4: 5000
+    1: 17500,
+    2: 13500,
+    3: 10500,
+    4: 5000
 }; 
 watchEffect(() => {
     form.occupantsCA.forEach((occupant) => {
         const categorie = Number(occupant.slt_categorie_ca_total) || 0;
-        const prixMetre = coeffCAValues[categorie] || 0; 
-
-        // const prixmetrecarreCA = parseFloat(occupant.nbr_prix_metre_carre_ca_total) || 0;
-
+        const prixMetre = coeffCAValues[categorie] || 0;  
         const surfaceCA = parseFloat(occupant.nbr_surface_ca_total) || 0;
         const coeffCA = parseFloat(occupant.nbr_coefficient_ca_total) || 0;
         occupant.nbr_prix_metre_carre_ca_total = prixMetre;
@@ -529,20 +501,7 @@ watchEffect(() => {
     form.nbr_valeur_total_ca = nbr_valeur_total_ca.value;
 });
  
-// calculer nbr_valeur_clo 
-// watchEffect(() => {
-//     form.occupantsCL.forEach((occupant) => {
-//         occupant.nbr_prix_metre_carre_clo = Number(occupant.slt_categorie_clo) || 0;
-//     })
-// })
-// watchEffect(() => {
-//   form.occupantsCL.forEach((occupant) => {
-//     const prixmetrecarreCL = parseFloat(occupant.nbr_prix_metre_carre_clo) || 0; 
-//     const lineaire = parseFloat(occupant.nbr_longueur_avant_clo) || 0;
-//     const coeffCL = parseFloat(occupant.nbr_coefficient_clo) || 0;
-//     occupant.nbr_valeur_clo = ( lineaire * prixmetrecarreCL * coeffCL).toFixed(2);
-//   });
-// });
+// calculer nbr_valeur_clo  
 const coeffCLValues = { 
     1: 48269,
     2: 35105,
@@ -556,8 +515,6 @@ watchEffect(() => {
     form.occupantsCL.forEach((occupant) => {
         const categorieCL = Number(occupant.slt_categorie_clo) || 0;
         const prixmetrecarreCL = coeffCLValues[categorieCL] || 0; 
-
-        // const prixmetrecarreCA = parseFloat(occupant.nbr_prix_metre_carre_ca_total) || 0;    nbr_prix_metre_carre_clo
 
         const lineaire = parseFloat(occupant.nbr_longueur_avant_clo) || 0;
         const coeffCL = parseFloat(occupant.nbr_coefficient_clo) || 0;
@@ -579,13 +536,13 @@ watchEffect(() => {
 
 // calculer nbr_valeur_totale_ap, 
 watchEffect(() => {
-  form.occupantsAP.forEach((occupant) => {
-    // nbr_valeur_unitaire_am, nbr_quantile_am, slt_coeficien_am
-    const valeurUnitaire = parseFloat(occupant.nbr_valeur_unitaire_am) || 0; 
-    const quantite = parseFloat(occupant.nbr_quantile_am) || 0;
-    const coeffCA = parseFloat(occupant.slt_coeficien_am) || 0;
-    occupant.nbr_valeur_am = ( valeurUnitaire * quantite * coeffCA).toFixed(2);
-  });
+    form.occupantsAP.forEach((occupant) => {
+        // nbr_valeur_unitaire_am, nbr_quantile_am, slt_coeficien_am
+        const valeurUnitaire = parseFloat(occupant.nbr_valeur_unitaire_am) || 0; 
+        const quantite = parseFloat(occupant.nbr_quantile_am) || 0;
+        const coeffCA = parseFloat(occupant.slt_coeficien_am) || 0;
+        occupant.nbr_valeur_am = ( valeurUnitaire * quantite * coeffCA).toFixed(2);
+    });
 }); 
 // Sommes Amenagement particulier nbr_valeur_totale_ap
 const nbr_valeur_totale_ap = computed(() => {nbr_valeur_totale_ap
@@ -610,8 +567,7 @@ const nbr_valeurVenaleLimeuble = computed(() => {
 watchEffect(() => {
     form.nbr_valeurVenaleLimeuble = nbr_valeurVenaleLimeuble.value;
 });
-
-
+ 
 const isPrincipalSelected = computed(() => form.txt_dependant_domainePR = 'Principale');
 
 const tauxValeurLocative = computed(() => {
@@ -713,8 +669,7 @@ const submitForm = () => {
                             </div>
                         </div>
                     </div><br>
-
-
+ 
                     <div v-if="formVisible" class="bg-white shadow-md rounded-lg">
                         <!-- En-tête du formulaire -->
                         <div class="p-4 border-b bg-gray-100">
@@ -1095,8 +1050,7 @@ const submitForm = () => {
                                                         <div class="mt-6">   
                                                             <label for="Superficie_totale" class="block text-sm/6 font-medium text-gray-900">Superficie Totale Terrain</label>
                                                             <div>
-                                                                <input 
-
+                                                                <input  
                                                                     type="number"  
                                                                     v-model="form.nbr_surface"
                                                                     name="nbr_surface"
@@ -1116,6 +1070,7 @@ const submitForm = () => {
                                                                 <input 
                                                                 type="number" 
                                                                 v-model="form.txt_superficie_bati_sol"  
+                                                                required
                                                                 name="txt_superficie_bati_sol"
                                                                 id="Superficie_bati_sol" 
                                                                 :min="0"
@@ -1133,6 +1088,7 @@ const submitForm = () => {
                                                             <div> 
                                                                 <select type="select" 
                                                                 v-model="form.slt_secteur" 
+                                                                required
                                                                 name="slt_secteur" 
                                                                 id="Secteur" 
                                                                 class="h-9 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
@@ -2086,7 +2042,8 @@ const submitForm = () => {
                                                         <label for="Date_devaluation" class="block text-sm/6 font-medium text-gray-900">Date d'évaluation</label>
                                                         <input 
                                                             type="date" 
-                                                            v-model="form.dt_dateEvaluation"  
+                                                            v-model="form.dt_dateEvaluation" 
+                                                            required 
                                                             name="dt_dateEvaluation" 
                                                             id="Date_devaluation" 
                                                             class="block w-64 rounded-md bg-white 
@@ -2123,40 +2080,40 @@ const submitForm = () => {
     </AuthenticatedLayout>
 </template>
 <style scoped>
-.slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all 0.5s ease;
-}
-.slide-fade-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-.slide-fade-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.slide-fade-enter-active {
-  transition: all 0.3s ease-out;
-}
-
-.slide-fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateX(20px);
-  opacity: 0;
-}
-
-
-.slide-fade-enter-active, .slide-fade-leave-active {
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-  .slide-fade-enter-from, .slide-fade-leave-to {
+    .slide-fade-enter-active, .slide-fade-leave-active {
+    transition: all 0.5s ease;
+    }
+    .slide-fade-enter-from {
     opacity: 0;
-    transform: translateX(20px); /* Si tu veux déplacer un peu l'élément, sinon retire ça */
-  }
+    transform: translateY(20px);
+    }
+    .slide-fade-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+    }
+
+    .slide-fade-enter-active {
+    transition: all 0.3s ease-out;
+    }
+
+    .slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+    }
+
+    .slide-fade-enter-from,
+    .slide-fade-leave-to {
+    transform: translateX(20px);
+    opacity: 0;
+    }
+
+
+    .slide-fade-enter-active, .slide-fade-leave-active {
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .slide-fade-enter-from, .slide-fade-leave-to {
+        opacity: 0;
+        transform: translateX(20px); /* Si tu veux déplacer un peu l'élément, sinon retire ça */
+    }
 </style>
 
 

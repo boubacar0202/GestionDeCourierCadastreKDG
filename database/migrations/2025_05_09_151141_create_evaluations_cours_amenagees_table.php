@@ -19,7 +19,7 @@ class CreateEvaluationsCoursAmenageesTable extends Migration
             $table->decimal('nbr_valeur_total_ca', 15, 2)->nullable();
             $table->string('slt_cours_amenager_totale')->nullable();
             $table->decimal('nbr_surface_ca_total', 10, 2)->nullable();
-            $table->string('slt_categorie_ca_total')->nullable();
+            $table->integer('slt_categorie_ca_total')->nullable();
             $table->decimal('nbr_prix_metre_carre_ca_total', 10, 2)->nullable();
             $table->decimal('nbr_coefficient_ca_total', 5, 2)->nullable();
             $table->decimal('nbr_valeur_ca_total', 15, 2)->nullable();

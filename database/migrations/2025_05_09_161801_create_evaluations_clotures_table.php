@@ -17,7 +17,7 @@ class CreateEvaluationsCloturesTable extends Migration
 
             $table->string('slt_cours_amenager_clo')->nullable();
             $table->decimal('nbr_longueur_avant_clo', 10, 2)->nullable();
-            $table->string('slt_categorie_clo')->nullable();
+            $table->integer('slt_categorie_clo')->nullable();
             $table->decimal('nbr_prix_metre_carre_clo', 10, 2)->nullable();
             $table->decimal('nbr_coefficient_clo', 5, 2)->nullable();
             $table->decimal('nbr_valeur_clo', 15, 2)->nullable();

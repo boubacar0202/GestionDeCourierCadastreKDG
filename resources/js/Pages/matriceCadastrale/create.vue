@@ -5,6 +5,7 @@ import { defineProps, onMounted } from 'vue';
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 
 defineOptions({ layout: DefaultLayout });
+
 const props = defineProps({
   terrains: Array,
 });

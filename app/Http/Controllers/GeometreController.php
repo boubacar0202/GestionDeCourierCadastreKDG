@@ -21,8 +21,7 @@ class GeometreController extends Controller
     public function index(){
         return Inertia::render("geometre/index");
     }
- 
- 
+  
     public function create()
     {
         // Récupération du dossier à partir du numéro en session
@@ -37,9 +36,7 @@ class GeometreController extends Controller
             'nbr_surface' => $terrain?->nbr_surface,
         ]);
     }
-
-
-
+ 
     public function show()
     {
         $Niveau = 0; // Exemple de récupération d'un nombre depuis la base de données
@@ -70,18 +67,11 @@ class GeometreController extends Controller
             ], 422);
         }
     } 
-
-
-    
-
-
-
-
-
+ 
      // PAGES GEOMETRE
     public function store(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $request->merge([
             'slt_categoriePR' => (string) $request->slt_categoriePR,
         ]);
@@ -92,8 +82,8 @@ class GeometreController extends Controller
         'txt_nicad' => 'required|string|exists:terrains,txt_nicad',
  
         // usage
-        'slt_residence' => 'nullable|string',
-        'slt_usage' => 'nullable|string',
+        'slt_residence' => 'required|string',
+        'slt_usage' => 'required|string',
         'occupants' => 'required|array',
         'occupants.*.txt_nomOccupantTG' => 'nullable|string',
         'occupants.*.txt_numAppartementTG' => 'nullable|string',
@@ -134,17 +124,18 @@ class GeometreController extends Controller
         'occupantsCA' => 'required|array', 
         'occupantsCA.*.slt_cours_amenager_totale' => 'nullable|string',
         'occupantsCA.*.nbr_surface_ca_total'      => 'nullable|numeric',
-        'occupantsCA.*.slt_categorie_ca_total'    => 'nullable|string',
+        'occupantsCA.*.slt_categorie_ca_total'    => 'nullable|numeric',
         'occupantsCA.*.nbr_prix_metre_carre_ca_total' => 'nullable|numeric',
         'occupantsCA.*.nbr_coefficient_ca_total'  => 'nullable|numeric',
         'occupantsCA.*.nbr_valeur_ca_total'       => 'nullable|numeric',
 
         // Cloture 
-        'slt_cours_amenager_clo' => 'nullavle|numeric',
+        'nbr_valeur_total_clotur' => 'nullable|numeric',
+        'slt_cours_amenager_clo' => 'nullable|numeric',
         'occupantsCL' => 'required|array', 
         'occupantsCL.*.slt_cours_amenager_clo'  => 'nullable|string',  
         'occupantsCL.*.nbr_longueur_avant_clo'  => 'nullable|numeric', 
-        'occupantsCL.*.slt_categorie_clo'       => 'nullable|string', 
+        'occupantsCL.*.slt_categorie_clo'       => 'nullable|numeric', 
         'occupantsCL.*.nbr_prix_metre_carre_clo'=> 'nullable|numeric', 
         'occupantsCL.*.nbr_coefficient_clo'     => 'nullable|numeric', 
         'occupantsCL.*.nbr_valeur_clo'          => 'nullable|numeric',
@@ -159,13 +150,12 @@ class GeometreController extends Controller
         'occupantsAP.*.nbr_valeur_am'         => 'nullable|numeric',
 
         // Evaluation Traitement  
-        'nbr_surface' => 'nullable|numeric', 
-        'nbr_valeurVenaleLimeuble' => 'nullable|numeric',
-        'nbr_valeurLocative' => 'nullable|numeric',
-        'dt_dateEvaluation' => 'nullable|date', 
-        'txt_superficie_totale'  => 'nullable|numeric',
+        'nbr_surface' => 'required|numeric', 
+        'nbr_valeurVenaleLimeuble' => 'required|numeric',
+        'nbr_valeurLocative' => 'required|numeric',
+        'dt_dateEvaluation' => 'required|date',  
         'txt_superficie_bati_sol'  => 'nullable|numeric',
-        'slt_secteur'   => 'nullable|string',
+        'slt_secteur'   => 'nullable|numeric',
         'nbr_prix_metre_carre' => 'nullable|numeric',
         'nbr_valeur_terrain' => 'nullable|numeric', 
 
@@ -213,17 +203,18 @@ class GeometreController extends Controller
                 'nbr_prix_metre_carre'      =>  $validatedData['nbr_prix_metre_carre'],
                 'nbr_valeur_terrain'        =>  $validatedData['nbr_valeur_terrain'], 
                 'dt_dateEvaluation'         =>  $validatedData['dt_dateEvaluation'], 
+                'txt_superficie_totale'     =>  $validatedData['nbr_surface'],
                 'nbr_valeurVenaleLimeuble'  =>  $validatedData['nbr_valeurVenaleLimeuble'],
                 'nbr_valeurLocative'        =>  $validatedData['nbr_valeurLocative'],
             ]);
         
             // Bati
             $occupantsBP = $request->input('occupantsBP');
-            $valeurTerrain_Bati = 0; 
-            // Calculer la somme de la valeur pour les occupants
-            foreach ($request->input('occupantsBP') as $occupant) {
-                $valeurTerrain_Bati += (float) $occupant['nbr_valeurTG'];
-            }
+            // $valeurTerrain_Bati = 0; 
+            // // Calculer la somme de la valeur pour les occupants
+            // foreach ($request->input('occupantsBP') as $occupant) {
+            //     $valeurTerrain_Bati += (float) $occupant['nbr_valeurTG'];
+            // }
 
             // Créer les enregistrements EvaluationTerrain pour chaque occupant dans $occupantsBP
             foreach ($occupantsBP as $occupant) {
@@ -246,7 +237,7 @@ class GeometreController extends Controller
 
                     'currentCat' => $request->currentCat, 
                     'slt_categorieTG'        => $occupant['slt_categorieTG'] ?? null,
-                    'txt_valeur_terrain_bati'=> $valeurTerrain_Bati,
+                    'txt_valeur_terrain_bati'=> $validatedData['txt_valeur_terrain_bati'] ?? null,
                     'slt_dependant_domaineTG'  => $occupant['slt_dependant_domaineTG'] ?? null,
                     'nbr_prix_metre_carreTG' => $occupant['nbr_prix_metre_carreTG'] ?? null,
                     'nbr_surface_bati_solTG' => $occupant['nbr_surface_bati_solTG'] ?? null,
@@ -260,18 +251,18 @@ class GeometreController extends Controller
  
             // Cours Aménager
             $occupantsCA = $request->input('occupantsCA');
-            $valeurCours_Amenager = 0; 
-            // somme occupants
-            foreach ($request->input('occupantsCA') as $occupant) {
-                $valeurCours_Amenager += (float) $occupant['nbr_valeur_ca_total'];
-            }
+            // $valeurCours_Amenager = 0; 
+            // // somme occupants
+            // foreach ($request->input('occupantsCA') as $occupant) {
+            //     $valeurCours_Amenager += (float) $occupant['nbr_valeur_ca_total'];
+            // }
             foreach ($occupantsCA as $occupant) {
                 EvaluationCoursAmenagee::create([
                     // Clés étrangères
                     'txt_num_dossier'           => $validatedData['txt_num_dossier'], 
-                    'txt_nicad'                 => $validatedData['txt_nicad'], 
+                    'txt_nicad'                 => $validatedData['txt_nicad'],  
+                    'nbr_valeur_total_ca'       => $validatedData['nbr_valeur_total_ca'] ?? null,
 
-                    'nbr_valeur_total_ca'       => $valeurCours_Amenager,
                     'slt_cours_amenager_totale' => $occupant['slt_cours_amenager_totale'],
                     'nbr_surface_ca_total'      => $occupant['nbr_surface_ca_total'],
                     'slt_categorie_ca_total'    => $occupant['slt_categorie_ca_total'],
@@ -283,17 +274,17 @@ class GeometreController extends Controller
 
             // Clôture
             $occupantsCL = $request->input('occupantsCL'); 
-            $valeurCloture = 0; 
-            // somme occupants
-            foreach ($request->input('occupantsCL') as $occupant) {
-                $valeurCloture += (float) $occupant['nbr_valeur_clo'];
-            }
+            // $valeurCloture = 0; 
+            // // somme occupants
+            // foreach ($request->input('occupantsCL') as $occupant) {
+            //     $valeurCloture += (float) $occupant['nbr_valeur_clo'];
+            // }
             foreach ($occupantsCL as $occupant) {
                 EvaluationCloture::create([
                     // Clés étrangères 
                     'txt_num_dossier'           => $validatedData['txt_num_dossier'],
                     'txt_nicad'                 => $validatedData['txt_nicad'],
-                    'nbr_valeur_total_clotur'   => $valeurCloture ,
+                    'nbr_valeur_total_clotur'   => $validatedData['nbr_valeur_total_clotur'] ?? null,
 
                     'slt_cours_amenager_clo'    => $occupant['slt_cours_amenager_clo'] ?? null,
                     'nbr_longueur_avant_clo'    => $occupant['nbr_longueur_avant_clo'] ?? null,
@@ -307,17 +298,17 @@ class GeometreController extends Controller
 
             // Amenagement
             $occupantsAP = $request->input('occupantsAP');
-            $valeurAmenagement = 0; 
-            // somme occupants
-            foreach ($request->input('occupantsAP') as $occupant) {
-                $valeurAmenagement += (float) $occupant['nbr_valeur_am'];
-            }
+            // $valeurAmenagement = 0; 
+            // // somme occupants
+            // foreach ($request->input('occupantsAP') as $occupant) {
+            //     $valeurAmenagement += (float) $occupant['nbr_valeur_am'];
+            // }
             foreach ($occupantsAP as $occupant) { 
                 EvaluationAmenagement::create([
                     'txt_num_dossier'       => $validatedData['txt_num_dossier'],
                     'txt_nicad'             => $validatedData['txt_nicad'], 
+                    'nbr_valeur_totale_ap'  => $validatedData['nbr_valeur_totale_ap' ?? null], 
 
-                    'nbr_valeur_totale_ap'  => $valeurAmenagement,  
                     'txt_designation_am'    => $occupant['txt_designation_am'] ?? null,
                     'nbr_valeur_unitaire_am' => $occupant['nbr_valeur_unitaire_am'] ?? null,
                     'nbr_quantile_am'       => $occupant['nbr_quantile_am'] ?? null,
@@ -327,8 +318,7 @@ class GeometreController extends Controller
             }
             
             return redirect()->back()->with('success', 'Donnée enregistrée !');
-        
-
+ 
     }
 
 
