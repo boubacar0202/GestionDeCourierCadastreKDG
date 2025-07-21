@@ -36,7 +36,7 @@ function handleImageError() {
     </Head>
 
 
-    <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
+    <div class="bg-white text-black/50 dark:bg-black dark:text-white/50">
 
         <div
             class="relative flex min-h-screen flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white"
@@ -54,7 +54,9 @@ function handleImageError() {
                         <Link
                             v-if="$page.props.auth.user"
                             :href="route('dashboard')"
-                            class="rounded-md px-3 py-2 text-primary ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
+                            class="rounded-md px-3 py-2 text-primary ring-1 ring-transparent transition hover:text-black/70 
+                            focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 
+                            dark:focus-visible:ring-white"
                         >
                             Dashboard
                         </Link>
@@ -62,7 +64,9 @@ function handleImageError() {
                         <template v-else>
                             <Link
                                 :href="route('login')"
-                                class="rounded-md px-3 py-2 text-primary ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
+                                class="rounded-md px-3 py-2 text-primary ring-1 ring-transparent transition hover:text-black/70 
+                                focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 
+                                dark:focus-visible:ring-white sm:text-2xl"
                             >
                                 Connection 
                             </Link>
@@ -70,7 +74,9 @@ function handleImageError() {
                             <Link
                                 v-if="canRegister"
                                 :href="route('register')"
-                                class="rounded-md px-3 py-2 text-primary ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
+                                class="rounded-md px-3 py-2 text-primary ring-1 ring-transparent transition hover:text-black/70 
+                                focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 
+                                dark:focus-visible:ring-white sm:text-2xl"
                             >
                                 Register
                             </Link>
@@ -82,9 +88,13 @@ function handleImageError() {
                     <div class="grid gap-6 lg:grid-cols-2 lg:gap-8">
                         
                         <a
-                            href="route('donnee')"
+                            :href="route('login')"
                             id="docs-card"
-                            class="flex flex-col items-start border border-primary-dark gap-6 overflow-hidden rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
+                            class="flex flex-col items-start border border-primary-dark gap-6 overflow-hidden rounded-lg bg-white 
+                            p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 
+                            hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 
+                            lg:p-10 lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 
+                            dark:focus-visible:ring-[#FF2D20]"
                         >
                             <div
                                 id="screenshot-container"
@@ -92,7 +102,8 @@ function handleImageError() {
                             >
                                
                                 <div
-                                    class="absolute -bottom-16 -left-16 h-40 w-[calc(100%+8rem)] bg-gradient-to-b from-transparent via-white to-white dark:via-zinc-900 dark:to-zinc-900"
+                                    class="absolute -bottom-16 -left-16 h-40 w-[calc(100%+8rem)] bg-gradient-to-b from-transparent 
+                                    via-white to-white dark:via-zinc-900 dark:to-zinc-900"
                                 ></div>
                             </div>
 
@@ -100,10 +111,10 @@ function handleImageError() {
                                 class="relative flex items-center gap-6 lg:items-end"
                             >
                             
-                                <h1>CADASTRE KEDOUGOU</h1>
+                                <h1 class="sm:text-3xl">CADASTRE KEDOUGOU</h1>
                                 <svg
                                     class="size-6 shrink-0 stroke-primary"
-                                    xmlns="http://www.w3.org/2000/svg"
+                                    href="route('login')"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke-width="1.5"
@@ -118,11 +129,11 @@ function handleImageError() {
                         </a>
                     </div>
                 </main>
-
+ 
                 <footer
-                    class="py-16 text-center text-sm text-black dark:text-white/70"
+                    class="py-16 text-center text-sm text-black dark:text-white/70 mt-8"
                 >
-                   Programme de Gestion de Base de données v-1    <!--{{ laravelVersion }} (PHP v{{ phpVersion }} ) -->
+                   Programme de Gestion de Courriers <b>v-1</b> 
                 </footer>
             </div>
         </div>
