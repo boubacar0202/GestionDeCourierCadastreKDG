@@ -32,7 +32,6 @@ class InstanceController extends Controller
             'departs' => $departs,
         ]);
     }
-
  
     /**
      * Store a newly created resource in storage.
@@ -70,21 +69,6 @@ class InstanceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
-    {
-        $arrivee = Arrivee::findOrFail($id);
-        $arrivee->delete();
-
-        return redirect()->back()->with('success', 'Courrier Arrivée N° ' . $arrivee->txt_numdordre . ' supprimé avec succès.');
-    }
-
-    // supprimer le courrier départ
-    public function destroyDepart($id)
-    {
-        $depart = Depart::findOrFail($id);
-        $depart->delete();
-
-        return redirect()->back()->with('success', 'Courrier Départ N° ' . $depart->txt_numdordrecd . ' supprimé avec succès.');
-    }
+ 
 
 }

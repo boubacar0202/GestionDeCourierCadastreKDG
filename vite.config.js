@@ -12,7 +12,7 @@ import {
 export default defineConfig({
     plugins: [
         laravel({
-            input: "resources/js/app.js",
+            input: ["resources/js/app.js", "resources/css/app.css"],
             refresh: true,
         }),
         vue({
@@ -32,9 +32,12 @@ export default defineConfig({
             ],
         }),
     ],
-    server: { 
-        host:   'localhost',
-        port:8000,
-
+    server: {
+        host: '0.0.0.0',
+        port: 5173,
+        hmr: {
+            host: 'courrierskdg.sn',
+        },
+        cors: true,
     },
 });

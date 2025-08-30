@@ -12,11 +12,13 @@ import { router } from '@inertiajs/vue3';
  
 defineOptions({ layout: DefaultLayout });
 const toast = useToast();
+const fichierPDF = ref(null);
 
  
 const { arrivees } = defineProps({
     arrivees: Object, 
 })
+ 
  
 const form = useForm({
     //  courrierarrivee
@@ -36,8 +38,33 @@ const form = useForm({
     txt_expediteur: arrivees?.txt_expediteur || '',
     txt_agenttraiteur: arrivees?.txt_agenttraiteur || '',
     txt_observation: arrivees?.txt_observation || '',
+    fichierPDF: arrivees?.fichierPDF || '',
 
 }); 
+
+// Récuperation des fichier PDF 
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+        toast.error("Veuillez sélectionner un fichier PDF valide.");
+        event.target.value = ""; // reset input
+        return;
+    }
+
+    if (file.size > 100 * 1024 * 1024) { // 100 Mo
+        toast.error("Le fichier dépasse 100 Mo !");
+        event.target.value = ""; // reset input
+        return;
+    }
+
+    fichierPDF.value = file;
+    form.fichierPDF = file;
+
+    console.log("Fichier PDF sélectionné :", fichierPDF.value);
+}
 
 const show = ref(false);
 const handleCategorieChange = () => {
@@ -125,7 +152,7 @@ function submit() {
         onSuccess: (page) => {
           console.log("✅ Succès Laravel :", page);
           const message = page.props.flash?.success || "Modification réussie !";
-          toast.success(message);  
+        //   toast.success(message);  
         },
         onError: (errors) => {
           console.error('Erreur lors de la mise à jour', errors);
@@ -143,7 +170,7 @@ function submit() {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
+            <h2 class="text-xl font-semibold leading-tight text-primary-txt">
                 Modification : Courriers Arrivées
             </h2>
 
@@ -154,15 +181,15 @@ function submit() {
                 <div class="w-full max-w-6xl">
                     <div class="bg-white shadow-md rounded-lg">
                         <!-- En-tête du formulaire -->
-                        <div   class="p-4 border-b bg-gray-100">
-                            <h1 class="text-lg font-semibold">Formulaire Courriers Arrivées : Modification ({{ arrivees.txt_numdordre }})</h1>
+                        <div   class="p-4 border-b bg-primary">
+                            <h1 class="text-lg text-white font-semibold">Formulaire de Modification des Courriers Arrivées</h1>
                         </div>
                         <!-- Corps du formulaire -->
                         <form @submit.prevent="submit">
                             <div class="p-6">
                                 <!-- Section Parcelle -->
-                                <h5 class="text-lg font-bold">
-                                    Réferences Courrier : {{ arrivees.txt_reference }}
+                                <h5 class="text-lg text-primary-txt font-bold">
+                                    Modification du Courrier N° : {{ arrivees.txt_reference }}
                                 </h5>
                                 <br />
                                 <div class="mb-6">
@@ -173,7 +200,7 @@ function submit() {
                                             <div class="sm:col-span-2">
                                                 <label 
                                                     for="txt_numdordre"
-                                                    class="block text-sm/6 font-medium text-gray-900">
+                                                    class="block text-sm/6 font-medium text-primary-txt">
                                                     N° Dordre Arrivée
                                                 </label>
                                                 <div class="mt-2">
@@ -183,8 +210,8 @@ function submit() {
                                                         required
                                                         v-model="form.txt_numdordre"  
                                                         id="txt_numdordre"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6" 
                                                     />
                                                 </div>
@@ -194,7 +221,7 @@ function submit() {
                                             <div class="sm:col-span-2">
                                                 <label 
                                                     for="txt_caractere"
-                                                    class="block text-sm/6 font-medium text-gray-900">
+                                                    class="block text-sm/6 font-medium text-primary-txt">
                                                     Caractères
                                                 </label>
                                                 <div class="mt-2">
@@ -205,8 +232,8 @@ function submit() {
                                                         readonly
                                                         v-model="form.txt_caractere"  
                                                         id="txt_caractere"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6" 
                                                     >
                                                         <option selected disabled>Choisis Caractères</option>
@@ -226,7 +253,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label 
                                                     for="dt_datearrivee"
-                                                    class="block text-sm/6 font-medium text-gray-900">
+                                                    class="block text-sm/6 font-medium text-primary-txt">
                                                     Date Réception
                                                 </label>
                                                 <div class="mt-2">
@@ -236,8 +263,8 @@ function submit() {
                                                         v-model="form.dt_datearrivee"  
                                                         required
                                                         id="dt_datearrivee"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6" 
                                                     />
                                                 </div>
@@ -247,7 +274,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_numcourier"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >N° Courrier</label
                                                 >
                                                 <div class="mt-2">
@@ -258,8 +285,8 @@ function submit() {
                                                         required
                                                         id="txt_numcourier"
                                                         autocomplete="address-level2"
-                                                        class="h-8  scrollbar-thin scrollbar-thumb-primary scrollbar-track-gray-300 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8  scrollbar-thin scrollbar-thumb-primary scrollbar-track-gray-300 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     > 
                                                 </div>
@@ -269,7 +296,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="dt_datecourier"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Date Courrier</label
                                                 >
                                                 <div class="mt-2">
@@ -280,8 +307,8 @@ function submit() {
                                                         required
                                                         id="dt_datecourier"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     > 
                                                 </div>
@@ -291,7 +318,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_reference"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Réf.Courrier Arrivée</label
                                                 >
                                                 <div class="mt-2">
@@ -302,8 +329,8 @@ function submit() {
                                                         required
                                                         id="txt_reference"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -313,7 +340,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_categorie"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Catégorie</label
                                                 >
                                                 <div class="mt-2">
@@ -326,8 +353,8 @@ function submit() {
                                                         required
                                                         id="txt_categorie"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                         
                                                     > 
@@ -345,7 +372,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_designation"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Designation</label
                                                 >
                                                 <div class="mt-1">
@@ -356,8 +383,8 @@ function submit() {
                                                         required
                                                         id="txt_designation"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     >
                                                         <option selected disabled>Choisis Designation</option> 
@@ -368,11 +395,11 @@ function submit() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div  v-if="show"  class="sm:col-span-1">
+                                        <div  v-if="!show"  class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="dt_date"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >
                                                     Date Evenement
                                                 </label
@@ -384,18 +411,18 @@ function submit() {
                                                         v-model="form.dt_date"  
                                                         id="dt_date"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
-                                        <div  v-if="show" class="sm:col-span-1">
+                                        <div  v-if="!show" class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_heure"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Heure Evenement</label
                                                 >
                                                 <div class="mt-2">
@@ -405,18 +432,18 @@ function submit() {
                                                         v-model="form.txt_heure" 
                                                         id="txt_heure"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
-                                        <div  v-if="show" class="sm:col-span-1">
+                                        <div  v-if="!show" class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_lieu"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Lieu Evenement</label
                                                 >
                                                 <div class="mt-2">
@@ -426,8 +453,8 @@ function submit() {
                                                         v-model="form.txt_lieu" 
                                                         id="txt_lieu"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -437,7 +464,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_nombrepiece"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Nbre Pièce</label
                                                 >
                                                 <div class="mt-2">
@@ -448,8 +475,8 @@ function submit() {
                                                         required
                                                         id="txt_nombrepiece"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -459,7 +486,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_objet"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Objet</label
                                                 >
                                                 <div class="mt-2">
@@ -470,8 +497,8 @@ function submit() {
                                                         required
                                                         id="txt_objet"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -481,7 +508,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_expediteur"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Expéditeur</label
                                                 >
                                                 <div class="mt-2">
@@ -492,8 +519,8 @@ function submit() {
                                                         required
                                                         id="txt_expediteur"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -503,7 +530,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_expediteur"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Agent Traiteur</label
                                                 >
                                                 <div class="mt-2">
@@ -514,8 +541,8 @@ function submit() {
                                                         required
                                                         id="txt_agenttraiteur"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     >
                                                         <option value="Saliou FAYE">Saliou FAYE</option>
@@ -529,7 +556,7 @@ function submit() {
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_observation"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Observation</label
                                                 >
                                                 <div class="mt-2">
@@ -539,11 +566,43 @@ function submit() {
                                                         v-model="form.txt_observation"  
                                                         id="txt_observation"
                                                         autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <div class="sm:col-span-1">
+                                                <label
+                                                    for="fichier_PDF"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
+                                                    >Importer le Fichier PDF</label
+                                                >
+                                                <div class="mt-2">
+                                                    <input
+                                                        type="file"
+                                                        name="fichier_PDF"
+                                                        accept="application/pdf"
+                                                        @change="handleFileUpload"
+                                                        id="fichier_PDF"
+                                                        autocomplete="off"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                    />
+                                                </div>
+                                                <!-- ✅ Affichage le fichier enregistré -->
+                                                <div v-if="form.fichierPDF && typeof form.fichierPDF === 'string'" class="mt-2"> 
+                                                    <a
+                                                        :href="`/storage/${form.fichierPDF}`"
+                                                        target="_blank"
+                                                        class="text-blue-600 underline"
+                                                    >
+                                                        Voir le fichier
+                                                    </a>
+                                                </div> 
                                             </div>
                                         </div>
                                     </div>

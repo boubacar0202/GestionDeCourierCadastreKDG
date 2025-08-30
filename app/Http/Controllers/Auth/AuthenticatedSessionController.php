@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -33,20 +34,45 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+
+        // Ajoute le message flash
+        if ($user) {
+            Session::flash('success', $user->name . ', bienvenue sur le Système : Gestion des Courriers !');
+        } else {
+            Session::flash('error', 'Utilisateur non connecté.');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**
      * Destroy an authenticated session.
      */
+    // public function destroy(Request $request): RedirectResponse
+    // {
+    //     Auth::guard('web')->logout();
+
+    //     $request->session()->invalidate();
+
+    //     $request->session()->regenerateToken();
+
+     
+    //     Session::flash('success', 'Déconnexion réussie. À bientôt !');
+
+    //     return redirect('/');
+    // }
+
+
     public function destroy(Request $request): RedirectResponse
     {
+ 
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');
     }
+
 }

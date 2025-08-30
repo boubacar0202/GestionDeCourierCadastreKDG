@@ -8,10 +8,9 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import * as MazUI from "maz-ui";
 import DefaultLayout from "./Layouts/DefaultLayout.vue";
 import { installToaster } from 'maz-ui'; 
-
-
-
-const appName = import.meta.env.VITE_APP_NAME || "Laravel";
+// import Toast from 'vue-toastification'
+ 
+// const appName = import.meta.env.VITE_APP_NAME || "Bou";
 
 import "maz-ui/styles";
 
@@ -21,8 +20,18 @@ const toasterOptions = {
     persistent: false,
 };
 
+// // app.js
+// const storedTheme = localStorage.getItem('theme');
+// if (storedTheme === 'dark') {
+//   document.documentElement.classList.add('dark');
+// } else {
+//   document.documentElement.classList.remove('dark');
+// }
+
+
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    // title: (title) => `${title} - ${appName}`,
+    title: (title) => `${title}`,
     resolve: async (name) => {
         const page = await resolvePageComponent(
             `./Pages/${name}.vue`,
@@ -43,7 +52,10 @@ createInertiaApp({
         // Configuration de MazUI avec la couleur personnalisée
         app.use(MazUI, {
             colors: {
-                primary: '#FE5835',  // 🔥 Définit la couleur principale pour MazUI
+                primary: '#FC9D03',  // 🔥 Définit la couleur principale pour MazUI
+            },
+            colors: {
+                second: '#733900',  // 🔥 Définit la couleur principale pour MazUI
             },
         });
     
@@ -52,9 +64,11 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(installToaster, toasterOptions)
             .mount(el);
+
+        // app.use(Toast)
     },    
       
     progress: {
-        color: "#FE5835",
+        color: "#FC9D03",
     },
 });

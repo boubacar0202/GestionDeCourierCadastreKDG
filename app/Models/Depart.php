@@ -27,11 +27,7 @@ class Depart extends Model
             'txt_referencereceptioncd',
             'txt_observationcd',
             'txt_dureetraitementcd',
+            'fichierPDFcd',
     ];
-
-    // public function arrivee()
-    // {
-    //     return $this->belongsTo(Arrivee::class);
-    // }
-    
+ 
 }

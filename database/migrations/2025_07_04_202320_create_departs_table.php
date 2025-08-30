@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('txt_referencereceptioncd')->nullable();
             $table->string('txt_observationcd')->nullable();
             $table->string('txt_dureetraitementcd');
+            $table->string('fichierPDFcd')->nullable();
   
 
             $table->timestamps(); 

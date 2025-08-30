@@ -2,21 +2,49 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import MazBtn from "maz-ui/components/MazBtn";
+import MazSelect from "maz-ui/components/MazSelect";
 import MazRadio from "maz-ui/components/MazRadio";
 import { onMounted, ref, watch, watchEffect, computed  } from "vue";
 import axios from "axios";
 import { useToast } from "maz-ui"; 
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
-import { Inertia } from '@inertiajs/inertia'; 
+import { Inertia } from '@inertiajs/inertia';
  
+
 defineOptions({ layout: DefaultLayout });
 const toast = useToast();
+const fichierPDF = ref(null);
+const today = new Date().toISOString().split('T')[0];
+
+// Récuperer le fichier PDF 
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+        toast.error("Veuillez sélectionner un fichier PDF valide.");
+        event.target.value = ""; // reset input
+        return;
+    }
+
+    if (file.size > 100 * 1024 * 1024) { // 100 Mo
+        toast.error("Le fichier dépasse 100 Mo !");
+        event.target.value = ""; // reset input
+        return;
+    }
+
+    fichierPDF.value = file;
+    form.fichierPDF = file;
+
+    console.log("Fichier PDF sélectionné :", fichierPDF.value);
+}
  
 const form = useForm({
     //  courrierarrivee
     txt_numdordre:"", 
     txt_caractere:"",
-    dt_datearrivee:"",
+    dt_datearrivee: "",
     txt_numcourier:"",
     dt_datecourier:"",
     txt_reference:"",
@@ -30,28 +58,33 @@ const form = useForm({
     txt_expediteur:"",
     txt_agenttraiteur:"",
     txt_observation:"",
+    fichierPDF: null,
 
 });
-
+ 
+ 
 const fetchNextDossier = async (annee) => {
     try {
         const response = await axios.get(`/arrivee/next/${annee}`);
-        form.txt_numdordre = response.data.num_dordre || ""; 
-        console.log("✅ Numéro généré :", form.txt_numdordre)
+        const numero = response.data.num_dordre;
+        const dateFormatee = form.dt_datearrivee;
+
+        form.txt_numdordre = `${numero}/${dateFormatee}`;
+        console.log("✅ Numéro généré :", form.txt_numdordre);
     } catch (error) {
-        console.error("❌ Erreur lors de la récupération du numéro de dossier :", error);
-        form.txt_numdordre = "00001";
-   
+        console.error("❌ Erreur :", error);
+        const dateFormatee = (new Date());
+        form.txt_numdordre = `00001/${dateFormatee}`;
     }
 }; 
-onMounted(() => {
-    const annee = new Date(form.dt_datearrivee || new Date()).getFullYear();
-    fetchNextDossier(annee);
+// Regénérer automatiquement quand la date change
+watch(() => form.dt_datearrivee, (nouvelleDate) => {
+    if (nouvelleDate) {
+        const annee = new Date(nouvelleDate).getFullYear();
+        fetchNextDossier(annee);
+    }
 });
-
- 
-
-// onMounted(fetchNextDossier); // ✅ sans les parenthèses
+  
 
 const show = ref(false);
 const handleCategorieChange = () => {
@@ -130,19 +163,19 @@ const submitForm = function () {  // Ajoutez `async` ici
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Courriers Arrivées
+            <h2 class="text-xl font-semibold leading-tight text-primary-txt">
+                Enregistrement des Courriers Arrivées
             </h2>
 
         </template>
 
         <div class="py-12">
             <div class="flex justify-center">
-                <div class="w-full max-w-7xl">
+                <div class="w-full border border-primary-only max-w-7xl">
                     <div class="bg-white shadow-md rounded-lg">
                         <!-- En-tête du formulaire -->
-                        <div   class="p-4 border-b bg-gray-100">
-                            <h1 class="text-lg font-semibold">Formulaire Courriers Arrivées</h1>
+                        <div   class="p-4 border-b bg-primary">
+                            <h1 class="text-lg text-white font-semibold">Formulaire d'enregistrement des Courriers Arrivés</h1>
                         </div>
                         <!-- Corps du formulaire -->
                         <form @submit.prevent="submitForm">
@@ -156,7 +189,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                             <div class="sm:col-span-2">
                                                 <label 
                                                     for="txt_numdordre"
-                                                    class="block text-sm/6 font-medium text-gray-900">
+                                                    class="block text-sm/6 font-medium text-primary-txt">
                                                     N° Dordre Arrivée
                                                 </label>
                                                 <div class="mt-2">
@@ -164,75 +197,51 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         type="text"
                                                         name="txt_numdordre"  
                                                         readonly
+                                                        required
                                                         v-model="form.txt_numdordre"  
                                                         id="txt_numdordre"
-                                                        class="h-8 block w-full bg-gray-100 cursor-not-allowed rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6" 
+                                                        class="h-8 block w-full bg-gray-100 cursor-not-allowed rounded-md bg-white px-3 py-1.5
+                                                            text-base text-primary outline outline-1 -outline-offset-1 outline-primary-only 
+                                                            placeholder:text-primary-dark focus:outline focus:outline-2 focus:-outline-2 
+                                                            focus:outline-primary sm:text-sm/6" 
                                                     />
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="sm:col-span-2">
-                                            <div class="sm:col-span-2">
-                                                <label 
-                                                    for="txt_caractere"
-                                                    class="block text-sm/6 font-medium text-gray-900">
-                                                    Caractères
-                                                </label>
-                                                <div class="mt-2">
-                                                    <select
-                                                        type="select"
-                                                        name="txt_caractere"
-                                          
-                                                        readonly
-                                                        v-model="form.txt_caractere"  
-                                                        autocomplete="off"
-                                                        id="txt_caractere"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6" 
-                                                    >
-                                                        <option selected disabled>Choisis Caractères</option>
-                                                        <option value="Confidentiel">Confidentiel</option>
-                                                        <option value="Urgent">Urgent</option>
-                                                        <option value="Secret">Secret</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <br />
-                                    <div
-                                        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
-                                    >
                                         <div class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label 
                                                     for="dt_datearrivee"
-                                                    class="block text-sm/6 font-medium text-gray-900">
+                                                    class="block text-sm/6 font-medium text-primary-txt">
                                                     Date Réception
                                                 </label>
                                                 <div class="mt-2">
                                                     <input
                                                         type="date"
                                                         name="dt_datearrivee"
-                                                        v-model="form.dt_datearrivee"  
+                                                        v-model="form.dt_datearrivee"   
+                                                        :max="today"
                                                         required
                                                         id="dt_datearrivee"
-                                                        autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        autocomplete="on"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6" 
                                                     />
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> 
+                                    </div>
+                                    <br />
+                                    <div
+                                        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
+                                    >
+
                                         <div class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_numcourier"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >N° Courrier</label
                                                 >
                                                 <div class="mt-2">
@@ -243,9 +252,9 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         required
                                                         id="txt_numcourier"
                                                         autocomplete="off"
-                                                        class="h-8  scrollbar-thin scrollbar-thumb-primary scrollbar-track-gray-300 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                        class="h-8  scrollbar-thin scrollbar-thumb-primary block w-full rounded-md bg-white 
+                                                            px-3 py-1.5 text-base text-primary-txt outline outline-1 -outline-offset-1 outline-primary-only 
+                                                            placeholder:text-primary-dark focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     > 
                                                 </div>
                                             </div>
@@ -254,7 +263,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="dt_datecourier"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Date Courrier</label
                                                 >
                                                 <div class="mt-2">
@@ -262,11 +271,12 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         type="date"
                                                         name="dt_datecourier"
                                                         v-model="form.dt_datecourier"
+                                                        :max="today"
                                                         required
                                                         id="dt_datecourier"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     > 
                                                 </div>
@@ -276,7 +286,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_reference"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Réf.Courrier Arrivée</label
                                                 >
                                                 <div class="mt-2">
@@ -287,50 +297,60 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         required
                                                         id="txt_reference"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="sm:col-span-1">
-                                            <div class="sm:col-span-1">
-                                                <label
-                                                    for="txt_categorie"
-                                                    class="block text-sm/6 font-medium text-gray-900"
-                                                    >Catégorie</label
-                                                >
-                                                <div class="mt-2">
-                                                    <select
-                                                        type="select"
-                                                        name="txt_categorie"
-                                                        v-model="form.txt_categorie"
-                                                        @change="handleCategorieChange"
-                                                       
-                                                        required
-                                                        id="txt_categorie"
-                                                        autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
-                                                        
-                                                    > 
-                                                        <option selected disabled>Choisis Catégorie</option>
-                                                        <option value="Demande SERVICES">Demande SERVICES</option>
-                                                        <option value="Convocation - Invitation">Convocation - Invitation</option>
-                                                        <option value="Information">Information</option>
-                                                        <option value="Réclamation - Signalement">Réclamation - Signalement</option>
-                                                        <option value="Réquisition - Instruction">Réquisition - Instruction</option>
-                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label
+                                                    for="txt_categorie"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
+                                                    >Catégorie</label
+                                                >
+                                                <div class="mt-2">
+                                                    <MazSelect
+                                                        type="select"
+                                                        name="txt_categorie"
+                                                        v-model="form.txt_categorie"
+                                                        @change="handleCategorieChange" 
+                                                        required
+                                                        id="txt_categorie"
+                                                        autocomplete="off"
+                                                
+                                                            :options="[
+                                                                'Demande SERVICES',
+                                                                'Convocation - Invitation',
+                                                                'Information',
+                                                                'Réclamation - Signalement',
+                                                                'Réquisition - Instruction'
+                                                            ]" 
+                                                            class="h-8  w-full block w-full rounded-md bg-white px-2 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6
+                                                            scrollbar-thin scrollbar-thumb-primary scrollbar-track-primary-darlk"
+                                                            option-class="custom-option"   
+                                                            option-selected-class="bg-primary text-white  "
+                                                        
+                                                    /> 
+                                                        <!-- <option selected disabled>Choisis Catégorie</option>
+                                                        <option value="Demande SERVICES">Demande SERVICES</option>
+                                                        <option value="Convocation - Invitation">Convocation - Invitation</option>
+                                                        <option value="Information">Information</option>
+                                                        <option value="Réclamation - Signalement">Réclamation - Signalement</option>
+                                                        <option value="Réquisition - Instruction">Réquisition - Instruction</option> -->
+                                                 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="sm:col-span-2">
+                                            <div class="sm:col-span-1">
+                                                <label
                                                     for="txt_designation"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Designation</label
                                                 >
                                                 <div class="mt-1">
@@ -341,9 +361,10 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         required
                                                         id="txt_designation"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6
+                                                            scrollbar-thin scrollbar-thumb-primary scrollbar-track-primary-darlk"
                                                     >
                                                         <option selected disabled>Choisis catégorie d'abord</option>
                                                         <option v-for="(designation, index) in designations" :key="index" :value="designation">
@@ -352,12 +373,39 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                     </select>
                                                 </div>
                                             </div>
+                                        </div> -->
+                                        <div class="sm:col-span-2">
+                                            <div class="sm:col-span-1">
+                                                <label
+                                                for="txt_designation"
+                                                class="block text-sm/6 font-medium text-primary-txt"
+                                                >
+                                                Designation
+                                                </label>
+                                                <div class="mt-1">
+                                                <MazSelect
+                                                    v-model="form.txt_designation"
+                                                    id="txt_designation"
+                                                    name="txt_designation"
+                                                    :options="designations"
+                                                    placeholder="Choisis catégorie d'abord"
+                                                    class="h-8  w-full block w-full rounded-md bg-white px-2 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6
+                                                            scrollbar-thin scrollbar-thumb-primary scrollbar-track-primary-darlk"
+                                                            option-class="custom-option"   
+                                                            option-selected-class="bg-primary text-white"
+                                                    required
+                                                />
+                                                </div>
+                                            </div>
                                         </div>
+
                                         <div  v-if="show"  class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="dt_date"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >
                                                     Date Evenement
                                                 </label
@@ -369,8 +417,8 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         v-model="form.dt_date"  
                                                         id="dt_date"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -380,7 +428,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_heure"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Heure Evenement</label
                                                 >
                                                 <div class="mt-2">
@@ -390,8 +438,8 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         v-model="form.txt_heure" 
                                                         id="txt_heure"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -401,7 +449,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_lieu"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Lieu Evenement</label
                                                 >
                                                 <div class="mt-2">
@@ -411,18 +459,18 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         v-model="form.txt_lieu" 
                                                         id="txt_lieu"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="sm:col-span-1">
+                                        <div class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_nombrepiece"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Nbre Pièce</label
                                                 >
                                                 <div class="mt-2">
@@ -433,8 +481,8 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         required
                                                         id="txt_nombrepiece"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -444,7 +492,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_objet"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Objet</label
                                                 >
                                                 <div class="mt-2">
@@ -455,8 +503,8 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         required
                                                         id="txt_objet"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -466,7 +514,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_expediteur"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Expéditeur</label
                                                 >
                                                 <div class="mt-2">
@@ -477,8 +525,8 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         required
                                                         id="txt_expediteur"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -487,11 +535,35 @@ const submitForm = function () {  // Ajoutez `async` ici
                                         <div class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label
-                                                    for="txt_expediteur"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    for="txt_agenttraiteur"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Agent Traiteur</label
                                                 >
                                                 <div class="mt-2">
+                                                    <MazSelect
+                                                    type="select"
+                                                    name="txt_agenttraiteur"
+                                                    v-model="form.txt_agenttraiteur" 
+                                                    required
+                                                    id="txt_agenttraiteur"
+                                                    autocomplete="off"
+                                            
+                                                        :options="[
+                                                            'Saliou FAYE',
+                                                            'Assane Aidara DIOP',
+                                                            'El Hadji Malick GUEYE'
+                                                        ]" 
+                                                        class="h-8  w-full block w-full rounded-md bg-white px-2 py-1.5 text-base text-primary-txt 
+                                                        outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6
+                                                        scrollbar-thin scrollbar-thumb-primary scrollbar-track-primary-darlk"
+                                                        option-class="custom-option"   
+                                                        option-selected-class="bg-primary text-white  "
+                                                    
+                                                    /> 
+                                                </div>
+                                               
+                                                <!-- <div class="mt-2">
                                                     <select
                                                         type="select"
                                                         name="txt_agenttraiteur"
@@ -499,22 +571,71 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         required
                                                         id="txt_agenttraiteur"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     >
                                                         <option value="Saliou FAYE">Saliou FAYE</option>
                                                         <option value="Assane Aidara DIOP">Assane Aidara DIOP</option>
                                                         <option value="El Hadji Malick GUEYE">El Hadji Malick GUEYE</option> 
                                                     </select>
-                                                </div>
+                                                </div> -->
                                             </div>
                                         </div> 
+                                        <div class="sm:col-span-2">
+                                            <div class="sm:col-span-2">
+                                                <label 
+                                                    for="txt_caractere"
+                                                    class="block text-sm/6 font-medium text-primary-txt">
+                                                    Caractères
+                                                </label>
+                                                <div class="mt-2">
+                                                    <MazSelect
+                                                    type="select"
+                                                    name="txt_caractere"
+                                                    v-model="form.txt_caractere" 
+                                                    required
+                                                    id="txt_caractere"
+                                                    autocomplete="off"
+                                                    placeholder="Choisis Caractère"
+                                                        :options="[
+                                                            'Confidentiel',
+                                                            'Urgent',
+                                                            'Secret'
+                                                        ]" 
+                                                        class="h-8  w-full block w-full rounded-md bg-white px-2 py-1.5 text-base text-primary-txt 
+                                                        outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6
+                                                        scrollbar-thin scrollbar-thumb-primary scrollbar-track-primary-darlk"
+                                                        option-class="custom-option"   
+                                                        option-selected-class="bg-primary text-white  "
+                                                    
+                                                    /> 
+                                                    <!-- <select
+                                                        type="select"
+                                                        name="txt_caractere"
+                                          
+                                                        readonly
+                                                        v-model="form.txt_caractere"  
+                                                        autocomplete="off"
+                                                        id="txt_caractere"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6" 
+                                                    >
+                                                        <option selected disabled>Choisis Caractères</option>
+                                                        <option value="Confidentiel">Confidentiel</option>
+                                                        <option value="Urgent">Urgent</option>
+                                                        <option value="Secret">Secret</option>
+                                                    </select> -->
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="sm:col-span-4">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_observation"
-                                                    class="block text-sm/6 font-medium text-gray-900"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
                                                     >Observation</label
                                                 >
                                                 <div class="mt-2">
@@ -525,8 +646,31 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         
                                                         id="txt_observation"
                                                         autocomplete="off"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
-                                                            outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div> 
+                                        <div class="sm:col-span-2">
+                                            <div class="sm:col-span-1">
+                                                <label
+                                                    for="fichier_PDF"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
+                                                    >Importer le Fichier PDF</label
+                                                >
+                                                <div class="mt-2">
+                                                    <input
+                                                        type="file"
+                                                        name="fichier_PDF"
+                                                        accept="application/pdf"
+                                                        @change="handleFileUpload"
+                                                        id="fichier_PDF"
+                                                        autocomplete="off"
+                                                        placeholder="Importer le fichier"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
@@ -556,4 +700,16 @@ const submitForm = function () {  // Ajoutez `async` ici
         </div>
     </AuthenticatedLayout>
 </template>
+
+
+<style scoped>
+/* ::v-deep permet de cibler les éléments dans le portal */
+::v-deep(.custom-option:hover),
+::v-deep(.custom-option:focus),
+::v-deep(.custom-option[aria-selected="true"]) {
+  background-color: #c7d2fe; /* Couleur claire type indigo-200 */
+  color: #1e293b; /* Couleur du texte, exemple slate-800 */
+}
+</style>
+
 

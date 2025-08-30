@@ -32,17 +32,16 @@ class DepartController extends Controller
     */
 
     // retrouver le dernier numéro dordre 
-    public function getNextOrdre()
+    public function getNextOrdre($annee)
     {
-        $annee = date('Y');
+         
+        $last = Depart::whereYear('dt_datecouriercd', $annee) // 🔥 ici on filtre par champ dt_datearrivee, pas created_at !
+        ->orderByRaw('CAST(SUBSTRING_INDEX(txt_numdordrecd, "/", 1) AS UNSIGNED) DESC')
+        ->first();
     
-        $last = Depart::whereYear('created_at', $annee)
-            ->orderByRaw('CAST(txt_numdordrecd AS UNSIGNED) DESC')
-            ->first();
-    
-        $nextOrdre = $last ? ((int) $last->txt_numdordrecd + 1) : 1;
-    
-        $numOrdre = sprintf('%04d', $nextOrdre); // ❗️plus de "/année"
+        $nextOrdre = $last ? ((int) explode('/', $last->txt_numdordrecd)[0] + 1) : 1;
+
+        $numOrdre = str_pad($nextOrdre, 4, '0', STR_PAD_LEFT);
     
         return response()->json([
             'num_dordre' => $numOrdre,      // ex: "00001" 
@@ -69,7 +68,7 @@ class DepartController extends Controller
     public function store(Request $request)
     {
         //
-        $request->validate([  
+        $validateData   = $request->validate([  
             'txt_numdordrecd' => 'required|unique:departs,txt_numdordrecd',  
             'txt_caracterecd' => 'nullable|string|max:255',
             'dt_datecouriercd' => 'required|date',
@@ -84,26 +83,46 @@ class DepartController extends Controller
             'txt_referencereceptioncd' => 'nullable|string|max:255',
             'txt_observationcd' => 'nullable|string|max:255',
             'txt_dureetraitementcd' => 'required|string|max:255', 
+            'fichierPDFcd' => 'nullable|file|mimes:pdf|max:120400',  // 100Mo * 100 x 1024
+        ],[
+            'txt_numdordrecd.required' => 'Le numéro d\'ordre est requis.',
+            'txt_numdordrecd.unique' => 'Le numéro d\'ordre doit être unique.', 
+            'dt_datecouriercd.required' => 'La date du courrier est requise.',
+            'dt_datecouriercd.date' => 'La date du courrier doit être une date valide.',
+            'txt_categoriecd.required' => 'La catégorie du courrier est requise.',
+            'txt_nombrepiececd.required' => 'Le nombre de pièces est requis.',
+            'txt_objetcd.required' => 'L\'objet du courrier est requis.',
+            'txt_destinatairecd.required' => 'Le destinataire du courrier est requis.',
+            'dt_dateenvoicd.required' => 'La date d\'envoi est requise.',
+            'dt_dateenvoicd.date' => 'La date d\'envoi doit être une date valide.',
+            'dt_dateenvoicd.before_or_equal' => 'La date d\'envoi ne peut pas être dans le futur.',
+            'txt_dureetraitementcd.required' => 'La durée de traitement est requise.', 
+            'fichierPDFcd.file' => 'Le fichier doit être un fichier valide.',
+            'fichierPDFcd.mimes' => 'Le fichier doit être au format PDF.',
+            'fichierPDFcd.max' => 'La taille du fichier ne doit pas dépasser 100 Mo.',
         ]);
 
         // Validation conditionnelle
- 
+        if ($request->hasFile('fichierPDFcd')) {
+            $validateData['fichierPDFcd'] = $request->file('fichierPDFcd')->store('courrierdepart', 'public');
+        }
 
         Depart::create([ 
-            'txt_numdordrecd' => $request->txt_numdordrecd,
-            'txt_caracterecd' => $request->txt_caracterecd ?? null,
-            'dt_datecouriercd' => $request->dt_datecouriercd,
-            'txt_categoriecd' => $request->txt_categoriecd,
-            'txt_referencecourierarriveecd' => $request->txt_referencecourierarriveecd ?? null,
-            'txt_referencecourierdepartcd' => $request->txt_referencecourierdepartcd ?? null,
-            'txt_nombrepiececd' => $request->txt_nombrepiececd,
-            'txt_referencecd' => $request->txt_referencecd ?? null,
-            'txt_objetcd' => $request->txt_objetcd,
-            'txt_destinatairecd' => $request->txt_destinatairecd,
-            'dt_dateenvoicd' => $request->dt_dateenvoicd,
-            'txt_referencereceptioncd' => $request->txt_referencereceptioncd ?? null,
-            'txt_observationcd' => $request->txt_observationcd ?? null,
-            'txt_dureetraitementcd' => $request->txt_dureetraitementcd,
+            'txt_numdordrecd' => $validateData['txt_numdordrecd'],
+            'txt_caracterecd' => $validateData['txt_caracterecd'] ?? null,
+            'dt_datecouriercd' => $validateData['dt_datecouriercd'],
+            'txt_categoriecd' => $validateData['txt_categoriecd'],
+            'txt_referencecourierarriveecd' => $validateData['txt_referencecourierarriveecd'] ?? null,
+            'txt_referencecourierdepartcd' => $validateData['txt_referencecourierdepartcd'] ?? null,
+            'txt_nombrepiececd' => $validateData['txt_nombrepiececd'],
+            'txt_referencecd' => $validateData['txt_referencecd'] ?? null,
+            'txt_objetcd' => $validateData['txt_objetcd'],
+            'txt_destinatairecd' => $validateData['txt_destinatairecd'],
+            'dt_dateenvoicd' => $validateData['dt_dateenvoicd'],
+            'txt_referencereceptioncd' => $validateData['txt_referencereceptioncd'] ?? null,
+            'txt_observationcd' => $validateData['txt_observationcd'] ?? null,
+            'txt_dureetraitementcd' => $validateData['txt_dureetraitementcd'],
+            'fichierPDFcd'=> $validateData['fichierPDFcd'] ?? null,
         ]);
         return redirect()->route('depart.create')->with('success', 'Dossier enregistré avec succès');
 
@@ -157,9 +176,10 @@ class DepartController extends Controller
             'txt_referencecourierdepartcd',
             'txt_observationcd',
             'txt_dureetraitementcd',
+            'fichierPDFcd',
         ]));
 
-        return redirect()->route('instance.create')->with('success', 'Courrier '.$depart->txt_numdordrecd.' modifié avec succès');
+        return redirect()->route('instancedepart.create')->with('success', 'Courrier '.$depart->txt_numdordrecd.' modifié avec succès');
     }
 
     /**

@@ -29,6 +29,7 @@ class Arrivee extends Model
         'txt_expediteur',
         'txt_agenttraiteur',
         'txt_observation', 
+        'fichierPDF',
     ];
       
     

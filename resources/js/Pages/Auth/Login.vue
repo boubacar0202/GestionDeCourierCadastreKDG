@@ -39,7 +39,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" class="text-primary" />
+                <InputLabel for="email" value="Adresse Email" class="text-primary" />
 
                 <TextInput
                     id="email"
@@ -57,7 +57,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" class="text-primary" />
+                <InputLabel for="password" value="Mot de Passe" class="text-primary" />
 
                 <TextInput
                     id="password"
@@ -77,7 +77,7 @@ const submit = () => {
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" class="text-primary" />
                     <span class="ms-2 text-sm text-primary"
-                        >Remember me</span
+                        >Se souvenir de moi</span
                     >
                 </label>
             </div>
@@ -88,7 +88,7 @@ const submit = () => {
                     :href="route('password.request')"
                     class="rounded-md text-sm text-primary underline hover:text-primary-dark focus:outline-none focus:ring-primary focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    Forgot your password?
+                    Mot de passe oublié ?
                 </Link>
 
                 <PrimaryButton
@@ -96,7 +96,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Connexion
+                    Se connecter
                 </PrimaryButton>
             </div>
         </form>

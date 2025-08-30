@@ -22,17 +22,16 @@ class ArriveeController extends Controller
      * Show the form for creating a new resource.
      */
  
-    public function getNextOrdre()
+    public function getNextOrdre($annee)
     {
-        $annee = date('Y');
+ 
+        $last = Arrivee::whereYear('dt_datearrivee', $annee) // 🔥 ici on filtre par champ dt_datearrivee, pas created_at !
+        ->orderByRaw('CAST(SUBSTRING_INDEX(txt_numdordre, "/", 1) AS UNSIGNED) DESC')
+        ->first();
     
-        $last = Arrivee::whereYear('created_at', $annee)
-            ->orderByRaw('CAST(txt_numdordre AS UNSIGNED) DESC')
-            ->first();
-    
-        $nextOrdre = $last ? ((int) $last->txt_numdordre + 1) : 1;
-    
-        $numOrdre = sprintf('%05d', $nextOrdre); // ❗️plus de "/année"
+        $nextOrdre = $last ? ((int) explode('/', $last->txt_numdordre)[0] + 1) : 1;
+
+        $numOrdre = str_pad($nextOrdre, 5, '0', STR_PAD_LEFT);
     
         return response()->json([
             'num_dordre' => $numOrdre,      // ex: "00001" 
@@ -58,7 +57,7 @@ class ArriveeController extends Controller
             'txt_caractere' => 'nullable|string|max:255',
             'dt_datearrivee' => 'required|date',
             'txt_numcourier' => 'required|string|max:255',
-            'dt_datecourier' => 'required|date',
+            'dt_datecourier' => 'required|date|before_or_equal:today',
             'txt_reference' => 'required|string|max:255',
             'txt_categorie' => 'required|string|max:255',
             'txt_designation' => 'required|string|max:255',
@@ -70,18 +69,32 @@ class ArriveeController extends Controller
             'txt_expediteur' => 'required|string|max:255',
             'txt_agenttraiteur' => 'required|string|max:255',
             'txt_observation' => 'nullable|string|max:255',
+            'fichierPDF' => 'nullable|file|mimes:pdf|max:120400',
+
+        ],[
+            'txt_numdordre.unique' => 'Le numéro d\'ordre existe déjà.',
+            'txt_numdordre.required' => 'Le numéro d\'ordre est requis.',
+            'txt_numcourier.required' => 'Le numéro du courrier est requis.',
+            'dt_datearrivee.required' => 'La date d\'arrivée est requise.',
+            'dt_datearrivee.date' => 'Le format de la date d\'arrivée est invalide.',
+            'dt_datecourier.required' => 'La date du courrier est requise.',
+            'dt_datecourier.before_or_equal' => 'La date du courrier ne peut pas dépasser aujourd\'hui.',
+            'txt_reference.required' => 'La référence est requise.',
+            'txt_categorie.required' => 'La catégorie est requise.',
+            'txt_designation.required' => 'La désignation est requise.',
+            'txt_nombrepiece.required' => 'Le nombre de pièces est requis.',
+            'txt_nombrepiece.integer' => 'Le nombre de pièces doit être un entier.',
+            'txt_objet.required' => 'L\'objet est requis.',
+            'txt_expediteur.required' => 'L\'expéditeur est requis.',
+            'txt_agenttraiteur.required' => 'L\'agent traitant est requis.',
+            'fichierPDF.mimes' => 'Le fichier doit être au format PDF.',
+            'fichierPDF.max' => 'La taille du fichier ne doit pas dépasser 120 Mo.',
         ]);
+        // Gestion du fichier PDF
 
-        // ✅ Récupération du dernier `txt_numdordre` (string formaté)
-        // $dernierTxt = DB::table('courierarrivees')
-        //     ->selectRaw('MAX(CAST(txt_numdordre AS UNSIGNED)) as max_ordre')
-        //     ->value('max_ordre') ?? 0;
-
-        // $nouveau_txt_numdordre = str_pad($dernierTxt + 1, 4, '0', STR_PAD_LEFT);
-
-        // ✅ Récupération du dernier `num_dordre` (integer brut)
-        // $dernierNum = DB::table('courierarrivees')->max('num_dordre') ?? 0;
-        // $nouveau_num_dordre = $dernierNum + 1;
+        if ($request->hasFile('fichierPDF')) {
+            $validateData['fichierPDF'] = $request->file('fichierPDF')->store('courrierarrivee', 'public');
+        }
 
         Arrivee::create([
             'txt_numdordre' => $validateData['txt_numdordre'],  
@@ -100,11 +113,11 @@ class ArriveeController extends Controller
             'txt_expediteur' => $validateData['txt_expediteur'],
             'txt_agenttraiteur' => $validateData['txt_agenttraiteur'],
             'txt_observation' => $validateData['txt_observation'] ?? null, 
+            'fichierPDF'=> $validateData['fichierPDF'] ?? null,
         ]);
 
         return redirect()->route('arrivee.create')->with('success', 'Courrier arrivée créé avec succès');
- 
-    
+  
     }
 
     /**
@@ -155,8 +168,9 @@ class ArriveeController extends Controller
             'txt_expediteur',
             'txt_agenttraiteur',
             'txt_observation',
+            'fichierPDFcd',
         ]));
-        return redirect()->route('instance.create')->with('success', 'Courrier '.$arrivee->txt_numdordre.' modifié avec succès');
+        return redirect()->route('instancearrivee.create')->with('success', 'Courrier '.$arrivee->txt_numdordre.' modifié avec succès');
     }
 
     /**

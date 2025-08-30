@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     MazBtn: typeof import('maz-ui/components/MazBtn')['default']
+    MazSelect: typeof import('maz-ui/components/MazSelect')['default']
   }
   export interface ComponentCustomProperties {
     vLazyImg: typeof import('maz-ui')['vLazyImg']

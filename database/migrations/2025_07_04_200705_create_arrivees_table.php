@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('txt_expediteur');
             $table->string('txt_agenttraiteur');
             $table->string('txt_observation')->nullable(); 
-
+            $table->string('fichierPDF')->nullable();
             
             $table->timestamps(); 
             $table->softDeletes();
