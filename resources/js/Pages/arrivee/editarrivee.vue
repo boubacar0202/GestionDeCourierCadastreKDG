@@ -11,20 +11,18 @@ import { Inertia } from '@inertiajs/inertia';
 import { router } from '@inertiajs/vue3';
  
 defineOptions({ layout: DefaultLayout });
-const toast = useToast();
-const fichierPDF = ref(null);
+const toast = useToast(); 
 
  
 const { arrivees } = defineProps({
-    arrivees: Object, 
+    arrivees: Object,  
 })
- 
  
 const form = useForm({
     //  courrierarrivee
-    txt_numdordre: arrivees?.txt_numdordre || '',  
-    txt_caractere: arrivees?.txt_caractere || '',
-    dt_datearrivee: arrivees?.dt_datearrivee || '',
+    txt_numdordre: arrivees?.txt_numdordre || '',
+    dt_datearrivee: arrivees?.dt_datearrivee || '',  
+    txt_caractere: arrivees?.txt_caractere || '', 
     txt_numcourier: arrivees?.txt_numcourier || '',
     dt_datecourier: arrivees?.dt_datecourier || '',
     txt_reference: arrivees?.txt_reference || '',
@@ -38,34 +36,10 @@ const form = useForm({
     txt_expediteur: arrivees?.txt_expediteur || '',
     txt_agenttraiteur: arrivees?.txt_agenttraiteur || '',
     txt_observation: arrivees?.txt_observation || '',
-    fichierPDF: arrivees?.fichierPDF || '',
+    fichierPDF: arrivees?.fichierPDF || null,
 
 }); 
-
-// Récuperation des fichier PDF 
-function handleFileUpload(event) {
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    if (file.type !== "application/pdf") {
-        toast.error("Veuillez sélectionner un fichier PDF valide.");
-        event.target.value = ""; // reset input
-        return;
-    }
-
-    if (file.size > 100 * 1024 * 1024) { // 100 Mo
-        toast.error("Le fichier dépasse 100 Mo !");
-        event.target.value = ""; // reset input
-        return;
-    }
-
-    fichierPDF.value = file;
-    form.fichierPDF = file;
-
-    console.log("Fichier PDF sélectionné :", fichierPDF.value);
-}
-
+ 
 const show = ref(false);
 const handleCategorieChange = () => {
     show.value = form.txt_categorie === "Convocation - Invitation";
@@ -92,7 +66,7 @@ const designationsParCategorie = {
         'Autirisationde morceler'
     ],
     'Convocation - Invitation': ['Réunion', 'Alerte', 'Visite de site', 
-        'Rencontre', 'Randonnée - Marche', 'Session - Congré',
+        'Rencontre', 'Randonnée - Marche', 'Session', 'Congré', 'Cérémonie', 'Inauguration', ' Congré',
         'Journée dédiée', 'Forum', 'Formation', 'Séminaire'
     ],
     'Information': ['Note de service - Curculaire', 'Rapport - PV Compte rendu', 
@@ -144,25 +118,75 @@ watch(
         form.txt_reference = newNum + ' du ' + newDate;
     }
 );
- 
- 
-function submit() {
-    form.put(route('arrivee.update', arrivees?.id), {
-        preserveScroll: true,
-        onSuccess: (page) => {
-          console.log("✅ Succès Laravel :", page);
-          const message = page.props.flash?.success || "Modification réussie !";
-        //   toast.success(message);  
-        },
-        onError: (errors) => {
-          console.error('Erreur lors de la mise à jour', errors);
-          Object.values(errors).forEach((error) => {
-            toast.error(error);
-          });
-        }
-    });
+  
+// 📁 Gestion du changement de fichier
+function handleFileChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+        form.fichierPDF = file;
+        console.log("Fichier sélectionné:", file.name);
+    } else {
+        form.fichierPDF = null;
+    }
 }
- 
+
+async function submit() {
+    try {
+        console.log("📤 Envoi avec axios...");
+        
+        const formData = new FormData();
+        
+        // Ajouter tous les champs UNE SEULE FOIS
+        formData.append('_method', 'PUT'); // Important pour Laravel
+        formData.append('txt_numdordre', form.txt_numdordre);
+        formData.append('dt_datearrivee', form.dt_datearrivee);
+        formData.append('txt_caractere', form.txt_caractere);
+        formData.append('txt_numcourier', form.txt_numcourier);
+        formData.append('dt_datecourier', form.dt_datecourier);
+        formData.append('txt_reference', form.txt_reference);
+        formData.append('txt_categorie', form.txt_categorie);
+        formData.append('txt_designation', form.txt_designation);
+        formData.append('dt_date', form.dt_date);
+        formData.append('txt_heure', form.txt_heure);
+        formData.append('txt_lieu', form.txt_lieu);
+        formData.append('txt_nombrepiece', form.txt_nombrepiece);
+        formData.append('txt_objet', form.txt_objet);
+        formData.append('txt_expediteur', form.txt_expediteur);
+        formData.append('txt_agenttraiteur', form.txt_agenttraiteur);
+        formData.append('txt_observation', form.txt_observation);
+        
+        // Ajouter le fichier
+        if (form.fichierPDF instanceof File) {
+            formData.append('fichierPDF', form.fichierPDF);
+        }
+
+        // Debug : vérifiez ce qui est envoyé
+        for (let [key, value] of formData.entries()) {
+            console.log(key + ': ', value);
+        }
+
+        const response = await axios.post(route('arrivee.update', arrivees.id), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        });
+
+        toast.success('Modification réussie!');
+        Inertia.visit(route("instancearrivee.create"), { replace: true });
+        
+    } catch (error) {
+        console.error('Erreur détaillée:', error.response?.data);
+        if (error.response?.data?.errors) {
+            Object.values(error.response.data.errors).forEach(err => {
+                toast.error(err);
+            });
+        } else {
+            toast.error('Erreur lors de la modification');
+        }
+    }
+}
+
+
 </script>
 
 <template>
@@ -185,7 +209,7 @@ function submit() {
                             <h1 class="text-lg text-white font-semibold">Formulaire de Modification des Courriers Arrivées</h1>
                         </div>
                         <!-- Corps du formulaire -->
-                        <form @submit.prevent="submit">
+                        <form @submit.prevent="submit" enctype="multipart/form-data">
                             <div class="p-6">
                                 <!-- Section Parcelle -->
                                 <h5 class="text-lg text-primary-txt font-bold">
@@ -217,44 +241,12 @@ function submit() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="sm:col-span-2">
-                                            <div class="sm:col-span-2">
-                                                <label 
-                                                    for="txt_caractere"
-                                                    class="block text-sm/6 font-medium text-primary-txt">
-                                                    Caractères
-                                                </label>
-                                                <div class="mt-2">
-                                                    <select
-                                                        type="txt"
-                                                        name="txt_caractere"
-                                                        required
-                                                        readonly
-                                                        v-model="form.txt_caractere"  
-                                                        id="txt_caractere"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
-                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6" 
-                                                    >
-                                                        <option selected disabled>Choisis Caractères</option>
-                                                        <option value="Confidentiel">Confidentiel</option>
-                                                        <option value="Urgent">Urgent</option>
-                                                        <option value="Secret">Secret</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <br />
-                                    <div
-                                        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
-                                    >
                                         <div class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label 
                                                     for="dt_datearrivee"
                                                     class="block text-sm/6 font-medium text-primary-txt">
-                                                    Date Réception
+                                                    Date Reception
                                                 </label>
                                                 <div class="mt-2">
                                                     <input
@@ -269,7 +261,13 @@ function submit() {
                                                     />
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> 
+                                    </div>
+                                    <br />
+                                    <div
+                                        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"
+                                    >
+
                                         <div class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label
@@ -336,7 +334,7 @@ function submit() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="sm:col-span-1">
+                                        <div class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_categorie"
@@ -460,7 +458,7 @@ function submit() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="sm:col-span-1">
+                                        <div class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_nombrepiece"
@@ -548,10 +546,41 @@ function submit() {
                                                         <option value="Saliou FAYE">Saliou FAYE</option>
                                                         <option value="Assane Aidara DIOP">Assane Aidara DIOP</option>
                                                         <option value="El Hadji Malick GUEYE">El Hadji Malick GUEYE</option> 
+                                                        <option value="Moustapha Diop">Moustapha Diop</option>
+                                                        <option value="Daouda Ndiaye">Daouda Ndiaye</option>
+                                                        <option value="Abdoulaye Camara">Abdoulaye Camara</option>
+                                                        <option value="Oumar Diop">Oumar Diop</option>
                                                     </select>
                                                 </div>
                                             </div>
                                         </div> 
+                                        <div class="sm:col-span-2">
+                                            <div class="sm:col-span-2">
+                                                <label 
+                                                    for="txt_caractere"
+                                                    class="block text-sm/6 font-medium text-primary-txt">
+                                                    Caractères
+                                                </label>
+                                                <div class="mt-2">
+                                                    <select
+                                                        type="txt"
+                                                        name="txt_caractere"
+                                                        required
+                                                        readonly
+                                                        v-model="form.txt_caractere"  
+                                                        id="txt_caractere"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6" 
+                                                    >
+                                                        <option selected disabled>Choisis Caractères</option>
+                                                        <option value="Confidentiel">Confidentiel</option>
+                                                        <option value="Urgent">Urgent</option>
+                                                        <option value="Secret">Secret</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="sm:col-span-4">
                                             <div class="sm:col-span-1">
                                                 <label
@@ -583,26 +612,29 @@ function submit() {
                                                 <div class="mt-2">
                                                     <input
                                                         type="file"
-                                                        name="fichier_PDF"
+                                                        name="fichierPDF"
                                                         accept="application/pdf"
-                                                        @change="handleFileUpload"
-                                                        id="fichier_PDF"
+                                                        @change="handleFileChange"
+                                                        id="fichierPDF"
                                                         autocomplete="off"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
-                                                </div>
-                                                <!-- ✅ Affichage le fichier enregistré -->
-                                                <div v-if="form.fichierPDF && typeof form.fichierPDF === 'string'" class="mt-2"> 
-                                                    <a
-                                                        :href="`/storage/${form.fichierPDF}`"
-                                                        target="_blank"
-                                                        class="text-blue-600 underline"
-                                                    >
-                                                        Voir le fichier
+                                                </div>  
+                                                <!-- Pour ajouter un bouton de suppression de fichier -->
+                                                <div v-if="arrivees?.fichierPDF" class="mt-2 flex items-center space-x-2">
+                                                    <a :href="`/storage/${arrivees.fichierPDF}`" target="_blank" 
+                                                    class="text-blue-600 underline text-sm">
+                                                        📄 Voir le PDF
                                                     </a>
-                                                </div> 
+                                                    <button @click="deleteFile" 
+                                                            class="text-red-600 text-sm hover:text-red-800">
+                                                        🗑️ Supprimer
+                                                    </button>
+                                                </div>
+                                                <!-- Fin du bouton de suppression -->
+                                                 
                                             </div>
                                         </div>
                                     </div>

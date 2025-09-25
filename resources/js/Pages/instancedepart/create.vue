@@ -4,8 +4,7 @@ import { ref, computed  } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import { defineProps, onMounted } from 'vue';
 import { router, usePage  } from '@inertiajs/vue3'
-import { Link as InertiaLink } from '@inertiajs/vue3'
-// import { toast } from 'vue3-toastify'
+import { Link as InertiaLink } from '@inertiajs/vue3' 
  
 const props = defineProps({
     arrivee: Object,    
@@ -13,8 +12,7 @@ const props = defineProps({
     departs: Array,
     depart: Object,
 });
- 
- 
+  
 const numeroCD = ref('');  
 const annee = ref('');
 
@@ -23,9 +21,9 @@ function normalize(str) {
     return str?.toString().trim().toLowerCase();
 }
  
-//  Filtrer par date et par Numéro
+//  Filtrer par date et par Numéro + Tri croissant par txt_numdordrecd
 const filtereDeparts = computed(() => {
-    return props.departs.filter(depart => {
+    const filtered = props.departs.filter(depart => {
         const matchNumero = numeroCD.value
             ? normalize(depart.txt_numdordrecd)?.includes(normalize(numeroCD.value))
             : true;
@@ -36,14 +34,20 @@ const filtereDeparts = computed(() => {
 
         return matchNumero && matchAnnee;
     });
-});
 
+    // Tri par ordre numérique de la partie avant "/"
+    return filtered.sort((a, b) => {
+        const numA = parseInt(a.txt_numdordrecd?.split("/")[0] || 0, 10);
+        const numB = parseInt(b.txt_numdordrecd?.split("/")[0] || 0, 10);
+        return numA - numB; // ordre croissant
+    });
+});
+ 
 // Compter le nombre total de courrier
 const totalCourrier = computed(() => {
     return props.departs.filter(totalarrivee => !!totalarrivee.txt_numdordrecd).length;
 });
-
-
+ 
 // filtrer les instances par categorie  
 const formatDate = (dateString) => {
     if (!dateString) return '-';
@@ -103,7 +107,7 @@ function supprimerCourrierDepart(depart) {
                              
                             <div class="relative overflow-x-auto p-4 border-b bg-primary-form mt-8">
                                 <div class="flex justify-between items-center"> 
-                                    <h1 class="text-2xl text-primary-txt font-semibold">
+                                    <h1 class="text-xl text-primary-txt font-semibold">
                                         Liste des Courriers Départs : 
                                         <span v-if="totalCourrier>0" class="text-gray-600">
                                             ({{ totalCourrier }})
@@ -146,53 +150,52 @@ function supprimerCourrierDepart(depart) {
                                 </div>
                             </div>
 
-                            <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-8">
+                            <div class="max-h-[500px] overflow-y-auto shadow-md sm:rounded-lg mt-8">
                                 <div class="container"> 
                                     <div class="card"> 
                                         <div class="card-body">
                                             <table class="table table-sm table-strictped table-bordered bg-primary text-white">
 
-                                                <thead sortedDeparts>
+                                                <thead class="sticky top-0 z-10">
                                                     <tr class="h-20">
-                                                        <th scope="col" class="bg-primary text-white text-center whitespace-nowrap">N°</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">N° d'ordre départ</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Caractère</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Date Courrier</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Categorie</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Référence C.Arrivée</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Référence C.Depart</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Nombre Pièce</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Référence</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Objet</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Destinataire</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Date Envoi</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Référence Réception</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Observation</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Durée Traitement</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">Fichier</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-center border-l border-primary-only font-bold whitespace-nowrap">ACTIONS</th>
+                                                        <th scope="col" class="sticky left-0 z-30 px-6 py-3 bg-primary text-white text-sm text-center whitespace-nowrap">N°</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">N° d'ordre départ</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Caractère</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Date Courrier</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Categorie</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Référence C.Arrivée</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Référence C.Depart</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Nombre Pièce</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Référence</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Objet</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Destinataire</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Date Envoi</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Référence Réception</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Observation</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Durée Traitement</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">Fichier</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm text-center border-l border-primary-only font-bold whitespace-nowrap">ACTIONS</th>
 
                                                     </tr>
                                                 </thead>
                                                         
                                                 <tbody sortedDeparts>
-                                                    <tr v-for="(depart, index) in filtereDeparts" :key="depart.id"  class="bg-white text-gray-800">
-                                                        <td scope="col" class="px-6 py-3 text-center font-bold text-primary-txt whitespace-nowrap">{{ index + 1 }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_numdordrecd }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_caracterecd || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ formatDate(depart.dt_datecouriercd) || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_categoriecd || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_referencecourierarriveecd || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_referencecourierdepartcd || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_nombrepiececd || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_referencecd || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_objetcd || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_destinatairecd || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ formatDate(depart.dt_dateenvoicd) || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_referencereceptioncd || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_observationcd || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center border border-primary-only whitespace-nowrap">{{ depart.txt_dureetraitementcd || '-' }}</td>
-
+                                                    <tr v-for="(depart, index) in filtereDeparts" :key="depart.id"  class="bg-white text-primary-txt h-10">
+                                                        <td scope="col" class="sticky left-0 z-0 border bg-white px-6 py-3 text-sm text-center font-bold text-primary-txt whitespace-nowrap">{{ index + 1 }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_numdordrecd }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_caracterecd || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ formatDate(depart.dt_datecouriercd) || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_categoriecd || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_referencecourierarriveecd || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_referencecourierdepartcd || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_nombrepiececd || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_referencecd || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_objetcd || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_destinatairecd || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ formatDate(depart.dt_dateenvoicd) || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_referencereceptioncd || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_observationcd || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold border border-primary-only whitespace-nowrap">{{ depart.txt_dureetraitementcd || '-' }}</td>
                                                         <td scope="col" class="px-6 py-3 text-center border border-primary-only font-bold whitespace-nowrap"> 
                                                             <div v-if="depart.fichierPDFcd">
                                                                 <a :href="`/storage/${depart.fichierPDFcd}`" target="_blank" class="text-blue-600 underline">

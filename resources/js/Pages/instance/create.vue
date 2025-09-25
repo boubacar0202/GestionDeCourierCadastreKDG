@@ -50,6 +50,11 @@ const totalInstance = computed(() => {
     return filteredInstance.value.filter(instance => instance.isOverdue).length;
 });
 
+// Compter le nombre total de courrier
+const totalCourrierInstance = computed(() => {
+    return filteredInstance.value.filter(totalCourrierInstance => !!totalCourrierInstance.txt_numdordre).length;
+});
+
 const formatDate = (dateString) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -58,6 +63,7 @@ const formatDate = (dateString) => {
         year: 'numeric',
     });
 };
+
  
 </script>
 
@@ -94,59 +100,67 @@ const formatDate = (dateString) => {
  
                             <div class="relative overflow-x-auto p-4 border-b bg-primary-form mt-8">
                                 <div class="flex justify-between items-center"> 
-                                    <h1 class="text-2xl text-primary-txt font-semibold">Instances </h1>  
-                                    <h1 class="text-lg text-primary-txt  font-semibold">Nombres d'Instances (+10 jours) :  {{ totalInstance }}</h1>  
+                                    <h1 class="text-2xl text-primary-txt font-semibold">
+                                        Instances 
+                                        <span v-if="totalCourrierInstance>0" class="text-gray-600">
+                                            ({{ totalCourrierInstance }})
+                                        </span>
+                                        <span v-else class="text-red-600">
+                                            Aucun enregistrement
+                                        </span> 
+                                    </h1>  
+                                    <h1 class="text-lg text-primary-txt  font-semibold">Nombres d'Instances (+10 jours) :  {{ totalInstance }}</h1>   
                                 </div>
                             </div>
-                            <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-8">
+                            <div class="max-h-[500px] overflow-y-auto shadow-md sm:rounded-lg mt-8">
                                 <div class="container"> 
                                     <div class="card"> 
                                         <div class="card-body">
                                             <table class="table table-sm table-strictped table-bordered bg-primary text-white">
 
-                                                <thead sortedinstance>
+                                                <thead class="sticky top-0 z-10">
                                                     <tr class="h-20">  
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">N°</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">N° d'ordre d'arrivée</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Catégorie</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Date Arrivée</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">N° Courrier</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Date Courrier</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Référence</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Caractère</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Désignation</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Date</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Heure</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Lieu</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Nombre Pièces</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Objet</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Expéditeur</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Agent Traiteur</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Observation</th>
-                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-l border-l border-primary-only font-bold whitespace-nowrap">Fichier PDF</th> 
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">N°</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">N° d'ordre d'arrivée</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Catégorie</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Date Arrivée</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">N° Courrier</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Date Courrier</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Référence</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Caractère</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Désignation</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Date</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Heure</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Lieu</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Nombre Pièces</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Objet</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Expéditeur</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Agent Traiteur</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Observation</th>
+                                                        <th scope="col" class="px-6 py-3 bg-primary text-white text-sm border-l border-primary-only font-bold whitespace-nowrap">Fichier PDF</th> 
                                                     </tr>
                                                 </thead>
                                                         
                                                 <tbody sortedinstance>
                                                     <tr v-for="(arrivee, index) in filteredInstance" :key="arrivee.id"  class="bg-white text-gray-800">
-                                                        <td scope="col" class="px-6 py-3 text-center text-primary-txt font-bold whitespace-nowrap border border-primary-only">{{ index + 1 }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only" :class="arrivee.isOverdue ? 'text-red-600 font-bold' : ''">{{ arrivee.txt_numdordre }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_categorie || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ formatDate(arrivee.dt_datearrivee) || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_numcourier || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ formatDate(arrivee.dt_datecourier) }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_reference || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_caractere || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_designation || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ formatDate(arrivee.dt_date) || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_heure || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_lieu || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_nombrepiece || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_objet || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_expediteur || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_agenttraiteur || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center whitespace-nowrap border border-primary-only">{{ arrivee.txt_observation || '-' }}</td>
-                                                        <td scope="col" class="px-6 py-3 text-center font-bold whitespace-nowrap border border-primary-only"> 
+                                                        <td scope="col" class="sticky left-0 z-0 border bg-white px-6 py-3 text-center text-sm text-primary-txt font-bold whitespace-nowrap border border-primary-only">{{ index + 1 }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only" :class="arrivee.isOverdue ? 'text-red-600 font-bold' : ''">{{ arrivee.txt_numdordre }}</td> 
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_categorie || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ formatDate(arrivee.dt_datearrivee) || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_numcourier || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ formatDate(arrivee.dt_datecourier) }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_reference || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_caractere || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_designation || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ formatDate(arrivee.dt_date) || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_heure || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_lieu || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_nombrepiece || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_objet || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_expediteur || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_agenttraiteur || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm whitespace-nowrap border border-primary-only">{{ arrivee.txt_observation || '-' }}</td>
+                                                        <td scope="col" class="px-6 py-3 text-center text-sm font-bold whitespace-nowrap border border-primary-only"> 
                                                             <div v-if="arrivee.fichierPDF">
                                                                 <a :href="`/storage/${arrivee.fichierPDF}`" target="_blank" class="text-blue-600 underline">
                                                                     Voir PDF

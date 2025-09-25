@@ -6,6 +6,7 @@ use App\Http\Controllers\InstancearriveeController;
 use App\Http\Controllers\InstanceController; 
 use App\Http\Controllers\Auth\AuthenticatedSessionController; 
 use App\Http\Controllers\InstancedepartController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TrimestreController;
 use Illuminate\Container\Attributes\Auth; 
@@ -52,6 +53,7 @@ Route::resource('instance', InstanceController::class);
 Route::resource('/instancearrivee', InstancearriveeController::class);
 Route::resource('/instancedepart', InstancedepartController::class);
 Route::resource('/trimestre', TrimestreController::class);
+Route::resource('/message', MessageController::class); 
 Route::get('/arrivee', [ArriveeController::class, 'create'])->name('arrivee.create');
 Route::get('/depart', [DepartController::class, 'create'])->name('depart.create');
 Route::get('/instance', [InstanceController::class, 'create'])->name('instance.create'); 
@@ -70,29 +72,52 @@ Route::post('/depart',[DepartController::class, 'store'])->name('depart.store');
 
 Route::get('/instance/create', [InstanceController::class, 'create'])->name('instance.create');   
 Route::get('/instancearrivee/create', [InstancearriveeController::class, 'create'])->name('instancearrivee.create');
+ 
 Route::get('/instancedepart/create', [InstancedepartController::class, 'create'])->name('instancedepart.create');
 Route::get('/trimestre/create', [TrimestreController::class, 'create'])->name('trimestre.create');
-
-
-
-
+ 
 Route::get('/count-morcellements', [TrimestreController::class, 'countMorcellementsThisQuarter']);
-
-
-
  
 Route::delete('/instance/arrivee/{id}', [InstanceController::class, 'destroy'])->name('instance.destroyArrivee');
 Route::delete('/instance/depart/{id}', [InstanceController::class, 'destroyDepart'])->name('instance.destroyDepart'); 
 
 Route::delete('/instancearrivee/arrivee/{id}', [InstancearriveeController::class, 'destroy'])->name('instancearrivee.destroyArrivee');
 Route::delete('/instancedepart/depart/{id}', [InstancedepartController::class, 'destroyDepart'])->name('instancedepart.destroyDepart'); 
+Route::get('/instancearrivee/arrivee/{txt_numdordre}', [InstancearriveeController::class, 'show'])->name('instancearrivee.show');
 
 Route::get('/arrivee/editarrivee/{id}', [ArriveeController::class, 'editarrivee'])->name('arrivee.editarrivee');
 Route::get('/depart/editdepart/{id}', [DepartController::class, 'editdepart'])->name('depart.editdepart');
 
-Route::put('/arrivee/update/{id}', [ArriveeController::class, 'update'])->name('arrivee.update'); 
+Route::put('/arrivee/update/{id}', [ArriveeController::class, 'update'])->name('arrivee.update');  
 Route::put('/depart/update/{id}', [DepartController::class, 'update'])->name('depart.update'); 
+ 
+Route::get('/message/create', [MessageController::class, 'create'])->name('message.create');
 
+Route::get('/message', [MessageController::class, 'index']);
+Route::post('/message', [MessageController::class, 'store']);
+
+Route::get('/message', [MessageController::class, 'index'])->middleware('auth');
+Route::post('/message', [MessageController::class, 'store'])->middleware('auth');
+ 
+Route::get('/api/messages/{withUserId}', [MessageController::class, 'apiIndex'])->middleware('auth');
+Route::get('/message/{id}', [MessageController::class, 'show'])->name('message.show');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/messages/unread-total', [MessageController::class, 'unreadTotal']);
+    Route::get('/messages/unread-by-user', [MessageController::class, 'unreadByUser']);
+});
+ 
+Route::post('/message/markRead/{senderId}', [MessageController::class, 'markRead'])->name('messages.markRead');
+ 
+Route::get('/api/messages/{id}', [MessageController::class, 'fetchMessages']); 
+Route::post('/message', [MessageController::class, 'store']);
+Route::post('/message/markReceived/{senderId}', [MessageController::class, 'markReceived']);
+Route::middleware('auth:sanctum')->get('/messages/{receiverId}', [MessageController::class, 'messages']);
+Route::get('/messages/unread-per-user', [MessageController::class, 'unreadPerUser'])->middleware('auth:sanctum');
+Route::delete('/message/{id}', [MessageController::class, 'destroy'])->middleware('auth');
+Route::put('/message/{id}', [MessageController::class, 'update'])->middleware('auth');
+  
  
 
+ 
 require __DIR__ . '/auth.php';

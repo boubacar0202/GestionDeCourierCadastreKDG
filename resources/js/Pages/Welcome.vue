@@ -27,11 +27,10 @@ function handleImageError() {
 </script>
 
 <template>
-    <Head title="Welcome">
+    <Head title="login - Gestion de Courriers">
         <link rel="icon" sizes="512x512" href="/logo-01.png">
     </Head>
-
-
+ 
     <div class="bg-white text-black/50 dark:bg-black dark:text-white/50">
 
         <div

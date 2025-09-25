@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Inertia\Inertia; 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+
+
 class ArriveeController extends Controller
 {
     /**
@@ -25,7 +29,7 @@ class ArriveeController extends Controller
     public function getNextOrdre($annee)
     {
  
-        $last = Arrivee::whereYear('dt_datearrivee', $annee) // 🔥 ici on filtre par champ dt_datearrivee, pas created_at !
+        $last = Arrivee::whereYear('dt_datearrivee', $annee)
         ->orderByRaw('CAST(SUBSTRING_INDEX(txt_numdordre, "/", 1) AS UNSIGNED) DESC')
         ->first();
     
@@ -90,8 +94,8 @@ class ArriveeController extends Controller
             'fichierPDF.mimes' => 'Le fichier doit être au format PDF.',
             'fichierPDF.max' => 'La taille du fichier ne doit pas dépasser 120 Mo.',
         ]);
-        // Gestion du fichier PDF
-
+        
+        // Gestion du fichier PDF 
         if ($request->hasFile('fichierPDF')) {
             $validateData['fichierPDF'] = $request->file('fichierPDF')->store('courrierarrivee', 'public');
         }
@@ -119,15 +123,7 @@ class ArriveeController extends Controller
         return redirect()->route('arrivee.create')->with('success', 'Courrier arrivée créé avec succès');
   
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
+ 
     /**
      * Show the form for editing the specified resource.
      */
@@ -147,30 +143,84 @@ class ArriveeController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        //
+    { 
         $arrivee = Arrivee::findOrFail($id); 
-        // ✅ Mise à jour du arrivee (champs directs)
-        $arrivee->update($request->only([
-            'txt_numdordre',
-            'txt_caractere',
-            'dt_datearrivee',
-            'txt_numcourier',
-            'dt_datecourier',
-            'txt_reference',
-            'txt_categorie',
-            'txt_designation',
-            'dt_date',
-            'txt_heure',
-            'txt_lieu',
-            'txt_nombrepiece',
-            'txt_objet',
-            'txt_expediteur',
-            'txt_agenttraiteur',
-            'txt_observation',
-            'fichierPDFcd',
-        ]));
-        return redirect()->route('instancearrivee.create')->with('success', 'Courrier '.$arrivee->txt_numdordre.' modifié avec succès');
+
+        // ✅ UTILISEZ LES MÊMES RÈGLES DE VALIDATION QUE STORE()
+        $validateData = $request->validate([
+            'txt_numdordre' => 'required|unique:arrivees,txt_numdordre,' . $id,   // ✅ Ajoutez l'ID pour ignorer l'unique
+            'txt_caractere' => 'nullable|string|max:255',
+            'dt_datearrivee' => 'required|date',
+            'txt_numcourier' => 'required|string|max:255',
+            'dt_datecourier' => 'required|date|before_or_equal:today',
+            'txt_reference' => 'required|string|max:255',
+            'txt_categorie' => 'required|string|max:255',
+            'txt_designation' => 'required|string|max:255',
+            'dt_date' => 'nullable|date',
+            'txt_heure' => 'nullable|string|max:255',
+            'txt_lieu' => 'nullable|string|max:255',
+            'txt_nombrepiece' => 'required|integer',
+            'txt_objet' => 'required|string|max:255',
+            'txt_expediteur' => 'required|string|max:255',
+            'txt_agenttraiteur' => 'required|string|max:255',
+            'txt_observation' => 'nullable|string|max:255',
+            'fichierPDF' => 'nullable|file|mimes:pdf|max:120400',
+        ], [
+            // ... mêmes messages d'erreur que store() ...
+            'txt_numdordre.required' => 'Le numéro d\'ordre est requis.',
+            'txt_numdordre.unique' => 'Le numéro d\'ordre doitêtre unique.',
+            'dt_datearrivee.required' => 'La date d\'arrivée est requise.',
+            'dt_datearrivee.date' => 'La date d\'arrivée doitêtre une date valide.',
+            'txt_numcourier.required' => 'Le numéro du courrier est requis.',
+            'dt_datecourier.required' => 'La date du courrier est requise.',
+            'dt_datecourier.date' => 'La date du courrier doitêtre une date valide.',
+            'txt_reference.required' => 'La reference est requise.',
+            'txt_categorie.required' => 'La catégorie du courrier est requise.',
+            'txt_designation.required' => 'La designation est requise.',
+            'txt_nombrepiece.required' => 'Le nombre de pièces est requis.',
+            'txt_objet.required' => 'L\'objet du courrier est requis.',
+            'txt_expediteur.required' => 'L\'expéditeur du courrier est requis.',
+            'txt_agenttraiteur.required' => 'L\'agent traiteur du courrier est requis.',
+     
+        ]);
+        
+        // ✅ GESTION DU FICHIER COMME DANS STORE()
+        if ($request->hasFile('fichierPDF')) {
+            // Supprimer l'ancien fichier si existe
+            if ($arrivee->fichierPDF && Storage::disk('public')->exists($arrivee->fichierPDF)) {
+                Storage::disk('public')->delete($arrivee->fichierPDF);
+            }
+            
+            // Stocker le nouveau fichier DANS LE MÊME DOSSIER
+            $validateData['fichierPDF'] = $request->file('fichierPDF')->store('courrierarrivee', 'public');
+        } else {
+            // Garder l'ancien fichier si aucun nouveau n'est uploadé
+            $validateData['fichierPDF'] = $arrivee->fichierPDF;
+        }
+
+        // ✅ MISE À JOUR COMME DANS STORE()
+        $arrivee->update([
+            'txt_numdordre' => $validateData['txt_numdordre'],  
+            'txt_caractere' => $validateData['txt_caractere'] ?? null,
+            'dt_datearrivee' => $validateData['dt_datearrivee'],
+            'txt_numcourier' => $validateData['txt_numcourier'],
+            'dt_datecourier' => $validateData['dt_datecourier'],
+            'txt_reference' => $validateData['txt_reference'],
+            'txt_categorie' => $validateData['txt_categorie'],
+            'txt_designation' => $validateData['txt_designation'],
+            'dt_date' => $validateData['dt_date'],  
+            'txt_heure' => $validateData['txt_heure'],
+            'txt_lieu' => $validateData['txt_lieu'],
+            'txt_nombrepiece' => $validateData['txt_nombrepiece'],
+            'txt_objet' => $validateData['txt_objet'],
+            'txt_expediteur' => $validateData['txt_expediteur'],
+            'txt_agenttraiteur' => $validateData['txt_agenttraiteur'],
+            'txt_observation' => $validateData['txt_observation'] ?? null, 
+            'fichierPDF' => $validateData['fichierPDF'] ?? null,
+        ]);
+
+        return redirect()->route('instancearrivee.create')
+            ->with('success', 'Courrier '.$arrivee->txt_numdordre.' modifié avec succès');
     }
 
     /**

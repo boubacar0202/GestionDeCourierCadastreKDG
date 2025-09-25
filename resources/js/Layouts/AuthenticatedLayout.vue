@@ -1,69 +1,83 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch  } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { usePage, Link } from '@inertiajs/vue3'; 
 import NavLink from '@/Components/NavLink.vue';
-import { useToast } from 'maz-ui'
- 
-// Récupérer l'utilisateur depuis les props Inertia
+import { useToast } from 'maz-ui';
+import axios from 'axios';
+
+// --- USER & PAGE ---
 const page = usePage();
 const user = page.props.auth?.user;
-const isMenuOpen = ref(false)
-const isDesktop = ref(false)
-const showingNavigationDropdown = ref(false)
- 
-// Message alerte 
-const toast = useToast() 
+
+// --- MENU ---
+const isMenuOpen = ref(false);
+const isDesktop = ref(false);
+const showingNavigationDropdown = ref(false);
+const unreadTotal = ref(0);
+  
+// --- TOAST ---
+const toast = useToast();
 onMounted(() => {
   if (page.props.flash.success) {
-    toast.success(page.props.flash.success)
+    toast.success(page.props.flash.success);
   }
-}) 
+});
 
-  
-// Surveille la largeur d'écran
+// --- SCREEN & MENU HANDLING ---
 function checkScreenSize() {
-  isDesktop.value = window.innerWidth >= 768
+  isDesktop.value = window.innerWidth >= 768;
 }
 
-// Toggle menu (mobile uniquement)
 function toggleMenu() {
-  isMenuOpen.value = !isMenuOpen.value
+  isMenuOpen.value = !isMenuOpen.value;
 }
 
-// Garde l’état du menu entre pages, mais pas après F5
 onMounted(() => {
-    checkScreenSize()
-    window.addEventListener('resize', checkScreenSize) 
-        if (window.__menuOpenTemp === true) {
-            isMenuOpen.value = true
-    } 
-    window.__menuOpenTemp = false
-}) 
+  checkScreenSize();
+  window.addEventListener('resize', checkScreenSize);
+
+  if (window.__menuOpenTemp === true) {
+    isMenuOpen.value = true;
+  }
+  window.__menuOpenTemp = false;
+});
 
 onUnmounted(() => {
-  window.removeEventListener('resize', checkScreenSize)
-})
+  window.removeEventListener('resize', checkScreenSize);
+});
 
-// Mémoriser l'état temporairement pour navigation Inertia
+// --- PERSIST MENU STATE ---
 watch(isMenuOpen, (val) => {
-  window.__menuOpenTemp = val
-})
+  window.__menuOpenTemp = val;
+});
 
-// Liens du menu
-const menuItems = [
-  { label: 'Dashboard', href: route('dashboard'), active: 'dashboard' },
-  { label: 'Enregistrement Arrivées', href: route('arrivee.create'), active: 'arrivee.create' },
-  { label: 'Enregistrement Départs', href: route('depart.create'), active: 'depart.create' },
-  { label: 'Instances', href: route('instance.create'), active: 'instance.create' }, 
-  { label: 'Liste des Arrivées', href: route('instancearrivee.create'), active: 'instancearrivee.create' }, 
-  { label: 'Liste des Départs', href: route('instancedepart.create'), active: 'instancedepart.create' }, 
-]
+
+// Charger le total des messages non lus au montage
+onMounted(async () => {
+  try {
+    const res = await axios.get("/messages/unread-total");
+    unreadTotal.value = res.data.total;
+  } catch (e) {
+    console.error("Erreur fetch unread:", e);
+  }
+});
+
+// --- MENU ITEMS ---
+// const menuItems = [
+//   { label: 'Dashboard', href: route('dashboard'), active: 'dashboard' },
+//   { label: 'Enregistrement Arrivées', href: route('arrivee.create'), active: 'arrivee.create' },
+//   { label: 'Enregistrement Départs', href: route('depart.create'), active: 'depart.create' },
+//   { label: 'Instances', href: route('instance.create'), active: 'instance.create' }, 
+//   { label: 'Liste des Arrivées', href: route('instancearrivee.create'), active: 'instancearrivee.create' }, 
+//   { label: 'Liste des Départs', href: route('instancedepart.create'), active: 'instancedepart.create' }, 
+// ];
 
 </script>
 
+
 <template>
  
-    <div class="flex min-h-screen bg-primary-layout">
+    <div class="flex min-h-screen bg-primary-layout overflow-x-hidden">
         <!-- Sidebar -->
         <nav class="w-64 h-screen bg-white border-r border-primary-only fixed flex flex-col p-4">
             <!-- Logo -->
@@ -92,7 +106,7 @@ const menuItems = [
                                     <svg class="w-6 h-5 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#6d3500">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V10z" />
                                     </svg>
-                                    Dashboard
+                                    Acceuil
                                 </NavLink>
                                 <NavLink :href="route('arrivee.create')" :active="route().current('arrivee.create')" 
                                     class="hover:bg-primary-menu hover:border hover:text-white hover:font-bold hover:text-1xl p-3 rounded font-bold text-primary-txt border border-l-8 flex items-center" 
@@ -147,9 +161,21 @@ const menuItems = [
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M8 7V3m8 4V3m-9 8h10m-12 9h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z" />
                                     </svg>
-                                    Trimestre 
+                                    Rapport Trimestre 
                                 </NavLink>
- 
+                                <NavLink :href="route('message.create')" 
+                                        :active="route().current('message.create')" 
+                                        class="relative hover:bg-primary-menu hover:border hover:text-white hover:font-bold hover:text-1xl p-3 rounded font-bold text-primary-txt border border-l-8 flex items-center" 
+                                        :class="{'border-primary-menu': route().current('message.create')}">
+                                    <svg class="w-5 h-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"/>
+                                    </svg> 
+                                    Discussion
+                                    <span v-if="unreadTotal > 0" class="ml-2 px-2 py-1 text-xs bg-green-500 text-white rounded-full">
+                                        {{ unreadTotal }}
+                                    </span>
+                                </NavLink> 
+  
                             </div>
                         </nav> 
                 </transition>
@@ -161,11 +187,11 @@ const menuItems = [
         </nav>
 
         <!-- Page Content -->
-        <div class="ml-64 flex-1">
+        <div class="flex-1 md:ml-64">
             <header class="bg-white shadow flex justify-between items-center p-4 relative">
                 <!-- Titre ou Header (si présent) -->
                 <div>
-                    <slot name="header" />
+                    <slot name="header"/>
                 </div>
  
                     <div class="relative">

@@ -39,5 +39,5 @@ export default defineConfig({
             host: 'courrierskdg.sn',
         },
         cors: true,
-    },
+    }, 
 });

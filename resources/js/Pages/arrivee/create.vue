@@ -9,12 +9,14 @@ import axios from "axios";
 import { useToast } from "maz-ui"; 
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import { Inertia } from '@inertiajs/inertia';
+
  
 
 defineOptions({ layout: DefaultLayout });
 const toast = useToast();
 const fichierPDF = ref(null);
 const today = new Date().toISOString().split('T')[0];
+
 
 // Récuperer le fichier PDF 
 function handleFileUpload(event) {
@@ -39,7 +41,8 @@ function handleFileUpload(event) {
 
     console.log("Fichier PDF sélectionné :", fichierPDF.value);
 }
- 
+
+// Formulaire 
 const form = useForm({
     //  courrierarrivee
     txt_numdordre:"", 
@@ -63,20 +66,35 @@ const form = useForm({
 });
  
  
+// Génération automatique du numéro d'ordre
 const fetchNextDossier = async (annee) => {
     try {
         const response = await axios.get(`/arrivee/next/${annee}`);
         const numero = response.data.num_dordre;
-        const dateFormatee = form.dt_datearrivee;
+
+        // ✅ Formater la date au format DD-MM-YYYY
+        const date = new Date(form.dt_datearrivee);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        const dateFormatee = `${day}-${month}-${year}`;
 
         form.txt_numdordre = `${numero}/${dateFormatee}`;
         console.log("✅ Numéro généré :", form.txt_numdordre);
+
     } catch (error) {
         console.error("❌ Erreur :", error);
-        const dateFormatee = (new Date());
+
+        const date = new Date();
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        const dateFormatee = `${day}-${month}-${year}`;
+
         form.txt_numdordre = `00001/${dateFormatee}`;
     }
-}; 
+};
+
 // Regénérer automatiquement quand la date change
 watch(() => form.dt_datearrivee, (nouvelleDate) => {
     if (nouvelleDate) {
@@ -84,8 +102,9 @@ watch(() => form.dt_datearrivee, (nouvelleDate) => {
         fetchNextDossier(annee);
     }
 });
-  
 
+
+// Afficher ou cacher les champs de la catégorie "Convocation - Invitation" 
 const show = ref(false);
 const handleCategorieChange = () => {
     show.value = form.txt_categorie === "Convocation - Invitation";
@@ -100,22 +119,22 @@ const categories = {
     "2": "Convocation - Invitation",
     "3": "Information",
     "4": "Réclamation - Signalement",
-    "5": "Réquisition - Instruction"
+    "5": "Réquisition - Instruction" 
 };
 const designationsParCategirie = {
-    'Demande SERVICES': ['Morcellements', 'Réquisition d\'immatriculation', 'Demande de terrain / Echange', 'Prospection de terrain', 
-        'Autorisation de construction', 'Autorisation de lotir', 'Demande d\états des lieux', 'Deamnde de délimitation/reconstruction', 
+    'Demande SERVICES': ['Morcellements', 'Réquisition d\'immatriculation', 'Demande Avis Technique', 'Demande de terrain / Echange', 'Prospection de terrain', 
+        'Autorisation de construction', 'Autorisation de lotir', 'Demande d\'états des lieux', 'Demande de délimitation/reconstruction', 
         'Réquisition DSCOS, Tribunal, Litiges','Demande de situation foncière', 'Demande de Cession définitive',
         'Demande de Cession définitive a Titre Gratuit', 'Demande de Régularisation', 'Demande d\'attestation du Cadastre', 
         'Réceptions de lotissements', 'Demande de CIC', 'Duplication de CIC', 'Demande de Titre foncier', 
         'Autirisationde morceler'
     ],
-    'Convocation - Invitation': ['Réunion', 'Alerte', 'Visite de site', 
-        'Rencontre', 'Randonnée - Marche', 'Session - Congré',
-        'Journée dédiée', 'Forum', 'Formation', 'Séminaire'
+    'Convocation - Invitation': ['Réunion', 'Audience Publique', 'Alerte', 'Visite de site', 
+        'Rencontre', 'Randonnée', 'Marche', 'Session', 'Congré', 'Cérémonie', 'Inauguration',
+        'Journée dédiée', 'Forum', 'Formation', 'Séminaire', 'Caravane'
     ],
-    'Information': ['Note de service - Curculaire', 'Rapport - PV Compte rendu', 
-        'Arrêté - Décision - Délibération', 'Document administratif', 'Texte Juridique'
+    'Information': ['Note de service', 'Curculaire', 'Rapport', 'PV', 'Compte rendu', 
+        'Arrêté', 'Décision', 'Délibération', 'Approbation délibération', 'Transmission lettre', 'Document administratif', 'Texte Juridique'
     ],
     'Réclamation - Signalement': ['Dénonciation', 'Plainte', 
         'Alerte'
@@ -133,12 +152,22 @@ watch(() => form.txt_categorie, (newCategorie) => {
  
 // reupèration references courrier arrivée
 watch(
-    () => [form.txt_numcourier, form.dt_datecourier],
-    ([newNum, newDate]) => {
-        form.txt_reference = newNum + ' du ' + newDate;
-    }
+  () => [form.txt_numcourier, form.dt_datecourier],
+  ([newNum, newDate]) => {
+    if (!newDate) return;
+
+    const date = new Date(newDate);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    const dateFormatee = `${day}-${month}-${year}`; // "29-08-2026"
+    form.txt_reference = `${newNum} du ${dateFormatee}`;
+  }
 );
- 
+
+
+// Soumission du formulaire
 const submitForm = function () {  // Ajoutez `async` ici
     console.log("📤 Envoi du formulaire :", form);
     console.log("✅ Données finales envoyées à Laravel :", form.data()); 
@@ -152,8 +181,7 @@ const submitForm = function () {  // Ajoutez `async` ici
         onError: (errors) => {
             Object.values(errors).forEach(msg => toast.error(msg))
         }
-    })
-
+    }) 
 };
  
 </script>
@@ -223,7 +251,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         :max="today"
                                                         required
                                                         id="dt_datearrivee"
-                                                        autocomplete="on"
+                                                        autocomplete="off"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6" 
@@ -251,7 +279,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         v-model="form.txt_numcourier"
                                                         required
                                                         id="txt_numcourier"
-                                                        autocomplete="off"
+                                                        autocomplete="address-level2"
                                                         class="h-8  scrollbar-thin scrollbar-thumb-primary block w-full rounded-md bg-white 
                                                             px-3 py-1.5 text-base text-primary-txt outline outline-1 -outline-offset-1 outline-primary-only 
                                                             placeholder:text-primary-dark focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -296,7 +324,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         v-model="form.txt_reference"
                                                         required
                                                         id="txt_reference"
-                                                        autocomplete="off"
+                                                        autocomplete="address-level2"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -437,7 +465,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         name="txt_heure"
                                                         v-model="form.txt_heure" 
                                                         id="txt_heure"
-                                                        autocomplete="off"
+                                                        autocomplete="address-level2"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -445,7 +473,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                 </div>
                                             </div>
                                         </div>
-                                        <div  v-if="show" class="sm:col-span-1">
+                                        <div  v-if="show" class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_lieu"
@@ -458,7 +486,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         name="txt_lieu"
                                                         v-model="form.txt_lieu" 
                                                         id="txt_lieu"
-                                                        autocomplete="off"
+                                                        autocomplete="address-level2"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -480,7 +508,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         v-model="form.txt_nombrepiece"
                                                         required
                                                         id="txt_nombrepiece"
-                                                        autocomplete="off"
+                                                        autocomplete="address-level2"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -502,7 +530,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         v-model="form.txt_objet"
                                                         required
                                                         id="txt_objet"
-                                                        autocomplete="off"
+                                                        autocomplete="address-level2"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -524,7 +552,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         v-model="form.txt_expediteur"
                                                         required
                                                         id="txt_expediteur"
-                                                        autocomplete="off"
+                                                        autocomplete="address-level2"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -551,7 +579,11 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         :options="[
                                                             'Saliou FAYE',
                                                             'Assane Aidara DIOP',
-                                                            'El Hadji Malick GUEYE'
+                                                            'El Hadji Malick GUEYE',
+                                                            'Moustapha Diop',
+                                                            'Daouda Ndiaye',
+                                                            'Abdoulaye Camara',
+                                                            'Oumar Diop'
                                                         ]" 
                                                         class="h-8  w-full block w-full rounded-md bg-white px-2 py-1.5 text-base text-primary-txt 
                                                         outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
@@ -594,7 +626,6 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                     type="select"
                                                     name="txt_caractere"
                                                     v-model="form.txt_caractere" 
-                                                    required
                                                     id="txt_caractere"
                                                     autocomplete="off"
                                                     placeholder="Choisis Caractère"
@@ -645,7 +676,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         v-model="form.txt_observation"txt_observation
                                                         
                                                         id="txt_observation"
-                                                        autocomplete="off"
+                                                        autocomplete="address-level2"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-primary-dark 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"

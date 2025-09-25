@@ -14,42 +14,16 @@ defineOptions({ layout: DefaultLayout });
 const toast = useToast()
  
  
-const { departs } = defineProps({
+const { departs, arrivees } = defineProps({
     departs: Object,
     arrivees: Array, 
 })
-
-const fichierPDFcd = ref(null);
-
-// Récuperer le fichier PDF 
-function handleFileUploadcd(event) {
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    if (file.type !== "application/pdf") {
-        toast.error("Veuillez sélectionner un fichier PDF valide.");
-        event.target.value = ""; // reset input
-        return;
-    }
-
-    if (file.size > 100 * 1024 * 1024) { // 100 Mo
-        toast.error("Le fichier dépasse 100 Mo !");
-        event.target.value = ""; // reset input
-        return;
-    }
-
-    fichierPDFcd.value = file;
-    form.fichierPDFcd = file;
-
-    console.log("Fichier PDF sélectionné :", fichierPDFcd.value);
-}
-
+ 
 const form = useForm({
     //  courierdepart 
     txt_numdordrecd: departs?.txt_numdordrecd || '',
-    txt_caracterecd: departs?.txt_caracterecd || '',
     dt_datecouriercd: departs?.dt_datecouriercd || '',
+    txt_caracterecd: departs?.txt_caracterecd || '', 
     txt_categoriecd: departs?.txt_categoriecd || '',
     txt_referencecourierarriveecd: departs?.txt_referencecourierarriveecd || '',
     txt_referencecourierdepartcd: departs?.txt_referencecourierdepartcd || '',
@@ -72,8 +46,7 @@ const handleCategorieChangecd = () => {
 watch(() => form.txt_categoriecd, (newValue) => {
     show.value = newValue === "Reponse à un Courrier arrivé";
 });
-
-
+ 
 // récuperer les categories de courrier arrivee
 const categoriescd = {
     "1": "Reponse à un Courrier arrivé",
@@ -192,38 +165,89 @@ watch(() => form.txt_referencecourierarriveecd, (selectedRef) => {
  
 // reupèration references courrier depart: Durée de traitement
 watch(
-    () => [form.dt_dateenvoicd, form.dt_datearriveeCA],
-    ([newDateEnvoie, newDateArrivee]) => {
-        if (newDateEnvoie && newDateArrivee) {
-            const dateEnvoi = new Date(newDateEnvoie);
-            const dateArrivee = new Date(newDateArrivee);
+    () => [form.dt_dateenvoicd, form.dt_datecouriercd, form.txt_categoriecd],
+    ([newDateEnvoie, newDateArrivee, newCategorie]) => {
 
-            const diffInTime = dateEnvoi.getTime() - dateArrivee.getTime();
-            const diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24));
+        if (newCategorie === "Reponse à un Courrier arrivé") {
+            if (newDateEnvoie && newDateArrivee) {
+                const dateEnvoi = new Date(newDateEnvoie);
+                const dateArrivee = new Date(newDateArrivee);
 
-            form.txt_dureetraitementcd = `${diffInDays} jours`;
+                const diffInTime = dateEnvoi.getTime() - dateArrivee.getTime();
+                const diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24));
+
+                if (diffInDays <= 0) {
+                    form.txt_dureetraitementcd = `24 heures`;
+                } else {
+                    form.txt_dureetraitementcd = `${diffInDays} jours`;
+                }
+            } else {
+                form.txt_dureetraitementcd = "";
+            }
         } else {
-            form.txt_dureetraitementcd = '';
+            form.txt_dureetraitementcd = "";
         }
     }
-); 
+);
  
-function submit() {
-    form.put(route('depart.update', departs?.id), {
-        preserveScroll: true,
-        onSuccess: (page) => {
-          console.log("✅ Succès Laravel :", page);
-          const message = page.props.flash?.success || "Modification réussie !";
-        //   toast.success(message);  
-        },
-        onError: (errors) => {
-          console.error('Erreur lors de la mise à jour', errors);
-          Object.values(errors).forEach((error) => {
-            toast.error(error);
-          });
-        }
-    });
+function handleFileChangecd(event) {
+    const file = event.target.files[0];
+    if (file) {
+        form.fichierPDFcd = file;
+        console.log("Fichier sélectionné:", file.name);
+    } else {
+        form.fichierPDFcd = null;
+    }
 }
+async function submit() {
+    try {
+        console.log("📤 Envoi du formulaire départ...");
+
+        const formData = new FormData();
+        formData.append('_method', 'PUT'); // Laravel update
+
+        formData.append('txt_numdordrecd', form.txt_numdordrecd);
+        formData.append('dt_datecouriercd', form.dt_datecouriercd);
+        formData.append('txt_caracterecd', form.txt_caracterecd);
+        formData.append('txt_numcouriercd', form.txt_numcouriercd);
+        formData.append('dt_dateenvoicd', form.dt_dateenvoicd);
+        formData.append('txt_referencecd', form.txt_referencecd);
+        formData.append('txt_nombrepiececd', form.txt_nombrepiececd);
+        formData.append('txt_categoriecd', form.txt_categoriecd);
+        formData.append('txt_designationcd', form.txt_designationcd);
+        formData.append('dt_datecd', form.dt_datecd); 
+        formData.append('txt_lieuenvoicd', form.txt_lieuenvoicd);
+        formData.append('txt_destinatairecd', form.txt_destinatairecd);
+        formData.append('txt_objetcd', form.txt_objetcd);
+        formData.append('txt_agenttraiteurcd', form.txt_agenttraiteurcd);
+        formData.append('txt_observationcd', form.txt_observationcd);
+
+        if (form.fichierPDFcd instanceof File) {
+            formData.append('fichierPDFcd', form.fichierPDFcd);
+        }
+
+        // Debug
+        for (let [key, value] of formData.entries()) {
+            console.log(key + ':', value);
+        }
+
+        await axios.post(route('depart.update', departs.id), formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        toast.success('Modification réussie !');
+        Inertia.visit(route('instancedepart.create'), { replace: true });
+
+    } catch (error) {
+        console.error('Erreur détaillée:', error.response?.data);
+        if (error.response?.data?.errors) {
+            Object.values(error.response.data.errors).forEach(err => toast.error(err));
+        } else {
+            toast.error('Erreur lors de la modification');
+        }
+    }
+}
+
 
 </script>
 
@@ -278,38 +302,13 @@ function submit() {
                                                         focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                 />
                                             </div>
-                                        </div> 
-                                        <div class="sm:col-span-2">
-                                            <label 
-                                                for="txt_caracterecd"
-                                                class="block text-sm/6 font-medium text-primary-txt">
-                                                Caractères
-                                            </label>
-                                            <div class="mt-2">
-                                                <select
-                                                    type="text"
-                                                    name="txt_caracterecd"
-                                                    v-model="form.txt_caracterecd" 
-                                                    required
-                                                        
-                                                    id="txt_numdordrecd"
-                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
-                                                        outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
-                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
-                                                >
-                                                    <option selected desabled></option>
-                                                    <option value="Connfidentiel">Confidentiel</option>
-                                                    <option value="Urgent">Urgent</option>
-                                                    <option value="Secret">Secret</option> 
-                                                </select>
-                                            </div> 
-                                        </div>
+                                        </div>  
                                         <div class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label 
                                                     for="dt_datecouriercd"
                                                     class="block text-sm/6 font-medium text-primary-txt">
-                                                    Date Courrier
+                                                    Date Réception
                                                 </label>
                                                 <div class="mt-2">
                                                     <input
@@ -355,11 +354,13 @@ function submit() {
                                                         <option value="Demande">Demande</option>
                                                         <option value="Transmission de Documents">Transmission de Documents</option>
                                                         <option value="Information">Information</option> 
+                                                        <option value="Alerte">Alerte</option>
+                                                        <option value="Signalement">Signalement</option>
                                                     </select>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div v-if="!show" class="sm:col-span-2">
+                                        <div v-if="show" class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label for="txt_referencecourierarriveecd" class="block text-sm/6 font-medium text-primary-txt">
                                                     Ref.Courrier Arrivée à Repondre
@@ -383,7 +384,7 @@ function submit() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div v-if="show" class="sm:col-span-2">
+                                        <div v-if="!show" class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label for="txt_referencecourierarriveecd" class="block text-sm/6 font-medium text-primary-txt">
                                                     Ref.Courrier Depart à Envoyer
@@ -391,8 +392,8 @@ function submit() {
                                                 <div class="mt-2">
                                                     <input
                                                         type="text"
-                                                        name="txt_referencecourierdepart"
-                                                        v-model="form.txt_referencecourierdepartcd"
+                                                        name="txt_referencereceptioncd"
+                                                        v-model="form.txt_referencereceptioncd"
                                                         id="txt_referencecourierdepart"
                                                         autocomplete="off"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt
@@ -500,30 +501,6 @@ function submit() {
                                         <div class="sm:col-span-1">
                                             <div class="sm:col-span-1">
                                                 <label
-                                                    for="dt_dateenvoicd"
-                                                    class="block text-sm/6 font-medium text-primary-txt"
-                                                    >Date d'envoi</label
-                                                >
-                                                <div class="mt-2">
-                                                    <input
-                                                        type="date"
-                                                        name="dt_dateenvoicd"
-                                                        v-model="
-                                                            form.dt_dateenvoicd
-                                                        "
-                                                        required
-                                                        id="dt_dateenvoicd"
-                                                        autocomplete="address-level2"
-                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
-                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
-                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="sm:col-span-1">
-                                            <div class="sm:col-span-1">
-                                                <label
                                                     for="txt_referencereceptioncd"
                                                     class="block text-sm/6 font-medium text-primary-txt"
                                                     >Réf.Récéption</label
@@ -544,8 +521,32 @@ function submit() {
                                                     />
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="sm:col-span-1">
+                                            <div class="sm:col-span-1">
+                                                <label
+                                                    for="dt_dateenvoicd"
+                                                    class="block text-sm/6 font-medium text-primary-txt"
+                                                    >Date d'envoi</label
+                                                >
+                                                <div class="mt-2">
+                                                    <input
+                                                        type="date"
+                                                        name="dt_dateenvoicd"
+                                                        v-model="
+                                                            form.dt_dateenvoicd
+                                                        "
+                                                        required
+                                                        id="dt_dateenvoicd"
+                                                        autocomplete="address-level2"
+                                                        class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                            outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
+                                                            focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                    />
+                                                </div>
+                                            </div>
                                         </div> 
-                                        <div class="sm:col-span-2">
+                                        <div v-if="show" class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label
                                                     for="txt_dureetraitement"
@@ -568,6 +569,29 @@ function submit() {
                                                     />
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <label 
+                                                for="txt_caracterecd"
+                                                class="block text-sm/6 font-medium text-primary-txt">
+                                                Caractères
+                                            </label>
+                                            <div class="mt-2">
+                                                <select
+                                                    type="text"
+                                                    name="txt_caracterecd"
+                                                    v-model="form.txt_caracterecd" 
+                                                    id="txt_caracterecd"
+                                                    class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
+                                                        outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                >
+                                                    <option selected desabled></option>
+                                                    <option value="Connfidentiel">Confidentiel</option>
+                                                    <option value="Urgent">Urgent</option>
+                                                    <option value="Secret">Secret</option> 
+                                                </select>
+                                            </div> 
                                         </div>
                                         <div class="sm:col-span-4">
                                             <div class="sm:col-span-1">
@@ -595,33 +619,35 @@ function submit() {
                                         <div class="sm:col-span-2">
                                             <div class="sm:col-span-1">
                                                 <label
-                                                    for="fichier_PDFcd"
+                                                    for="fichierPDFcd"
                                                     class="block text-sm/6 font-medium text-primary-txt"
                                                     >Importer le Fichier PDF</label
                                                 >
                                                 <div class="mt-2">
                                                     <input
                                                         type="file"
-                                                        name="fichier_PDFcd"
+                                                        name="fichierPDFcd"
                                                         accept="application/pdf"
-                                                        @change="handleFileUploadcd"
-                                                        id="fichier_PDFcd"
+                                                        @change="handleFileChangecd"
+                                                        id="fichierPDFcd"
                                                         autocomplete="off"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     />
                                                 </div>
-                                                <!-- ✅ Affichage du PDF déjà enregistré -->
-                                                <div v-if="form.fichierPDFcd && typeof form.fichierPDFcd === 'string'" class="mt-2"> 
-                                                    <a
-                                                        :href="`/storage/${form.fichierPDFcd}`"
-                                                        target="_blank"
-                                                        class="text-blue-600 underline"
-                                                    >
-                                                        Voir le fichier
+                                                                                            <!-- Pour ajouter un bouton de suppression de fichier -->
+                                                <div v-if="departs?.fichierPDFcd" class="mt-2 flex items-center space-x-2">
+                                                    <a :href="`/storage/${departs.fichierPDFcd}`" target="_blank" 
+                                                    class="text-blue-600 underline text-sm">
+                                                        📄 Voir le PDF
                                                     </a>
+                                                    <button @click="deleteFile" 
+                                                            class="text-red-600 text-sm hover:text-red-800">
+                                                        🗑️ Supprimer
+                                                    </button>
                                                 </div>
+                                                <!-- Fin du bouton de suppression -->
                                             </div>
                                         </div>
                                     </div>

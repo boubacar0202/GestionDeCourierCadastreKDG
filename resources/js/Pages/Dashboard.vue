@@ -17,7 +17,7 @@ const randomImage = images[Math.floor(Math.random() * images.length)];
 </script>
 
 <template>
-    <Head title="Dashboard">
+    <Head title="Accueil">
         <link rel="icon" sizes="512x512" href="/logo-01.png">
     </Head>
 
@@ -26,7 +26,7 @@ const randomImage = images[Math.floor(Math.random() * images.length)];
             <h2
                 class="text-xl font-semibold leading-tight text-primary-txt"
             >
-                Dashboard
+                Accueil
             </h2>
         </template>
  

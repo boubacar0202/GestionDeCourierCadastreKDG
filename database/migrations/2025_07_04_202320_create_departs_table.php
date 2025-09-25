@@ -29,7 +29,7 @@ return new class extends Migration
             $table->date('dt_dateenvoicd');
             $table->string('txt_referencereceptioncd')->nullable();
             $table->string('txt_observationcd')->nullable();
-            $table->string('txt_dureetraitementcd');
+            $table->string('txt_dureetraitementcd')->nullable();
             $table->string('fichierPDFcd')->nullable();
   
 
