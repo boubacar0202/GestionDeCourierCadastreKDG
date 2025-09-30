@@ -115,10 +115,11 @@ const convocationsDans48h = computed(() => {
         const dtDate = arrivee.dt_date ? new Date(arrivee.dt_date) : null;
 
         return (
-        arrivee.txt_categorie === 'Convocation - Invitation' &&
-        dtDate &&
-        dtDate > now &&
-        dtDate - now <= 48 * 60 * 60 * 1000 // max 48h
+            arrivee.txt_categorie === 'Convocation - Invitation' &&
+            dtDate &&
+            dtDate > now && 
+            (dtDate - now) <= 48 * 60 * 60 * 1000
+            
         );
     });
 });
