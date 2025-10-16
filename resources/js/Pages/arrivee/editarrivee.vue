@@ -12,7 +12,6 @@ import { router } from '@inertiajs/vue3';
  
 defineOptions({ layout: DefaultLayout });
 const toast = useToast(); 
-
  
 const { arrivees } = defineProps({
     arrivees: Object,  
@@ -47,8 +46,7 @@ const handleCategorieChange = () => {
 watch(() => form.txt_categorie, (newValue) => {
     show.value = newValue === "Convocation - Invitation";
 });
-
-
+ 
 // récuperer les categories de courrier arrivee
 const categories = {
     "1": "Demande SERVICES",
@@ -79,8 +77,7 @@ const designationsParCategorie = {
     ], 
  
 };
- 
-
+  
 // récupérer les désignations et modifier la valeur de la désignation
 const designations = ref([]);  
 
@@ -93,8 +90,7 @@ const chargerDesignations = (categorie) => {
         liste = [form.txt_designation, ...liste];
         designations.value = liste;
     }
-
-
+ 
 }; 
 onMounted(() => {
     if (form.txt_categorie) {
@@ -109,8 +105,7 @@ watch(() => form.txt_categorie, (newCategorie, oldCategorie) => {
         form.txt_designation = '';
     }
 });
- 
-
+  
 // reupèration references courrier arrivée
 watch(
     () => [form.txt_numcourier, form.dt_datecourier],

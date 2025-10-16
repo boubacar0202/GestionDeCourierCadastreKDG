@@ -15,6 +15,7 @@ const props = defineProps({
   
 const numeroCD = ref('');  
 const annee = ref('');
+const refCourrierArrivee = ref('');
 
 // Normalisation pour éviter les problèmes d'espaces et de casse
 function normalize(str) {
@@ -32,7 +33,11 @@ const filtereDeparts = computed(() => {
             ? new Date(depart.dt_datecouriercd).getFullYear().toString() === annee.value
             : true;
 
-        return matchNumero && matchAnnee;
+        const matchArrivee = refCourrierArrivee.value
+            ? normalize(depart.txt_referencecourierarriveecd)?.includes(normalize(refCourrierArrivee.value))
+            : true;
+
+        return matchNumero && matchAnnee && matchArrivee;
     });
 
     // Tri par ordre numérique de la partie avant "/"
@@ -139,10 +144,23 @@ function supprimerCourrierDepart(depart) {
                                                     type="search"
                                                     id="default-search"
                                                     aria-label="Rechercher"
-                                                    class="h-9 block w-50 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                    class="h-9 block w-25 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
                                                         border border-primary-menu  placeholder:text-gray-400 
                                                         focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
                                                     placeholder="Entrez numéro courrier"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <input 
+                                                    v-model="refCourrierArrivee"
+                                                    type="search"
+                                                    id="default-search"
+                                                    aria-label="Rechercher"
+                                                    class="h-9 block w-25 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                                                        border border-primary-menu  placeholder:text-gray-400 
+                                                        focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
+                                                    placeholder="Reférence C .Arrivée"
                                                 />
                                             </div>
                                         </div>

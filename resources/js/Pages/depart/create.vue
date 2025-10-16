@@ -69,10 +69,10 @@ function handleFileUploadcd(event) {
 }
 const showcd = ref(false);
 const handleCategorieChangecd = () => {
-    showcd.value = form.txt_categoriecd === "Reponse à un Courrier arrivé";
+    showcd.value = form.txt_categoriecd === "Reponse à un Courrier arrivé" || form.txt_categoriecd === "Retourner";
 };
 watch(() => form.txt_categoriecd, (newValue) => {
-    showcd.value = newValue === "Reponse à un Courrier arrivé";
+    showcd.value = newValue === "Reponse à un Courrier arrivé" || newValue === "Retourner";
 });
   
 // Automaiser le Numéro d'ordre
@@ -111,12 +111,13 @@ watch(() => form.dt_datecouriercd, (nouvelleDate) => {
         fetchNextDossier(annee);
     }
 });
-
+// txt_reference
   
 // Références disponibles 
 const references = ref([]);  
 const referenceToExpediteur = ref({});
 const referenceToObject = ref({}); 
+const referenceToReception = ref({});
  
 // Surveille le changement de catégorie pour charger les références liées
 watch(() => form.txt_categoriecd, async (newCategorie) => {
@@ -133,16 +134,19 @@ watch(() => form.txt_categoriecd, async (newCategorie) => {
         // ✅ Mapping de référence vers expéditeur 
         referenceToExpediteur.value = res.data.map_ref_to_expediteur || {};
         referenceToObject.value = res.data.map_ref_to_objet || {};
+        referenceToReception.value = res.data.map_ref_to_reception || {};
 
         // ✅ Réinitialisation
         form.txt_referencecourierarriveecd = '';
         form.txt_destinatairecd = '';
         form.txt_objetcd = ''; 
+        form.txt_referencereceptioncd = '';
     } catch (e) {
         console.error('❌ Erreur lors de la récupération des références :', e);
         references.value = []; 
         referenceToExpediteur.value = {};
         referenceToObject.value = {};
+        referenceToReception.value = {};
     }
 });
  
@@ -161,6 +165,16 @@ watch(() => form.txt_referencecourierarriveecd, (selectedRef) => {
         form.txt_objetcd = referenceToObject.value[selectedRef];
     } else {
         form.txt_objetcd = '';
+    }
+});
+
+// Surveiller le categorie et récupérer l'objet 
+watch(() => form.txt_referencecourierarriveecd, (selectedRef) => {
+    if (selectedRef && referenceToReception.value[selectedRef]) { 
+        let lastReceptionSplite = referenceToReception.value[selectedRef].split(' du ')[0]; 
+        form.txt_referencereceptioncd = lastReceptionSplite;
+    } else {
+        form.txt_referencereceptioncd = '';
     }
 });
   
@@ -236,7 +250,7 @@ watch(
     () => [form.dt_dateenvoicd, form.dt_datecouriercd, form.txt_categoriecd],
     ([newDateEnvoie, newDateArrivee, newCategorie]) => {
 
-        if (newCategorie === "Reponse à un Courrier arrivé") {
+        if (newCategorie === "Reponse à un Courrier arrivé" || newCategorie === "Retourner") {
             if (newDateEnvoie && newDateArrivee) {
                 const dateEnvoi = new Date(newDateEnvoie);
                 const dateArrivee = new Date(newDateArrivee);
@@ -384,6 +398,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         <option value="Information">Information</option> 
                                                         <option value="Alerte">Alerte</option>
                                                         <option value="Signalement">Signalement</option>
+                                                        <option value="Retourner">Retourner</option>
                                                     </select>
                                                 </div>
                                             </div>

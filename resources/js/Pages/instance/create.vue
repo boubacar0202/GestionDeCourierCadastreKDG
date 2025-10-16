@@ -63,7 +63,6 @@ const formatDate = (dateString) => {
         year: 'numeric',
     });
 };
-
  
 </script>
 

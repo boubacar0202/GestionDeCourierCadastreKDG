@@ -59,11 +59,15 @@ class DepartController extends Controller
         // Association txt_reference => txt_expediteur
         $map_ref_to_expediteur = Arrivee::pluck('txt_expediteur', 'txt_reference')->toArray();
         $map_ref_to_objet = Arrivee::pluck('txt_objet', 'txt_reference')->toArray();
+        $map_ref_to_reception = Arrivee::pluck('txt_reference', 'txt_reference')->toArray();
+ 
+
 
         return response()->json([
             'references' => $references,
             'map_ref_to_expediteur' => $map_ref_to_expediteur,
             'map_ref_to_objet' => $map_ref_to_objet,
+            'map_ref_to_reception' => $map_ref_to_reception
         ]);
     }
  

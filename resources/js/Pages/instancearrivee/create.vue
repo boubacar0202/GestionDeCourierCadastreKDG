@@ -146,7 +146,7 @@ const goToConvocation = (txt_numdordre) => {
         row.scrollIntoView({ behavior: 'smooth', block: 'center' });
         // Optionnel : mettre en surbrillance la ligne pendant 2 sec
         row.classList.add('bg-yellow-300');
-        setTimeout(() => row.classList.remove('bg-yellow-300'), 3000);
+        setTimeout(() => row.classList.remove('bg-yellow-300'), 5000);
     }
 };
 const formatDateDMY = (dateStr) => {

@@ -123,8 +123,8 @@ const categories = {
 };
 const designationsParCategirie = {
     'Demande SERVICES': ['Morcellements', 'Réquisition d\'immatriculation', 'Demande Avis Technique', 'Demande de terrain / Echange', 'Prospection de terrain', 
-        'Autorisation de construction', 'Autorisation de lotir', 'Demande d\'états des lieux', 'Demande de délimitation/reconstruction', 
-        'Réquisition DSCOS, Tribunal, Litiges','Demande de situation foncière', 'Demande de Cession définitive',
+        'Autorisation de construction', 'Autorisation de lotir', 'Demande d\'états des lieux', 'Demande de délimitation', 'Demande de reconstruction', 
+        'Réquisition DSCOS', 'Tribunal', 'Litiges','Demande de situation foncière', 'Demande de Cession définitive',
         'Demande de Cession définitive a Titre Gratuit', 'Demande de Régularisation', 'Demande d\'attestation du Cadastre', 
         'Réceptions de lotissements', 'Demande de CIC', 'Duplication de CIC', 'Demande de Titre foncier', 
         'Autirisationde morceler'
@@ -133,8 +133,9 @@ const designationsParCategirie = {
         'Rencontre', 'Randonnée', 'Marche', 'Session', 'Congré', 'Cérémonie', 'Inauguration',
         'Journée dédiée', 'Forum', 'Formation', 'Séminaire', 'Caravane'
     ],
-    'Information': ['Note de service', 'Curculaire', 'Rapport', 'PV', 'Compte rendu', 
-        'Arrêté', 'Décision', 'Délibération', 'Approbation délibération', 'Transmission lettre', 'Document administratif', 'Texte Juridique'
+    'Information': ['Note de service', 'Circulaire', 'Rapport', 
+        'Transmission lettre', 'Document administratif', 'Texte Juridique',
+        'Lettre', 'Rapport d\'étude impact', 'PV - Compte - rendu', 'Texte juridique', 'Décision - Arrêté', 'Délibération', 'Résolution', 'Autres'
     ],
     'Réclamation - Signalement': ['Dénonciation', 'Plainte', 
         'Alerte'
