@@ -264,7 +264,7 @@ const formatDateDMY = (dateStr) => {
                                 <div class="container"> 
                                     <div class="card"> 
                                         <div class="card-body">
-                                            <table class="table table-auto  w-full border  bg-primary text-white ">
+                                            <table class="table table-auto  w-full border  bg-primary text-white">
 
                                                 <thead  class="sticky top-0 z-10">
                                                     <tr class="h-20">

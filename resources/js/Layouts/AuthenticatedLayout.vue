@@ -14,18 +14,32 @@ const isMenuOpen = ref(false);
 const isDesktop = ref(false);
 const showingNavigationDropdown = ref(false);
 const unreadTotal = ref(0);
-  
+
+const isSmallScreen = ref(false);
+
+function updateScreenSize() {
+    isSmallScreen.value = window.innerWidth < 1024; // tu peux ajuster le seuil
+}
+
+onMounted(() => {
+    updateScreenSize();
+    window.addEventListener('resize', updateScreenSize);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', updateScreenSize);
+});
 // --- TOAST ---
 const toast = useToast();
 onMounted(() => {
-  if (page.props.flash.success) {
-    toast.success(page.props.flash.success);
-  }
+    if (page.props.flash.success) {
+        toast.success(page.props.flash.success);
+    }
 });
 
 // --- SCREEN & MENU HANDLING ---
 function checkScreenSize() {
-  isDesktop.value = window.innerWidth >= 768;
+    isDesktop.value = window.innerWidth >= 768;
 }
 
 function toggleMenu() {
@@ -77,9 +91,9 @@ onMounted(async () => {
 
 <template>
  
-    <div class="flex min-h-screen bg-primary-layout overflow-x-hidden">
+    <div class="flex min-h-screen bg-primary-layout">
         <!-- Sidebar -->
-        <nav class="w-64 h-screen bg-white border-r border-primary-only fixed flex flex-col p-4">
+        <nav class="w-64 h-screen bg-white border-r border-primary-only fixed flex flex-col p-4 overflow-y-auto">
             <!-- Logo -->
             <div class="flex items-center justify-center mb-6">
                 <Link :href="route('dashboard')">
@@ -187,8 +201,8 @@ onMounted(async () => {
         </nav>
 
         <!-- Page Content -->
-        <div class="flex-1 md:ml-64">
-            <header class="bg-white shadow flex justify-between items-center p-4 relative">
+        <div class="flex-1 md:ml-64 overflow-x-auto">
+            <header class="bg-white shadow flex justify-between items-center p-4 relative sticky top-0 z-30">
                 <!-- Titre ou Header (si présent) -->
                 <div>
                     <slot name="header"/>
@@ -217,9 +231,11 @@ onMounted(async () => {
             </header>
 
             <!-- Contenu de la p-menuage -->
-            <main class="p-6">
-                <slot />
-            </main>
+                <main 
+                    class="p-6 overflow-x-auto" 
+                >
+                    <slot/>
+                </main>
 
         </div>
     </div>
