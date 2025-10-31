@@ -35,8 +35,7 @@ const form = useForm({
     txt_expediteur: arrivees?.txt_expediteur || '',
     txt_agenttraiteur: arrivees?.txt_agenttraiteur || '',
     txt_observation: arrivees?.txt_observation || '',
-    fichierPDF: arrivees?.fichierPDF || null,
-
+    fichierPDF: arrivees?.fichierPDF || null, 
 }); 
  
 const show = ref(false);
@@ -56,7 +55,7 @@ const categories = {
     "5": "Réquisition - Instruction"
 };
 const designationsParCategorie = {
-    'Demande SERVICES': ['Morcellements', 'Réquisition d\'immatriculation', 'Demande de terrain / Echange', 'Prospection de terrain', 
+    'Demande SERVICES': ['Morcellements', 'Réquisition d\'immatriculation',  'Demande Avis Technique',  'Demande de terrain / Echange', 'Prospection de terrain', 
         'Autorisation de construction', 'Autorisation de lotir', 'Demande d\états des lieux', 'Deamnde de délimitation/reconstruction', 
         'Réquisition DSCOS, Tribunal, Litiges','Demande de situation foncière', 'Demande de Cession définitive',
         'Demande de Cession définitive a Titre Gratuit', 'Demande de Régularisation', 'Demande d\'attestation du Cadastre', 
@@ -122,6 +121,27 @@ function handleFileChange(event) {
         console.log("Fichier sélectionné:", file.name);
     } else {
         form.fichierPDF = null;
+    }
+}
+
+// ✅ Fonction suppression fichier PDF
+const deleteFile = (arrivee) => {
+    if (!arrivee || !arrivee.id) {
+        console.error('Aucun départ fourni à deleteFile')
+        return
+    }
+
+    if (confirm('Voulez-vous vraiment supprimer ce fichier PDF ?')) {
+        router.delete(`/arrivee/arrivee-pdf/${arrivee.id}`, {
+            onSuccess: () => {
+                arrivee.fichierPDF = null
+                toast.success('Fichier supprimé avec succès ✅')
+            },
+            onError: (error) => {
+                console.error('Erreur lors de la suppression du PDF :', error)
+                toast.error('Erreur lors de la suppression du fichier ❌')
+            },
+        })
     }
 }
 
@@ -208,7 +228,7 @@ async function submit() {
                             <div class="p-6">
                                 <!-- Section Parcelle -->
                                 <h5 class="text-lg text-primary-txt font-bold">
-                                    Modification du Courrier N° : {{ arrivees.txt_reference }}
+                                    Modification du Courrier N° : {{ arrivees.txt_numdordre }}
                                 </h5>
                                 <br />
                                 <div class="mb-6">
@@ -623,7 +643,7 @@ async function submit() {
                                                     class="text-blue-600 underline text-sm">
                                                         📄 Voir le PDF
                                                     </a>
-                                                    <button @click="deleteFile" 
+                                                    <button @click="deleteFile(arrivees)" 
                                                             class="text-red-600 text-sm hover:text-red-800">
                                                         🗑️ Supprimer
                                                     </button>
@@ -639,12 +659,15 @@ async function submit() {
                                 <!-- Bouton de soumission -->
 
                                 <div class="sm:col-span-6 flex justify-center">
-                                    <MazBtn type="submit" no-shadow no-hover-effect
-                                            class="bg-gradient-to-r from-primary via-primary-light to-primary-dark 
-                                                hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-primary 
-                                                dark:focus:ring-primary-dark shadow-lg shadow-primary/50 
-                                                dark:shadow-lg dark:shadow-primary-dark font-medium rounded-lg text-sm 
-                                                px-5 py-2.5 text-center">
+                                    <MazBtn 
+                                        type="submit" no-shadow no-hover-effect
+                                        class="w-64 h-10 text-white bg-gradient-to-r from-primary via-primary-dark 
+                                            to-primary hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                            focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
+                                            dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 
+                                            py-2.5 text-center me-2 mb-2"
+                                            size="medium"
+                                    >
                                         Enregistrer
                                     </MazBtn>
                                 </div>

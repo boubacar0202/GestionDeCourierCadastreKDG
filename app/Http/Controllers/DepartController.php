@@ -52,17 +52,29 @@ class DepartController extends Controller
     }
  
     public function fetchReferencesArrivee(Request $request): JsonResponse
-    {
-        $references = Arrivee::where('txt_categorie', 'Demande SERVICES')
-        ->pluck('txt_reference')->toArray();
+    { 
+
+        $departs = Depart::all();
+
+        // Récupérer toutes les arrivées de catégorie "Demande SERVICES"
+        $arrivees = Arrivee::where('txt_categorie', 'Demande SERVICES')->get();
+
+        // Filtrer comme en JS : un expéditeur peut apparaître plusieurs fois si txt_reference est différent
+        $arriveesFiltrees = $arrivees->filter(function ($arrivee) use ($departs) {
+            $existeDansDepart = $departs->contains(function ($depart) use ($arrivee) {
+                return $depart->txt_referencecourierarriveecd === $arrivee->txt_reference; 
+            });
+            return !$existeDansDepart;
+        })->values();
+
+        // Extraire les références
+        $references = $arriveesFiltrees->pluck('txt_reference')->all(); 
 
         // Association txt_reference => txt_expediteur
         $map_ref_to_expediteur = Arrivee::pluck('txt_expediteur', 'txt_reference')->toArray();
         $map_ref_to_objet = Arrivee::pluck('txt_objet', 'txt_reference')->toArray();
         $map_ref_to_reception = Arrivee::pluck('txt_reference', 'txt_reference')->toArray();
- 
-
-
+  
         return response()->json([
             'references' => $references,
             'map_ref_to_expediteur' => $map_ref_to_expediteur,
@@ -70,7 +82,22 @@ class DepartController extends Controller
             'map_ref_to_reception' => $map_ref_to_reception
         ]);
     }
+
+    // Supprimer le fichier PDF
+    public function deletePdf($id)
+    {
+        $depart = Depart::findOrFail($id);
+
+        if ($depart->fichierPDFcd && Storage::disk('public')->exists($depart->fichierPDFcd)) {
+            Storage::disk('public')->delete($depart->fichierPDFcd);
+        }
+
+        // Supprime le lien dans la base de données
+        $depart->update(['fichierPDFcd' => null]);
  
+        return back()->with('success', 'Fichier supprimé avec succès');
+    }
+    
 
     public function store(Request $request)
     {

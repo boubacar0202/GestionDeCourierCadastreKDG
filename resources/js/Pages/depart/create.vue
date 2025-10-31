@@ -67,12 +67,14 @@ function handleFileUploadcd(event) {
 
     console.log("Fichier PDF sélectionné :", fichierPDFcd.value);
 }
+
+// Comotement de la catégories
 const showcd = ref(false);
 const handleCategorieChangecd = () => {
-    showcd.value = form.txt_categoriecd === "Reponse à un Courrier arrivé" || form.txt_categoriecd === "Retourner";
+    showcd.value = form.txt_categoriecd === "Reponse à un Courrier arrivé" || form.txt_categoriecd === "Dossier Retourne";
 };
 watch(() => form.txt_categoriecd, (newValue) => {
-    showcd.value = newValue === "Reponse à un Courrier arrivé" || newValue === "Retourner";
+    showcd.value = newValue === "Reponse à un Courrier arrivé" || newValue === "Dossier Retourne";
 });
   
 // Automaiser le Numéro d'ordre
@@ -110,15 +112,15 @@ watch(() => form.dt_datecouriercd, (nouvelleDate) => {
         const annee = new Date(nouvelleDate).getFullYear();
         fetchNextDossier(annee);
     }
-});
-// txt_reference
+}); 
   
 // Références disponibles 
 const references = ref([]);  
 const referenceToExpediteur = ref({});
 const referenceToObject = ref({}); 
 const referenceToReception = ref({});
- 
+  
+// Filtrage dynamique des arrivées par catégorie 
 // Surveille le changement de catégorie pour charger les références liées
 watch(() => form.txt_categoriecd, async (newCategorie) => {
     if (!newCategorie) return;
@@ -128,26 +130,26 @@ watch(() => form.txt_categoriecd, async (newCategorie) => {
             categorie: newCategorie
         });
 
-        // ✅ Mise à jour des références
-        references.value = res.data.references || [];
+        // ✅ Mise à jour des références 
+        references.value = res.data.references || []; 
 
         // ✅ Mapping de référence vers expéditeur 
         referenceToExpediteur.value = res.data.map_ref_to_expediteur || {};
         referenceToObject.value = res.data.map_ref_to_objet || {};
         referenceToReception.value = res.data.map_ref_to_reception || {};
-
-        // ✅ Réinitialisation
+  
         form.txt_referencecourierarriveecd = '';
         form.txt_destinatairecd = '';
         form.txt_objetcd = ''; 
-        form.txt_referencereceptioncd = '';
+        form.txt_referencereceptioncd = ''; 
+
     } catch (e) {
         console.error('❌ Erreur lors de la récupération des références :', e);
         references.value = []; 
         referenceToExpediteur.value = {};
         referenceToObject.value = {};
         referenceToReception.value = {};
-    }
+     }
 });
  
 // Surveille le changement de la référence choisie
@@ -168,15 +170,6 @@ watch(() => form.txt_referencecourierarriveecd, (selectedRef) => {
     }
 });
 
-// Surveiller le categorie et récupérer l'objet 
-watch(() => form.txt_referencecourierarriveecd, (selectedRef) => {
-    if (selectedRef && referenceToReception.value[selectedRef]) { 
-        let lastReceptionSplite = referenceToReception.value[selectedRef].split(' du ')[0]; 
-        form.txt_referencereceptioncd = lastReceptionSplite;
-    } else {
-        form.txt_referencereceptioncd = '';
-    }
-});
   
 // reupèration references courrier depart
 watch(
@@ -223,56 +216,84 @@ watch(
   }
 );
  
-// recupèration references courrier depart: Date d'arrivée du courrier à répondre 
+ 
+// 🔹 1. Extraire et normaliser la date d'arrivée depuis la référence
+const dateArrivee = ref(''); 
 watch(
     () => form.txt_referencecourierarriveecd,
     (newReference) => {
-        if (!newReference) return;
-
-        // Extraction de la partie après " du "
-        const parts = newReference.split(' du ');
-
-        if (parts.length === 2) {
-            const dateString = parts[1].trim();
-
-            // Conversion en format Date ou laisser en string si besoin
-            form.dt_datearriveeCA = dateString;
-            console.log("✅ Date extraite :", dateString);
-        } else {
-            form.dt_datearriveeCA = '';
-            console.warn("Format inattendu :", newReference);
+        if (!newReference) {
+            dateArrivee.value = '';
+            return;
         }
+
+        const parts = newReference.split(' du ');
+        if (parts.length === 2) {
+            let dateString = parts[1].trim();
+            dateString = normalizeDate(dateString);
+            dateArrivee.value = dateString;
+            console.log("✅ Date extraite normalisée :", dateString);
+        } else {
+            dateArrivee.value = '';
+            console.warn("⚠️ Format inattendu :", newReference);
+        }
+    }
+);
+
+// // 🔹 2. Fonction intelligente de normalisation
+function normalizeDate(dateStr) {
+    if (!dateStr) return "";
+
+    // Remplacer ., / par -
+    dateStr = dateStr.replace(/[./]/g, "-");
+
+    // Vérifier si format AAAA-MM-JJ
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        return dateStr; // déjà ISO
+    }
+
+    // Vérifier si format JJ-MM-AAAA
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+        const [jour, mois, annee] = dateStr.split("-");
+        return `${annee}-${mois}-${jour}`;
+    }
+
+    // Vérifier si format JJ-MM-AA (rare mais possible)
+    if (/^\d{2}-\d{2}-\d{2}$/.test(dateStr)) {
+        const [jour, mois, annee] = dateStr.split("-");
+        return `20${annee}-${mois}-${jour}`;
+    }
+
+    // Sinon, invalide
+    return "";
+}
+
+// 🔹 3. Calcul automatique de la durée de traitement
+watch(
+    () => [dateArrivee.value, form.dt_dateenvoicd, form.txt_categoriecd],
+    ([arrivee, envoie, categorie]) => {
+        if (!["Reponse à un Courrier arrivé", "Dossier Retourne"].includes(categorie)) {
+        form.txt_dureetraitementcd = "";
+        return;
+        }
+
+        if (!arrivee || !envoie) return;
+
+        // ✅ Convertir "JJ/MM/AAAA" → "AAAA-MM-JJ" si nécessaire
+        const toISO = (date) =>
+        /^\d{2}\/\d{2}\/\d{4}$/.test(date)
+            ? date.split("/").reverse().join("-")
+            : date;
+
+        const dArr = new Date(toISO(arrivee));
+        const dEnv = new Date(toISO(envoie));
+
+        const diff = Math.ceil((dEnv - dArr) / (1000 * 3600 * 24));
+
+        form.txt_dureetraitementcd = diff <= 0 ? "24 heures" : `${diff} jours`;
     }
 );
  
-// reupèration references courrier depart: Durée de traitement
-watch(
-    () => [form.dt_dateenvoicd, form.dt_datecouriercd, form.txt_categoriecd],
-    ([newDateEnvoie, newDateArrivee, newCategorie]) => {
-
-        if (newCategorie === "Reponse à un Courrier arrivé" || newCategorie === "Retourner") {
-            if (newDateEnvoie && newDateArrivee) {
-                const dateEnvoi = new Date(newDateEnvoie);
-                const dateArrivee = new Date(newDateArrivee);
-
-                const diffInTime = dateEnvoi.getTime() - dateArrivee.getTime();
-                const diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24));
-
-                if (diffInDays <= 0) {
-                    form.txt_dureetraitementcd = `24 heures`;
-                } else {
-                    form.txt_dureetraitementcd = `${diffInDays} jours`;
-                }
-            } else {
-                form.txt_dureetraitementcd = "";
-            }
-        } else {
-            form.txt_dureetraitementcd = "";
-        }
-    }
-);
-
-   
 // Soumission du formulaire
 const submitForm = function () {  // Ajoutez `async` ici 
     const today = new Date().toISOString().split('T')[0];
@@ -398,7 +419,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         <option value="Information">Information</option> 
                                                         <option value="Alerte">Alerte</option>
                                                         <option value="Signalement">Signalement</option>
-                                                        <option value="Retourner">Retourner</option>
+                                                        <option value="Dossier Retourne">Dossier Retourné</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -442,7 +463,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                             form.txt_nombrepiececd
                                                         "
                                                         required
-                                                        autocomplete="address-level2"
+                                                        autocomplete="off"
                                                         min="1"
                                                         id="txt_nombrepiececd" 
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
@@ -516,7 +537,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         "
                                                         required
                                                         id="txt_destinatairecd"
-                                                            autocomplete="address-level2"
+                                                            autocomplete="off"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -529,7 +550,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                 <label
                                                     for="txt_referencereceptioncd"
                                                     class="block text-sm/6 font-medium text-primary-txt"
-                                                    >Réf.Récéption</label
+                                                    >Ref. Décharge</label
                                                 >
                                                 <div class="mt-2">
                                                     <input
@@ -539,7 +560,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                             form.txt_referencereceptioncd
                                                         " 
                                                         id="txt_referencereceptioncd"
-                                                        autocomplete="address-level2"
+                                                        autocomplete="off"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -584,8 +605,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                         name="txt_dureetraitementcd"
                                                         v-model="
                                                             form.txt_dureetraitementcd
-                                                        "
-                                                        required
+                                                        " 
                                                         id="txt_dureetraitementcd"
                                                         autocomplete="off"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
@@ -634,7 +654,7 @@ const submitForm = function () {  // Ajoutez `async` ici
                                                             form.txt_observationcd
                                                         " 
                                                         id="txt_observationcd"
-                                                        autocomplete="address-level2"
+                                                        autocomplete="off"
                                                         class="h-8 block w-full rounded-md bg-white px-3 py-1.5 text-base text-primary-txt 
                                                             outline outline-1 -outline-offset-1 outline-primary-only placeholder:text-gray-400 
                                                             focus:outline focus:outline-2 focus:-outline-2 focus:outline-primary sm:text-sm/6"
@@ -671,12 +691,15 @@ const submitForm = function () {  // Ajoutez `async` ici
                                 <!-- Bouton de soumission -->
 
                                 <div class="sm:col-span-6 flex justify-center">
-                                    <MazBtn type="submit" no-shadow no-hover-effect
-                                            class="bg-gradient-to-r from-primary via-primary-light to-primary-dark 
-                                                hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-primary 
-                                                dark:focus:ring-primary-dark shadow-lg shadow-primary/50 
-                                                dark:shadow-lg dark:shadow-primary-dark font-medium rounded-lg text-sm 
-                                                px-5 py-2.5 text-center">
+                                    <MazBtn 
+                                        type="submit" no-shadow no-hover-effect
+                                        class="w-64 h-10 text-white bg-gradient-to-r from-primary via-primary-dark 
+                                            to-primary hover:bg-gradient-to-br focus:ring-4 focus:outline-none 
+                                            focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 
+                                            dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 
+                                            py-2.5 text-center me-2 mb-2"
+                                            size="medium"
+                                    >
                                         Enregistrer
                                     </MazBtn>
                                 </div>

@@ -120,7 +120,7 @@ function handleImageError() {
                 <footer
                     class="py-16 text-center text-sm text-primary-txt font-bold dark:text-white/70 mt-8"
                 >
-                   Programme de Gestion de Courriers <b>v-1</b> 
+                   Programme de Gestion de Courriers <b>MB.01</b> 
                 </footer>
             </div>
         </div>

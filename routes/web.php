@@ -87,7 +87,9 @@ Route::get('/instancearrivee/arrivee/{txt_numdordre}', [InstancearriveeControlle
 
 Route::get('/arrivee/editarrivee/{id}', [ArriveeController::class, 'editarrivee'])->name('arrivee.editarrivee');
 Route::get('/depart/editdepart/{id}', [DepartController::class, 'editdepart'])->name('depart.editdepart');
-
+Route::delete('/depart/delete-pdf/{id}', [DepartController::class, 'deletePdf'])->name('depart.deletePdf');
+Route::delete('/arrivee/arrivee-pdf/{id}', [DepartController::class, 'arriveePdf'])->name('arrivee.arriveePdf');
+ 
 Route::put('/arrivee/update/{id}', [ArriveeController::class, 'update'])->name('arrivee.update');  
 Route::put('/depart/update/{id}', [DepartController::class, 'update'])->name('depart.update'); 
  
@@ -118,6 +120,5 @@ Route::delete('/message/{id}', [MessageController::class, 'destroy'])->middlewar
 Route::put('/message/{id}', [MessageController::class, 'update'])->middleware('auth');
   
  
-
  
 require __DIR__ . '/auth.php';

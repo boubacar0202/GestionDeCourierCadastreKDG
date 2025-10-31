@@ -20,7 +20,8 @@ export default {
                 "primary-txt": "#592D00",   // #592D00
                 "primary-only": "#E6C5A2", // #E6C5A2
                 "primary-menu": "#C7812E", //  #C7812E
-                "primary-form": "#ffe5c5", //  #ffe5c5
+                "primary-form": "#f8d8b0ff", //  #fcdbb2ff
+                "primary-footer": "#fdd7a9ff",
                 "primary-layout": "#fff7ee", //#fff7ee
             },
             // Ajoute la personnalisation de la scrollbar

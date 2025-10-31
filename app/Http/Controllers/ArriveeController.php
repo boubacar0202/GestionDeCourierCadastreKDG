@@ -49,6 +49,21 @@ class ArriveeController extends Controller
         return Inertia::render("arrivee/create");    
     }
 
+    // Supprimer le fichier PDF
+    public function deletePdf($id)
+    {
+        $arrivee = Arrivee::findOrFail($id);
+
+        if ($arrivee->fichierPDF && Storage::disk('public')->exists($arrivee->fichierPDF)) {
+            Storage::disk('public')->delete($arrivee->fichierPDF);
+        }
+
+        // Supprime le lien dans la base de données
+        $arrivee->update(['fichierPDF' => null]);
+ 
+        return back()->with('success', 'Fichier supprimé avec succès');
+    }
+
     /**
      * Store a newly created resource in storage.
      */
